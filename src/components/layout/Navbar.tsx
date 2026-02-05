@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Menu, X, ShoppingCart, User } from "lucide-react";
 
 export function Navbar() {
@@ -44,14 +43,14 @@ export function Navbar() {
 
                 {/* Desktop Actions */}
                 <div className="hidden items-center gap-4 md:flex">
-                    <button className="glass p-2 rounded-xl hover:bg-white/10 transition-all relative">
+                    <Link href="/cart" className="glass p-2 rounded-xl hover:bg-white/10 transition-all relative">
                         <ShoppingCart className="w-5 h-5" />
                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-pink rounded-full text-xs flex items-center justify-center font-bold">0</span>
-                    </button>
-                    <button className="text-sm font-medium hover:text-brand-gold transition-colors flex items-center gap-2">
+                    </Link>
+                    <Link href="/login" className="text-sm font-medium hover:text-brand-gold transition-colors flex items-center gap-2">
                         <User className="w-4 h-4" />
                         Connexion
-                    </button>
+                    </Link>
                     <Link
                         href="/register"
                         className="rounded-full bg-gradient-to-r from-brand-purple to-brand-pink px-6 py-2.5 text-sm font-bold text-white transition-all hover:scale-105 hover:shadow-lg hover:shadow-brand-purple/30"
@@ -83,9 +82,9 @@ export function Navbar() {
                             Communauté
                         </Link>
                         <div className="pt-4 border-t border-white/10 space-y-3">
-                            <button className="w-full text-left font-medium hover:text-brand-gold transition-colors">
+                            <Link href="/login" className="block w-full text-left font-medium hover:text-brand-gold transition-colors">
                                 Connexion
-                            </button>
+                            </Link>
                             <Link
                                 href="/register"
                                 className="block text-center rounded-full bg-gradient-to-r from-brand-purple to-brand-pink px-6 py-3 font-bold text-white"

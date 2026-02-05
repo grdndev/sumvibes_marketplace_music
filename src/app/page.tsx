@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Music, Headphones, Shield, TrendingUp, Users, Star, Play, Download, Award } from "lucide-react";
 
@@ -59,6 +59,12 @@ export default function Home() {
     },
   ];
 
+  const featuredBeats = [
+    { title: "Midnight Dreams", slug: "midnight-dreams" },
+    { title: "Urban Vibes", slug: "urban-vibes" },
+    { title: "Celestial Flow", slug: "celestial-flow" },
+  ];
+
   return (
     <div className="relative min-h-screen bg-gradient-premium">
       <Navbar />
@@ -81,23 +87,29 @@ export default function Home() {
 
             <h1 className="mx-auto max-w-5xl text-6xl font-light tracking-wide md:text-8xl font-display leading-tight">
               Élevez votre son avec des{" "}
-              <span className="text-gradient font-normal">Prods d'Exception</span>
+              <span className="text-gradient font-normal">Prods d’Exception</span>
             </h1>
 
             <p className="mx-auto mt-8 max-w-3xl text-base text-white/80 md:text-xl leading-relaxed font-light">
-              La marketplace premium pour les compositeurs visionnaires et les artistes en quête d'excellence.
+              La marketplace premium pour les compositeurs visionnaires et les artistes en quête d’excellence.
               Vendez, achetez et collaborez dans un écosystème sécurisé et transparent.
             </p>
 
             <div className="mt-12 flex flex-wrap justify-center gap-6">
-              <button className="btn-primary group relative rounded-full bg-gradient-to-r from-brand-purple to-brand-pink px-10 py-5 font-bold text-white text-lg shadow-2xl hover:shadow-brand-purple/50 hover:scale-105 flex items-center gap-3">
+              <Link
+                href="/catalogue"
+                className="btn-primary group relative rounded-full bg-gradient-to-r from-brand-purple to-brand-pink px-10 py-5 font-bold text-white text-lg shadow-2xl hover:shadow-brand-purple/50 hover:scale-105 flex items-center gap-3"
+              >
                 <Music className="w-5 h-5" />
                 Explorer le Catalogue
-              </button>
-              <button className="glass rounded-full px-10 py-5 font-bold text-lg hover:bg-white/10 flex items-center gap-3 group">
+              </Link>
+              <Link
+                href="/seller/dashboard"
+                className="glass rounded-full px-10 py-5 font-bold text-lg hover:bg-white/10 flex items-center gap-3 group"
+              >
                 <TrendingUp className="w-5 h-5 group-hover:text-brand-gold" />
                 Vendre vos Beats
-              </button>
+              </Link>
             </div>
 
             {/* Stats Row */}
@@ -119,23 +131,27 @@ export default function Home() {
               <h2 className="text-4xl font-bold font-display mb-3">Dernières Pépites 💎</h2>
               <p className="text-slate-400">Les productions les plus en vogue cette semaine</p>
             </div>
-            <a href="#" className="text-brand-gold hover:text-brand-gold-dark font-semibold flex items-center gap-2 group">
+            <Link href="/catalogue" className="text-brand-gold hover:text-brand-gold-dark font-semibold flex items-center gap-2 group">
               Voir tout
               <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {["Midnight Dreams", "Urban Vibes", "Celestial Flow"].map((title, i) => (
-              <div key={i} className="glass group relative overflow-hidden rounded-3xl p-5 transition-all hover:-translate-y-3 hover:shadow-2xl hover:shadow-brand-purple/30">
+            {featuredBeats.map((beat) => (
+              <div key={beat.slug} className="glass group relative overflow-hidden rounded-3xl p-5 transition-all hover:-translate-y-3 hover:shadow-2xl hover:shadow-brand-purple/30">
                 <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Music className="w-20 h-20 text-white/20" />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button className="rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark p-5 text-black shadow-2xl hover:scale-110 transition-transform glow-gold">
+                    <Link
+                      href={`/product/${beat.slug}`}
+                      aria-label={`Écouter ${beat.title}`}
+                      className="rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark p-5 text-black shadow-2xl hover:scale-110 transition-transform glow-gold"
+                    >
                       <Play className="h-8 w-8 fill-current" />
-                    </button>
+                    </Link>
                   </div>
                   <div className="absolute top-3 right-3 glass px-3 py-1 rounded-full text-xs font-bold text-brand-gold">
                     NEW
@@ -143,7 +159,7 @@ export default function Home() {
                 </div>
 
                 <div className="mt-5">
-                  <h3 className="font-bold text-xl mb-1">{title}</h3>
+                  <h3 className="font-bold text-xl mb-1">{beat.title}</h3>
                   <p className="text-sm text-slate-400 mb-1">Prod. by Xavier Jarvis</p>
                   <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
                     <span className="glass px-2 py-1 rounded">140 BPM</span>
@@ -156,9 +172,12 @@ export default function Home() {
                       <span className="text-2xl font-bold text-gradient">29.99 €</span>
                       <span className="text-xs text-slate-500 ml-2">Licence Basic</span>
                     </div>
-                    <button className="glass rounded-xl px-5 py-2 text-sm font-semibold hover:bg-brand-purple/20 hover:border-brand-purple/30 transition-all">
+                    <Link
+                      href={`/product/${beat.slug}`}
+                      className="glass rounded-xl px-5 py-2 text-sm font-semibold hover:bg-brand-purple/20 hover:border-brand-purple/30 transition-all"
+                    >
                       Acheter
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -176,8 +195,8 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, i) => (
-              <div key={i} className="glass p-8 rounded-3xl hover:scale-105 transition-all group">
+            {features.map((feature) => (
+              <div key={feature.title} className="glass p-8 rounded-3xl hover:scale-105 transition-all group">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-gold/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform glow-purple">
                   <feature.icon className="w-8 h-8 text-brand-gold" />
                 </div>
@@ -192,7 +211,7 @@ export default function Home() {
         <section className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold font-display mb-4">Ils nous font confiance ⭐</h2>
-            <p className="text-xl text-slate-400">Des milliers d'artistes satisfaits</p>
+            <p className="text-xl text-slate-400">Des milliers d’artistes satisfaits</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -203,7 +222,7 @@ export default function Home() {
                     <Star key={i} className="w-5 h-5 fill-brand-gold text-brand-gold" />
                   ))}
                 </div>
-                <p className="text-slate-300 mb-6 leading-relaxed italic">"{testimonial.text}"</p>
+                <p className="text-slate-300 mb-6 leading-relaxed italic">&ldquo;{testimonial.text}&rdquo;</p>
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">{testimonial.avatar}</div>
                   <div>
@@ -229,14 +248,20 @@ export default function Home() {
                 Rejoignez la communauté SUMVIBES et accédez à des milliers de productions premium
               </p>
               <div className="flex flex-wrap justify-center gap-6">
-                <button className="btn-primary rounded-full bg-white px-10 py-5 font-bold text-black text-lg hover:scale-105 flex items-center gap-3">
+                <Link
+                  href="/register"
+                  className="btn-primary rounded-full bg-white px-10 py-5 font-bold text-black text-lg hover:scale-105 flex items-center gap-3"
+                >
                   <Users className="w-5 h-5" />
                   Créer mon compte gratuitement
-                </button>
-                <button className="glass rounded-full px-10 py-5 font-bold text-lg hover:bg-white/10 flex items-center gap-3">
+                </Link>
+                <Link
+                  href="/about"
+                  className="glass rounded-full px-10 py-5 font-bold text-lg hover:bg-white/10 flex items-center gap-3"
+                >
                   <Download className="w-5 h-5" />
                   En savoir plus
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -253,38 +278,38 @@ export default function Home() {
                 <span className="text-2xl font-bold text-gradient">SUMVIBES</span>
               </div>
               <p className="text-slate-400 mb-4 max-w-md">
-                La marketplace premium pour les compositeurs visionnaires et les artistes en quête d'excellence.
+                La marketplace premium pour les compositeurs visionnaires et les artistes en quête d’excellence.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
+                <Link href="/community" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
                   <span className="text-lg">𝕏</span>
-                </a>
-                <a href="#" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
+                </Link>
+                <Link href="/community" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
                   <span className="text-lg">IG</span>
-                </a>
-                <a href="#" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
+                </Link>
+                <Link href="/community" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
                   <span className="text-lg">YT</span>
-                </a>
+                </Link>
               </div>
             </div>
 
             <div>
               <h3 className="font-bold mb-4">Plateforme</h3>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="#" className="hover:text-brand-gold">Catalogue</a></li>
-                <li><a href="#" className="hover:text-brand-gold">Producteurs</a></li>
-                <li><a href="#" className="hover:text-brand-gold">Communauté</a></li>
-                <li><a href="#" className="hover:text-brand-gold">Blog</a></li>
+                <li><Link href="/catalogue" className="hover:text-brand-gold">Catalogue</Link></li>
+                <li><Link href="/producers" className="hover:text-brand-gold">Producteurs</Link></li>
+                <li><Link href="/community" className="hover:text-brand-gold">Communauté</Link></li>
+                <li><Link href="/blog" className="hover:text-brand-gold">Blog</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-bold mb-4">Support</h3>
               <ul className="space-y-3 text-slate-400">
-                <li><a href="#" className="hover:text-brand-gold">Aide</a></li>
-                <li><a href="#" className="hover:text-brand-gold">CGV</a></li>
-                <li><a href="#" className="hover:text-brand-gold">Confidentialité</a></li>
-                <li><a href="#" className="hover:text-brand-gold">Contact</a></li>
+                <li><Link href="/help" className="hover:text-brand-gold">Aide</Link></li>
+                <li><Link href="/cgv" className="hover:text-brand-gold">CGV</Link></li>
+                <li><Link href="/privacy" className="hover:text-brand-gold">Confidentialité</Link></li>
+                <li><Link href="/contact" className="hover:text-brand-gold">Contact</Link></li>
               </ul>
             </div>
           </div>
