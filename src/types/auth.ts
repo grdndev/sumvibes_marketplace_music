@@ -21,13 +21,14 @@ export interface JWTPayload {
 
 export interface RegisterData {
     email: string;
-    username: string;
+    username?: string;
+    artistName?: string;
     password: string;
     role: UserRole;
     firstName?: string;
     lastName?: string;
     displayName?: string;
-    gdprConsent: boolean;
+    gdprConsent?: boolean;
     marketingConsent?: boolean;
 }
 

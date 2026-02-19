@@ -8,16 +8,16 @@ export async function POST(request: NextRequest) {
         const body: RegisterData = await request.json();
 
         // Validation
-        if (!body.email || !body.username || !body.password) {
+        if (!body.email || !body.password) {
             return NextResponse.json(
-                { error: 'Email, username et mot de passe requis' },
+                { error: 'Email et mot de passe requis' },
                 { status: 400 }
             );
         }
 
-        if (!body.gdprConsent) {
+        if (!body.firstName || !body.lastName || !body.artistName) {
             return NextResponse.json(
-                { error: 'Vous devez accepter la politique de confidentialité' },
+                { error: 'Prénom, nom et nom d\'artiste requis' },
                 { status: 400 }
             );
         }
@@ -34,14 +34,14 @@ export async function POST(request: NextRequest) {
             where: {
                 OR: [
                     { email: body.email },
-                    { username: body.username },
+                    { username: body.artistName }, // Use artistName as username
                 ],
             },
         });
 
         if (existingUser) {
             return NextResponse.json(
-                { error: 'Cet email ou nom d\'utilisateur existe déjà' },
+                { error: 'Cet email ou nom d\'artiste existe déjà' },
                 { status: 409 }
             );
         }
@@ -53,13 +53,13 @@ export async function POST(request: NextRequest) {
         const user = await prisma.user.create({
             data: {
                 email: body.email,
-                username: body.username,
+                username: body.artistName, // Use artistName as username
                 passwordHash,
-                role: body.role,
+                role: body.role || 'BUYER',
                 firstName: body.firstName,
                 lastName: body.lastName,
-                displayName: body.displayName || body.username,
-                gdprConsent: body.gdprConsent,
+                displayName: body.artistName,
+                gdprConsent: body.gdprConsent || true,
                 marketingConsent: body.marketingConsent || false,
             },
             select: {
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
             await prisma.sellerProfile.create({
                 data: {
                     userId: user.id,
-                    artistName: body.displayName || body.username,
+                    artistName: body.artistName,
                     description: '',
                     genres: [],
                 },

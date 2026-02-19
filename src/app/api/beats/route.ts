@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { BeatStatus } from '@prisma/client';
 import { BeatFilters, PaginationParams } from '@/types/auth';
+import { verifyToken } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
     try {
@@ -24,9 +26,12 @@ export async function GET(request: NextRequest) {
         const featured = searchParams.get('featured');
 
         // Build where clause
-        const where: any = {
-            status: 'PUBLISHED',
-        };
+        const where: any = {};
+
+        // Si pas de sellerId ou pas de filtre explicite, on filtre PUBLISHED par défaut
+        if (!sellerId) {
+            where.status = 'PUBLISHED';
+        }
 
         // Genre filter
         if (genre && genre.length > 0) {
@@ -143,4 +148,87 @@ export async function GET(request: NextRequest) {
             { status: 500 }
         );
     }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const token = req.headers.get("authorization")?.split(" ")[1];
+    if (!token) {
+      return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    }
+
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Token invalide" }, { status: 401 });
+    }
+
+    // Vérifier que l'utilisateur est un vendeur
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { role: true },
+    });
+
+    if (!user || user.role !== "SELLER") {
+      return NextResponse.json(
+        { error: "Seuls les vendeurs peuvent créer des beats" },
+        { status: 403 }
+      );
+    }
+
+    const body = await req.json();
+
+    // Validation basique
+    if (!body.title || !body.genre || !body.bpm || (!body.previewUrl && !body.audioUrl)) {
+      return NextResponse.json(
+        { error: "Champs requis : title, genre, bpm, previewUrl" },
+        { status: 400 }
+      );
+    }
+
+    // Générer un slug unique
+    const slug = body.title
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    // Convertir genre/mood en tableau si c'est une string
+    const genres = Array.isArray(body.genre) ? body.genre : [body.genre];
+    const moods = Array.isArray(body.mood) ? body.mood : body.mood ? [body.mood] : [];
+
+    const beat = await prisma.beat.create({
+      data: {
+        title: body.title,
+        slug: `${slug}-${Date.now()}`,
+        description: body.description || "",
+        genre: genres,
+        mood: moods,
+        bpm: parseInt(body.bpm),
+        key: body.key || null,
+        tags: body.tags || [],
+        instruments: body.instruments || [],
+        duration: body.duration || 180,
+        previewUrl: body.previewUrl || body.audioUrl,   // fichier audio = preview
+        mainFileUrl: body.mainFileUrl || body.audioUrl,  // fichier principal
+        coverImage: body.coverImage || body.coverUrl || null,
+        sellerId: decoded.userId,
+        status: "PENDING" as any,
+      },
+      include: {
+        seller: {
+          select: {
+            id: true,
+            displayName: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ beat }, { status: 201 });
+  } catch (error) {
+    console.error("Error in POST /api/beats:", error);
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  }
 }

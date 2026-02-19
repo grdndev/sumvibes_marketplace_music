@@ -3,13 +3,22 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Music, Headphones, Shield, TrendingUp, Users, Star, Play, Download, Award } from "lucide-react";
+import { useBeats } from "@/hooks/useBeats";
+import { usePlatformStats } from "@/hooks/useStats";
+import { useMemo } from "react";
 
 export default function Home() {
+  const { stats: platformStats } = usePlatformStats();
+  
+  // Mémoïser les filtres pour éviter les re-renders
+  const beatFilters = useMemo(() => ({ sort: 'latest' as const, limit: 3 }), []);
+  const { beats: featuredBeats, loading: beatsLoading } = useBeats(beatFilters);
+  
   const stats = [
-    { value: "10K+", label: "Productions disponibles" },
-    { value: "5K+", label: "Producteurs actifs" },
-    { value: "50K+", label: "Téléchargements" },
-    { value: "98%", label: "Satisfaction client" },
+    { value: platformStats ? `${Math.floor(platformStats.totalBeats / 1000)}K+` : "10K+", label: "Productions disponibles" },
+    { value: platformStats ? `${Math.floor(platformStats.activeProducers / 1000)}K+` : "5K+", label: "Producteurs actifs" },
+    { value: platformStats ? `${Math.floor(platformStats.totalSales / 1000)}K+` : "50K+", label: "Téléchargements" },
+    { value: platformStats ? `${Math.round(platformStats.averageRating * 20)}%` : "98%", label: "Satisfaction client" },
   ];
 
   const features = [
@@ -57,12 +66,6 @@ export default function Home() {
       text: "Un écosystème pro qui respecte les artistes. Interface fluide, catalogue varié.",
       rating: 5,
     },
-  ];
-
-  const featuredBeats = [
-    { title: "Midnight Dreams", slug: "midnight-dreams" },
-    { title: "Urban Vibes", slug: "urban-vibes" },
-    { title: "Celestial Flow", slug: "celestial-flow" },
   ];
 
   return (
@@ -138,50 +141,69 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredBeats.map((beat) => (
-              <div key={beat.slug} className="glass group relative overflow-hidden rounded-3xl p-5 transition-all hover:-translate-y-3 hover:shadow-2xl hover:shadow-brand-purple/30">
-                <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Music className="w-20 h-20 text-white/20" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Link
-                      href={`/product/${beat.slug}`}
-                      aria-label={`Écouter ${beat.title}`}
-                      className="rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark p-5 text-black shadow-2xl hover:scale-110 transition-transform glow-gold"
-                    >
-                      <Play className="h-8 w-8 fill-current" />
-                    </Link>
-                  </div>
-                  <div className="absolute top-3 right-3 glass px-3 py-1 rounded-full text-xs font-bold text-brand-gold">
-                    NEW
-                  </div>
+            {beatsLoading ? (
+              // Loading skeleton
+              [...Array(3)].map((_, i) => (
+                <div key={i} className="glass rounded-3xl p-5 animate-pulse">
+                  <div className="aspect-square bg-white/5 rounded-2xl mb-5"></div>
+                  <div className="h-6 bg-white/5 rounded mb-2"></div>
+                  <div className="h-4 bg-white/5 rounded w-2/3"></div>
                 </div>
-
-                <div className="mt-5">
-                  <h3 className="font-bold text-xl mb-1">{beat.title}</h3>
-                  <p className="text-sm text-slate-400 mb-1">Prod. by Xavier Jarvis</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
-                    <span className="glass px-2 py-1 rounded">140 BPM</span>
-                    <span className="glass px-2 py-1 rounded">Trap</span>
-                    <span className="glass px-2 py-1 rounded">Dark</span>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                    <div>
-                      <span className="text-2xl font-bold text-gradient">29.99 €</span>
-                      <span className="text-xs text-slate-500 ml-2">Licence Basic</span>
+              ))
+            ) : featuredBeats.length > 0 ? (
+              featuredBeats.map((beat) => (
+                <div key={beat.id} className="glass group relative overflow-hidden rounded-3xl p-5 transition-all hover:-translate-y-3 hover:shadow-2xl hover:shadow-brand-purple/30">
+                  <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20">
+                    {beat.coverImage ? (
+                      <img src={beat.coverImage} alt={beat.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Music className="w-20 h-20 text-white/20" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Link
+                        href={`/product/${beat.slug}`}
+                        aria-label={`Écouter ${beat.title}`}
+                        className="rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark p-5 text-black shadow-2xl hover:scale-110 transition-transform glow-gold"
+                      >
+                        <Play className="h-8 w-8 fill-current" />
+                      </Link>
                     </div>
-                    <Link
-                      href={`/product/${beat.slug}`}
-                      className="glass rounded-xl px-5 py-2 text-sm font-semibold hover:bg-brand-purple/20 hover:border-brand-purple/30 transition-all"
-                    >
-                      Acheter
-                    </Link>
+                    <div className="absolute top-3 right-3 glass px-3 py-1 rounded-full text-xs font-bold text-brand-gold">
+                      NEW
+                    </div>
+                  </div>
+
+                  <div className="mt-5">
+                    <h3 className="font-bold text-xl mb-1">{beat.title}</h3>
+                    <p className="text-sm text-slate-400 mb-1">Prod. by {beat.seller.displayName || beat.seller.username}</p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
+                      <span className="glass px-2 py-1 rounded">{beat.bpm} BPM</span>
+                      <span className="glass px-2 py-1 rounded">{beat.genre}</span>
+                      {beat.mood && <span className="glass px-2 py-1 rounded">{beat.mood}</span>}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                      <div>
+                        <span className="text-2xl font-bold text-gradient">{Number(beat.basicPrice ?? 0).toFixed(2)} €</span>
+                        <span className="text-xs text-slate-500 ml-2">Licence Basic</span>
+                      </div>
+                      <Link
+                        href={`/product/${beat.slug}`}
+                        className="glass rounded-xl px-5 py-2 text-sm font-semibold hover:bg-brand-purple/20 hover:border-brand-purple/30 transition-all"
+                      >
+                        Acheter
+                      </Link>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-12 text-slate-400">
+                Aucun beat disponible pour le moment
               </div>
-            ))}
+            )}
           </div>
         </section>
 

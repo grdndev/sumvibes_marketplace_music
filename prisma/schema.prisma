@@ -122,7 +122,9 @@ model SellerProfile {
 
 enum BeatStatus {
   DRAFT
+  PENDING
   PUBLISHED
+  REJECTED
   ARCHIVED
   DELETED
 }
