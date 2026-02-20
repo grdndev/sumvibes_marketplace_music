@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Eye, EyeOff, Mail, Lock, User, Music, ShoppingBag, ArrowRight, CheckCircle } from "lucide-react";
+import { u } from "framer-motion/client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function RegisterPage() {
     firstName: "",
     lastName: "",
     artistName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -55,6 +57,7 @@ export default function RegisterPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           artistName: formData.artistName,
+          username : formData.username,
           role: formData.role,
           gdprConsent: formData.gdprConsent,
         }),
@@ -146,6 +149,8 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Si l'utilisateur choisit "SELLER", afficher le champ "Nom d'artiste" */}
+            {formData.role === "SELLER" && (
             <div className="mb-4">
               <label className="text-sm font-semibold text-slate-300 mb-2 block">Nom d&apos;artiste</label>
               <input
@@ -158,6 +163,24 @@ export default function RegisterPage() {
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
               />
             </div>
+            )}
+
+             {/* Si l'utilisateur choisit "SELLER", afficher le champ "Username" */}
+            {formData.role === "BUYER" && (
+            <div className="mb-4">
+              <label className="text-sm font-semibold text-slate-300 mb-2 block">Nom d&apos;utilisateur</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                placeholder="Votre nom d'utilisateur / pseudo"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+              />
+            </div>
+            )}
+
 
             <div className="mb-4">
               <label className="text-sm font-semibold text-slate-300 mb-2 block">Email</label>

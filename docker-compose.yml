@@ -1,10 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
     image: postgres:16-alpine
     container_name: sumvibes_postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: sumvibes_user
       POSTGRES_PASSWORD: sumvibes_password
@@ -18,6 +18,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - sumvibes_network
+
+  adminer:
+    image: adminer:4
+    container_name: sumvibes_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sumvibes_network
 
 volumes:
   postgres_data:
+
+networks:
+  sumvibes_network:
+    driver: bridge

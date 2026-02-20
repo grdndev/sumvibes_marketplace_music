@@ -15,13 +15,24 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!body.firstName || !body.lastName || !body.artistName) {
+        if (!body.firstName || !body.lastName) {
             return NextResponse.json(
-                { error: 'Prénom, nom et nom d\'artiste requis' },
+                { error: 'Prénom et nom requis' },
                 { status: 400 }
             );
         }
 
+        if(!body.username || !body.artistName){
+            let message = 'Nom d\'utilisateur requis';
+            if(body.artistName){
+                message = 'Nom d\'artiste requis';
+            }
+            return NextResponse.json(
+                { error: message },
+                { status: 400 }
+            );
+        }
+      
         if (body.password.length < 8) {
             return NextResponse.json(
                 { error: 'Le mot de passe doit contenir au moins 8 caractères' },
@@ -53,7 +64,7 @@ export async function POST(request: NextRequest) {
         const user = await prisma.user.create({
             data: {
                 email: body.email,
-                username: body.artistName, // Use artistName as username
+                username: body.username,  
                 passwordHash,
                 role: body.role || 'BUYER',
                 firstName: body.firstName,
