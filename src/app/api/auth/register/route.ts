@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
           email: body.email,
           username: body.artistName || "",
           passwordHash,
-          role: 'SELLER',
+          role: "SELLER",
           firstName: body.firstName,
           lastName: body.lastName,
           displayName: body.artistName || "",
