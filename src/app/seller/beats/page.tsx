@@ -259,7 +259,7 @@ export default function SellerBeatsPage() {
       setTimeout(() => {
         setForm(INITIAL_FORM);
         goToStep(1);
-        router.push("/seller/dashboard");
+        router.push("/seller/beats/display");
       }, 2000);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");

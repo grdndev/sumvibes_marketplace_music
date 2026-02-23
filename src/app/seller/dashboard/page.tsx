@@ -194,7 +194,7 @@ export default function SellerDashboardPage() {
                 <div className="glass rounded-3xl p-8">
                   <h2 className="text-xl font-bold font-display mb-6">Navigation rapide</h2>
                   <div className="space-y-3">
-                    <Link href="/seller/beats" className="flex items-center gap-3 glass rounded-xl p-4 hover:bg-white/5">
+                    <Link href="/seller/beats/display" className="flex items-center gap-3 glass rounded-xl p-4 hover:bg-white/5">
                       <Music className="w-5 h-5 text-brand-gold" />
                       <div className="flex-1">
                         <div className="font-semibold text-sm">Mes beats</div>

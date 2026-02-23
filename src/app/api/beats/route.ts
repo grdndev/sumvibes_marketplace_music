@@ -78,11 +78,15 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const sellerId = searchParams.get("sellerId");
     const featured = searchParams.get("featured");
+    const includeDeleted = searchParams.get("includeDeleted") === "true";
 
     const where: Prisma.BeatWhereInput = {};
 
     if (!sellerId) {
       where.status = "PUBLISHED";
+    } else if (!includeDeleted) {
+      // Si on récupère les beats d'un user, on exclut les supprimés sauf si includeDeleted=true
+      where.status = { not: "DELETED" };
     }
 
     if (genre?.length) where.genre = { hasSome: genre };
@@ -139,7 +143,13 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.beat.count({ where }),
+      // Pour le total, on veut pouvoir compter tous les beats d'un user (même supprimés) si includeDeleted=true
+      prisma.beat.count({
+        where: {
+          ...where,
+          ...(sellerId && includeDeleted ? { status: undefined } : {}),
+        },
+      }),
     ]);
 
     const totalPages = Math.ceil(total / limit);
