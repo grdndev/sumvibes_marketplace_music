@@ -20,30 +20,30 @@ export async function POST(req: NextRequest) {
     const type = formData.get("type") as string; // "audio", "cover", "stems"
 
     if (!file) {
-      return NextResponse.json(
-        { error: "Fichier requis" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
     }
 
     // Validation du type de fichier
+    // Restriction stricte pour les images : PNG/JPG uniquement
     const allowedTypes: Record<string, string[]> = {
       audio: ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav"],
-      cover: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
+      cover: ["image/jpeg", "image/jpg", "image/png"],
       stems: ["application/zip", "application/x-zip-compressed"],
     };
 
     if (!type || !allowedTypes[type]) {
       return NextResponse.json(
         { error: "Type de fichier invalide" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!allowedTypes[type].includes(file.type)) {
       return NextResponse.json(
-        { error: `Format de fichier non supporté pour ${type}` },
-        { status: 400 }
+        {
+          error: `Format de fichier non supporté pour ${type}. Seuls PNG et JPG sont acceptés pour les images.`,
+        },
+        { status: 400 },
       );
     }
 
@@ -56,25 +56,37 @@ export async function POST(req: NextRequest) {
 
     if (file.size > maxSizes[type]) {
       return NextResponse.json(
-        { error: `Le fichier est trop volumineux (max ${maxSizes[type] / 1024 / 1024} MB)` },
-        { status: 400 }
+        {
+          error: `Le fichier est trop volumineux (max ${maxSizes[type] / 1024 / 1024} MB)`,
+        },
+        { status: 400 },
       );
     }
 
-    // Sauvegarder le fichier localement dans /public/uploads
+    // Déterminer le dossier de destination
+    let uploadDir: string;
+    let url: string;
+    if (type === "cover") {
+      uploadDir = path.join(process.cwd(), "public", "cover-beats");
+    } else {
+      uploadDir = path.join(process.cwd(), "public", "uploads", `${type}s`);
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const fileName = `${Date.now()}-${decoded.userId.slice(0, 8)}-${sanitizedName}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", `${type}s`);
     const filePath = path.join(uploadDir, fileName);
 
     // Créer le dossier si inexistant
     await mkdir(uploadDir, { recursive: true });
     await writeFile(filePath, buffer);
 
-    const url = `/uploads/${type}s/${fileName}`;
+    if (type === "cover") {
+      url = `/cover-beats/${fileName}`;
+    } else {
+      url = `/uploads/${type}s/${fileName}`;
+    }
 
     return NextResponse.json({
       url,

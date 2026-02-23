@@ -4,8 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
-import { Eye, EyeOff, Mail, Lock, User, Music, ShoppingBag, ArrowRight, CheckCircle } from "lucide-react";
-import { u } from "framer-motion/client";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Music,
+  ShoppingBag,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -26,7 +35,10 @@ export default function RegisterPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,7 +69,7 @@ export default function RegisterPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           artistName: formData.artistName,
-          username : formData.username,
+          username: formData.username,
           role: formData.role,
           gdprConsent: formData.gdprConsent,
         }),
@@ -82,7 +94,9 @@ export default function RegisterPage() {
       <main className="pt-20">
         <div className="mx-auto max-w-2xl px-6 py-12">
           <div className="text-center mb-10">
-            <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient mb-4">Créer un compte</h1>
+            <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient mb-4">
+              Créer un compte
+            </h1>
             <p className="text-slate-300">Rejoignez la communauté SUMVIBES</p>
           </div>
 
@@ -90,25 +104,41 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4 mb-8">
             <button
               type="button"
-              onClick={() => setFormData((prev) => ({ ...prev, role: "BUYER" }))}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, role: "BUYER" }))
+              }
               className={`glass rounded-2xl p-6 text-center transition-all hover:scale-[1.02] ${
-                formData.role === "BUYER" ? "ring-2 ring-brand-gold bg-brand-gold/5" : ""
+                formData.role === "BUYER"
+                  ? "ring-2 ring-brand-gold bg-brand-gold/5"
+                  : ""
               }`}
             >
-              <ShoppingBag className={`w-10 h-10 mx-auto mb-3 ${formData.role === "BUYER" ? "text-brand-gold" : "text-slate-400"}`} />
+              <ShoppingBag
+                className={`w-10 h-10 mx-auto mb-3 ${formData.role === "BUYER" ? "text-brand-gold" : "text-slate-400"}`}
+              />
               <h3 className="font-bold text-lg mb-1">Acheteur</h3>
-              <p className="text-xs text-slate-400">Achetez des beats pour vos projets musicaux</p>
+              <p className="text-xs text-slate-400">
+                Achetez des beats pour vos projets musicaux
+              </p>
             </button>
             <button
               type="button"
-              onClick={() => setFormData((prev) => ({ ...prev, role: "SELLER" }))}
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, role: "SELLER" }))
+              }
               className={`glass rounded-2xl p-6 text-center transition-all hover:scale-[1.02] ${
-                formData.role === "SELLER" ? "ring-2 ring-brand-gold bg-brand-gold/5" : ""
+                formData.role === "SELLER"
+                  ? "ring-2 ring-brand-gold bg-brand-gold/5"
+                  : ""
               }`}
             >
-              <Music className={`w-10 h-10 mx-auto mb-3 ${formData.role === "SELLER" ? "text-brand-gold" : "text-slate-400"}`} />
+              <Music
+                className={`w-10 h-10 mx-auto mb-3 ${formData.role === "SELLER" ? "text-brand-gold" : "text-slate-400"}`}
+              />
               <h3 className="font-bold text-lg mb-1">Vendeur</h3>
-              <p className="text-xs text-slate-400">Vendez vos productions musicales</p>
+              <p className="text-xs text-slate-400">
+                Vendez vos productions musicales
+              </p>
             </button>
           </div>
 
@@ -121,7 +151,9 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-sm font-semibold text-slate-300 mb-2 block">Prénom</label>
+                <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                  Prénom
+                </label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -136,7 +168,9 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-300 mb-2 block">Nom</label>
+                <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                  Nom
+                </label>
                 <input
                   type="text"
                   name="lastName"
@@ -151,39 +185,44 @@ export default function RegisterPage() {
 
             {/* Si l'utilisateur choisit "SELLER", afficher le champ "Nom d'artiste" */}
             {formData.role === "SELLER" && (
-            <div className="mb-4">
-              <label className="text-sm font-semibold text-slate-300 mb-2 block">Nom d&apos;artiste</label>
-              <input
-                type="text"
-                name="artistName"
-                value={formData.artistName}
-                onChange={handleChange}
-                required
-                placeholder="Votre nom d'artiste / pseudo"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-              />
-            </div>
+              <div className="mb-4">
+                <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                  Nom d&apos;artiste
+                </label>
+                <input
+                  type="text"
+                  name="artistName"
+                  value={formData.artistName}
+                  onChange={handleChange}
+                  required={formData.role === "SELLER"}
+                  placeholder="Votre nom d'artiste / pseudo"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                />
+              </div>
             )}
 
-             {/* Si l'utilisateur choisit "SELLER", afficher le champ "Username" */}
+            {/* Si l'utilisateur choisit "BUYER", afficher le champ "Username" */}
             {formData.role === "BUYER" && (
-            <div className="mb-4">
-              <label className="text-sm font-semibold text-slate-300 mb-2 block">Nom d&apos;utilisateur</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                required
-                placeholder="Votre nom d'utilisateur / pseudo"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-              />
-            </div>
+              <div className="mb-4">
+                <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                  Nom d&apos;utilisateur
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required={formData.role === "BUYER"}
+                  placeholder="Votre nom d'utilisateur / pseudo"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                />
+              </div>
             )}
 
-
             <div className="mb-4">
-              <label className="text-sm font-semibold text-slate-300 mb-2 block">Email</label>
+              <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                Email
+              </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
@@ -200,7 +239,9 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="text-sm font-semibold text-slate-300 mb-2 block">Mot de passe</label>
+                <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                  Mot de passe
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -212,14 +253,26 @@ export default function RegisterPage() {
                     placeholder="••••••••"
                     className="w-full pl-12 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Minimum 8 caractères</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Minimum 8 caractères
+                </p>
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-300 mb-2 block">Confirmer</label>
+                <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                  Confirmer
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -247,9 +300,18 @@ export default function RegisterPage() {
                 />
                 <span className="text-sm text-slate-400">
                   J&apos;accepte les{" "}
-                  <Link href="/cgv" className="text-brand-gold hover:underline">Conditions Générales de Vente</Link> et la{" "}
-                  <Link href="/privacy" className="text-brand-gold hover:underline">Politique de Confidentialité</Link>.
-                  Conformément au RGPD, vos données sont traitées de manière sécurisée.
+                  <Link href="/cgv" className="text-brand-gold hover:underline">
+                    Conditions Générales de Vente
+                  </Link>{" "}
+                  et la{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-brand-gold hover:underline"
+                  >
+                    Politique de Confidentialité
+                  </Link>
+                  . Conformément au RGPD, vos données sont traitées de manière
+                  sécurisée.
                 </span>
               </label>
             </div>
@@ -270,13 +332,20 @@ export default function RegisterPage() {
 
             <p className="text-center text-sm text-slate-400 mt-6">
               Déjà un compte ?{" "}
-              <Link href="/login" className="text-brand-gold hover:underline font-semibold">Se connecter</Link>
+              <Link
+                href="/login"
+                className="text-brand-gold hover:underline font-semibold"
+              >
+                Se connecter
+              </Link>
             </p>
           </form>
 
           {/* Benefits */}
           <div className="glass rounded-2xl p-6 mt-8">
-            <h3 className="font-bold font-display mb-4">Pourquoi rejoindre SUMVIBES ?</h3>
+            <h3 className="font-bold font-display mb-4">
+              Pourquoi rejoindre SUMVIBES ?
+            </h3>
             <div className="space-y-3">
               {[
                 "Accès à des milliers de beats de qualité professionnelle",
@@ -284,7 +353,10 @@ export default function RegisterPage() {
                 "Paiements sécurisés et licences claires",
                 "Support réactif et accompagnement personnalisé",
               ].map((benefit, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                <div
+                  key={i}
+                  className="flex items-center gap-3 text-sm text-slate-300"
+                >
                   <CheckCircle className="w-4 h-4 text-brand-gold flex-shrink-0" />
                   <span>{benefit}</span>
                 </div>

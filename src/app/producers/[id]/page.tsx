@@ -229,7 +229,63 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
               ) : (
                 <div className="glass rounded-2xl p-12 text-center">
                   <Music className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-                  <p className="text-slate-400">Aucun beat publié pour l'instant</p>
+                  <p className="text-slate-400">Aucun beat publié pour lConsole Error
+
+
+A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+See more info here: https://nextjs.org/docs/messages/react-hydration-error
+
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/seller/beats" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="fr">
+                          <head>
+                          <body
+                            className="poppins_94d6a2b8-module__7LZuca__variable cormorant_garamond_b7907521-module__e..."
+-                           cz-shortcut-listen="true"
+                          >
+                  ...
+src\app\layout.tsx (36:7) @ RootLayout
+
+
+  34 |         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
+  35 |       </head>
+> 36 |       <body className={`${poppins.variable} ${cormorant.variable} antialiased`}>
+     |       ^
+  37 |         <AuthProvider>
+  38 |           {children}
+  39 |         </AuthProvider>
+Call Stack
+18
+
+Show 16 ignore-listed frame(s)
+body
+<anonymous>
+RootLayout
+src\app\layout.tsx (36:7)instant</p>
                 </div>
               )}
             </div>
