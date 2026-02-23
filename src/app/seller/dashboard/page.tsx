@@ -17,7 +17,6 @@ interface SellerStats {
     totalSales: number;
     rating: number;
     totalBeats: number;
-    publishedBeats: number;
     pendingBeats: number;
     totalPlays: number;
   };
@@ -149,7 +148,7 @@ export default function SellerDashboardPage() {
                 </div>
                 <div className="glass rounded-2xl p-6">
                   <Music className="w-8 h-8 text-purple-400 mb-3" />
-                  <div className="text-2xl font-bold text-gradient">{stats.overview.publishedBeats}</div>
+                  <div className="text-2xl font-bold text-gradient">{stats.overview.totalBeats}</div>
                   <div className="text-sm text-slate-400">Beats publiés</div>
                 </div>
               </div>

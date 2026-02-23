@@ -302,6 +302,7 @@ export async function POST(req: NextRequest) {
         exclusivePrice,
         sellerId: decoded.userId,
         status: BeatStatus.PENDING,
+        publishedAt: new Date(),
       },
       include: {
         seller: {
