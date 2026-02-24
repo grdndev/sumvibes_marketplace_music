@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
-import { ChevronLeft, Search, Send, MoreHorizontal, Check, CheckCheck, Loader2, User, AlertCircle } from "lucide-react";
+import { ChevronLeft, Search, Send, MoreHorizontal, Check, CheckCheck, Loader2, User, AlertCircle, MessageSquare } from "lucide-react";
 
 interface Conversation {
   userId: string;
@@ -25,54 +25,119 @@ interface Message {
   read: boolean;
 }
 
+const MOCK_CONVERSATIONS: Conversation[] = [
+  {
+    userId: "mock-1",
+    username: "melody_queen",
+    displayName: "MelodyQueen",
+    artistName: "MelodyQueen",
+    avatar: "https://i.pravatar.cc/150?u=melody",
+    lastMessage: "Yes, ce BPM est parfait! On part là dessus.",
+    lastMessageAt: new Date().toISOString(),
+    unreadCount: 2,
+  },
+  {
+    userId: "mock-2",
+    username: "beatmaker92",
+    displayName: "BeatMaker92",
+    artistName: "BeatMaker92",
+    avatar: "https://i.pravatar.cc/150?u=beatmaker",
+    lastMessage: "Tu peux m'envoyer les stems séparés ?",
+    lastMessageAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    unreadCount: 0,
+  },
+  {
+    userId: "mock-3",
+    username: "trapking_fr",
+    displayName: "TrapKing_FR",
+    artistName: "TrapKing_FR",
+    avatar: "https://i.pravatar.cc/150?u=trap",
+    lastMessage: "J'ai écouté ton dernier post, lourd mec 🔥",
+    lastMessageAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    unreadCount: 0,
+  },
+  {
+    userId: "mock-4",
+    username: "studiopro",
+    displayName: "StudioPro (Mixage)",
+    artistName: "StudioPro",
+    avatar: "https://i.pravatar.cc/150?u=studio",
+    lastMessage: "Le rendu final est dispo sur le drive.",
+    lastMessageAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+    unreadCount: 0,
+  },
+];
+
+const MOCK_MESSAGES_DATA: Record<string, Message[]> = {
+  "mock-1": [
+    { id: "msg-1", content: "Salut ! J'ai bien reçu la prod.", createdAt: new Date(Date.now() - 3600000).toISOString(), senderId: "mock-1", read: true },
+    { id: "msg-2", content: "Super ! Dis moi ce que tu penses de l'arrangement au refrain.", createdAt: new Date(Date.now() - 3000000).toISOString(), senderId: "me", read: true },
+    { id: "msg-3", content: "Honnêtement c'est lourd. J'ai posé un premier yaourt dessus, je te l'envoie ce soir pour que tu vois la vibe.", createdAt: new Date(Date.now() - 1500000).toISOString(), senderId: "mock-1", read: true },
+    { id: "msg-4", content: "Yes, ce BPM est parfait! On part là dessus.", createdAt: new Date().toISOString(), senderId: "mock-1", read: false },
+  ],
+  "mock-2": [
+    { id: "msg-5", content: "Yo bro, tu vends les stems de 'Dark Knight' ?", createdAt: new Date(Date.now() - 7200000).toISOString(), senderId: "mock-2", read: true },
+    { id: "msg-6", content: "Salut, oui c'est dispo dans la licence Premium sur mon profil.", createdAt: new Date(Date.now() - 7000000).toISOString(), senderId: "me", read: true },
+    { id: "msg-7", content: "Ok je vois ça. Tu peux m'envoyer les stems séparés ?", createdAt: new Date(Date.now() - 3600000).toISOString(), senderId: "mock-2", read: true },
+  ]
+};
+
 export default function MessagesPage() {
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>(MOCK_CONVERSATIONS);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [text, setText] = useState("");
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [showMobileList, setShowMobileList] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!user) return;
-    const token = localStorage.getItem("token");
-    fetch("/api/messages", { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(d => setConversations(d.conversations || []))
-      .finally(() => setLoading(false));
+    // Si on veut brancher l'API plus tard :
+    // fetch("/api/messages").then(...).catch(() => setConversations(MOCK_CONVERSATIONS));
   }, [user]);
 
   useEffect(() => {
     if (!activeConv) return;
-    const token = localStorage.getItem("token");
-    fetch(`/api/messages?conversationId=${activeConv.userId}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(d => setMessages(d.messages || []));
-  }, [activeConv]);
+    // Mock user.id as "me"
+    const myId = user?.id || "me";
+    const convMessages = MOCK_MESSAGES_DATA[activeConv.userId] || [];
+    
+    // Ensure "me" messages have the current user's ID
+    const mappedMessages = convMessages.map(m => ({
+      ...m,
+      senderId: m.senderId === "me" ? myId : m.senderId
+    }));
+    
+    setMessages(mappedMessages);
+  }, [activeConv, user]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim() || !activeConv) return;
-    setSending(true);
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ receiverId: activeConv.userId, content: text.trim() }),
-      });
-      if (res.ok) {
-        const d = await res.json();
-        setMessages(prev => [...prev, d.message]);
-        setText("");
-      }
-    } finally { setSending(false); }
+    
+    const myId = user?.id || "me";
+    const newMsg: Message = {
+      id: `new-${Date.now()}`,
+      content: text.trim(),
+      createdAt: new Date().toISOString(),
+      senderId: myId,
+      read: false
+    };
+    
+    setMessages(prev => [...prev, newMsg]);
+    setText("");
+    
+    // Update conversation last message visually
+    setConversations(prev => prev.map(c => 
+      c.userId === activeConv.userId 
+        ? { ...c, lastMessage: text.trim(), lastMessageAt: newMsg.createdAt } 
+        : c
+    ));
   };
 
   const selectConv = (conv: Conversation) => {
@@ -94,6 +159,7 @@ export default function MessagesPage() {
     return new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
   };
 
+  /* 
   if (!user) return (
     <div className="relative min-h-screen bg-gradient-premium"><Navbar />
       <main className="pt-20 flex items-center justify-center min-h-[60vh]">
@@ -105,20 +171,30 @@ export default function MessagesPage() {
       </main>
     </div>
   );
+  */
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium"><Navbar />
-      <main className="pt-20">
-        <div className="mx-auto max-w-7xl px-6 py-6">
-          <Link href="/community" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-4"><ChevronLeft className="w-5 h-5" />Retour à la communauté</Link>
-          <div className="glass rounded-3xl overflow-hidden" style={{ height: "calc(100vh - 180px)" }}>
+    <div className="relative min-h-screen bg-gradient-premium">
+      <Navbar />
+
+      <main className="pt-24 pb-20 px-4 md:px-6">
+        <div className="mx-auto max-w-7xl">
+          <Link href="/community" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-8 transition-colors text-sm font-medium">
+            <ChevronLeft className="w-5 h-5" /> Retour au Hub
+          </Link>
+
+          <div className="mb-8 relative z-10">
+            <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient drop-shadow-lg mb-2">Messagerie Privée</h1>
+            <p className="text-slate-300 font-light">Gérez vos collaborations et contrats en direct.</p>
+          </div>
+
+          <div className="glass rounded-3xl overflow-hidden border border-white/10" style={{ height: "calc(100vh - 200px)" }}>
             <div className="flex h-full">
               {/* Sidebar */}
               <div className={`w-full md:w-80 border-r border-white/10 flex flex-col ${!showMobileList ? "hidden md:flex" : "flex"}`}>
                 <div className="p-4 border-b border-white/10">
-                  <h2 className="text-xl font-bold font-display mb-3">Messages</h2>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-gold transition-colors" />
                     <input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-gold/50" />
                   </div>
@@ -127,7 +203,7 @@ export default function MessagesPage() {
                   {loading ? (
                     <div className="flex items-center justify-center h-32"><Loader2 className="w-8 h-8 text-brand-gold animate-spin" /></div>
                   ) : filtered.length === 0 ? (
-                    <div className="p-8 text-center text-slate-500 text-sm">Aucune conversation</div>
+                    <div className="p-8 text-center text-slate-500 text-sm font-light">Aucune conversation trouvée</div>
                   ) : filtered.map(conv => {
                     const name = conv.artistName || conv.displayName || conv.username;
                     const active = activeConv?.userId === conv.userId;
@@ -156,19 +232,21 @@ export default function MessagesPage() {
               <div className={`flex-1 flex flex-col ${showMobileList ? "hidden md:flex" : "flex"}`}>
                 {activeConv ? (
                   <>
+                    {/* Header Actif */}
                     <div className="p-4 border-b border-white/10 flex items-center gap-3">
                       <button onClick={() => setShowMobileList(true)} className="md:hidden p-2 rounded-xl glass mr-1"><ChevronLeft className="w-5 h-5" /></button>
                       <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-brand-purple/30 to-brand-gold/30 flex items-center justify-center">
-                        {activeConv.avatar ? <img src={activeConv.avatar} alt="" className="w-full h-full object-cover" /> : <User className="w-5 h-5 text-brand-gold" />}
+                        {activeConv?.avatar ? <img src={activeConv.avatar || ""} alt="" className="w-full h-full object-cover" /> : <User className="w-5 h-5 text-brand-gold" />}
                       </div>
                       <div>
-                        <div className="font-bold">{activeConv.artistName || activeConv.displayName || activeConv.username}</div>
+                        <div className="font-bold">{activeConv?.artistName || activeConv?.displayName || activeConv?.username || ""}</div>
                       </div>
-                      <button className="ml-auto glass p-2 rounded-xl hover:bg-white/10"><MoreHorizontal className="w-5 h-5" /></button>
                     </div>
+
+                    {/* Zone de Messages */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                       {messages.map(msg => {
-                        const isMine = msg.senderId === user.id;
+                        const isMine = msg.senderId === (user?.id || "me");
                         return (
                           <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
                             <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${isMine ? "bg-brand-gold text-brand-purple font-medium rounded-br-sm" : "glass rounded-bl-sm"}`}>
@@ -183,6 +261,8 @@ export default function MessagesPage() {
                       })}
                       <div ref={messagesEndRef} />
                     </div>
+
+                    {/* Zone d'envoi */}
                     <form onSubmit={handleSend} className="p-4 border-t border-white/10 flex items-center gap-3">
                       <input type="text" placeholder="Votre message..." value={text} onChange={e => setText(e.target.value)}
                         className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-brand-gold/50 text-sm" />
