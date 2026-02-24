@@ -20,6 +20,7 @@ interface Beat {
   premiumPrice?: number;
   exclusivePrice?: number;
   price?: number;
+  duration?: number;
   plays: number;
   sales: number;
   createdAt: string;

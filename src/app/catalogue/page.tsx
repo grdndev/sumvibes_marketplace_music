@@ -9,7 +9,7 @@ const INSTRUMENTS = [
   "Brass",
 ];
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
@@ -28,6 +28,10 @@ import {
   X,
   Check,
   Zap,
+  Volume2,
+  VolumeX,
+  SkipBack,
+  SkipForward,
 } from "lucide-react";
 import { useBeats } from "@/hooks/useBeats";
 
@@ -91,8 +95,8 @@ const GENRE_EMOJI: Record<string, string> = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatDuration(secs?: number | null) {
-  if (!secs) return null;
-  return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+  if (!secs || isNaN(secs) || !isFinite(secs)) return "0:00";
+  return `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 }
 
 function coverSrc(raw: string) {
@@ -114,11 +118,105 @@ export default function CataloguePage() {
   >("latest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [activeBeatId, setActiveBeatId] = useState<string | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
-  const togglePlay = (id: string) =>
-    setPlayingId((p) => (p === id ? null : id));
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const togglePlay = (id: string) => {
+    if (activeBeatId === id) {
+      if (isPlayingAudio) {
+        audioRef.current?.pause();
+        setIsPlayingAudio(false);
+      } else {
+        audioRef.current?.play();
+        setIsPlayingAudio(true);
+      }
+    } else {
+      const beat = allBeats.find((b) => b.id === id);
+      const url = beat?.previewUrl || beat?.audioUrl || beat?.mainFileUrl;
+      if (!url) {
+        alert("Aperçu audio non disponible.");
+        return;
+      }
+      if (audioRef.current) {
+        setIsBuffering(true);
+        audioRef.current.src = url;
+        audioRef.current.play().then(() => {
+          setIsBuffering(false);
+        }).catch(() => {
+          setIsBuffering(false);
+        });
+        setActiveBeatId(id);
+        setIsPlayingAudio(true);
+      }
+    }
+  };
+
+
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = isMuted ? 0 : volume;
+
+    const updateProgress = () => {
+      if (audio.duration) {
+        setCurrentTime(audio.currentTime);
+        setDuration(audio.duration);
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlayingAudio(false);
+      setProgress(0);
+      setCurrentTime(0);
+    };
+
+    const handleWaiting = () => setIsBuffering(true);
+    const handlePlaying = () => setIsBuffering(false);
+
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("waiting", handleWaiting);
+    audio.addEventListener("playing", handlePlaying);
+
+    return () => {
+      audio.removeEventListener("timeupdate", updateProgress);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("waiting", handleWaiting);
+      audio.removeEventListener("playing", handlePlaying);
+      audio.pause();
+    };
+  }, [volume, isMuted]);
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setProgress(val);
+    if (audioRef.current && audioRef.current.duration) {
+      audioRef.current.currentTime = (val / 100) * audioRef.current.duration;
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setVolume(val);
+    setIsMuted(val === 0);
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
   const toggleLike = (id: string) =>
     setLikedIds((prev) => {
       const n = new Set(prev);
@@ -146,6 +244,10 @@ export default function CataloguePage() {
 
   // Charge TOUS les beats une seule fois — le filtrage se fait entièrement côté client
   const { beats: allBeats, loading } = useBeats({});
+
+  const activeBeat = useMemo(() => {
+    return allBeats.find((b) => b.id === activeBeatId);
+  }, [allBeats, activeBeatId]);
 
   // ── Filtrage + tri 100% client ─────────────────────────────────────────────
   const { beats, total } = useMemo(() => {
@@ -215,6 +317,8 @@ export default function CataloguePage() {
   return (
     <div className="relative min-h-screen bg-gradient-premium">
       <Navbar />
+
+      <audio ref={audioRef} className="hidden" />
 
       <main className="pt-20">
         {/* ── Header (inchangé) ─────────────────────────────────────────── */}
@@ -649,14 +753,15 @@ export default function CataloguePage() {
                     "from-brand-purple/30 to-brand-pink/25";
                   const emoji = GENRE_EMOJI[genre0] ?? "🎵";
                   const isLiked = likedIds.has(beat.id);
-                  const isPlaying = playingId === beat.id;
+                  const isActive = activeBeatId === beat.id;
+                  const isPlaying = isActive && isPlayingAudio;
                   const duration = formatDuration(beat.duration);
 
                   return (
                     <div
                       key={beat.id}
                       className={`glass group rounded-2xl p-6 text-center hover:scale-[1.03] hover:shadow-xl hover:shadow-black/30 transition-all duration-200 relative ${
-                        isPlaying
+                        isActive
                           ? "ring-2 ring-brand-gold/50 bg-brand-gold/5"
                           : ""
                       }`}
@@ -765,7 +870,8 @@ export default function CataloguePage() {
               <div className="space-y-3">
                 {beats.map((beat) => {
                   const genre0 = beat.genre?.[0] ?? "";
-                  const isPlaying = playingId === beat.id;
+                  const isActive = activeBeatId === beat.id;
+                  const isPlaying = isActive && isPlayingAudio;
                   const isLiked = likedIds.has(beat.id);
                   const duration = formatDuration(beat.duration);
 
@@ -773,7 +879,7 @@ export default function CataloguePage() {
                     <div
                       key={beat.id}
                       className={`glass rounded-xl p-4 flex items-center gap-4 transition-all hover:bg-white/5 ${
-                        isPlaying
+                        isActive
                           ? "ring-1 ring-brand-gold/40 bg-brand-gold/5"
                           : ""
                       }`}
@@ -864,6 +970,122 @@ export default function CataloguePage() {
           to   { transform: scaleY(1); }
         }
       `}</style>
+
+      {/* ── Player flottant type Spotify ── */}
+      {activeBeat && (
+        <div className="fixed bottom-0 left-0 right-0 glass z-50 border-t border-brand-gold/10 backdrop-blur-xl bg-[#0a0a0f]/95 animate-in slide-in-from-bottom-5">
+          <div className="mx-auto max-w-[1400px] px-4 py-3 flex items-center justify-between h-20">
+            {/* Ligne 1 : Artiste et infos */}
+            <div className="flex items-center gap-3 w-1/3 min-w-[200px]">
+              <div className="w-14 h-14 rounded-md bg-white/5 overflow-hidden relative flex-shrink-0 shadow-lg group">
+                {activeBeat.coverImage ? (
+                  <Image src={coverSrc(activeBeat.coverImage)} alt="cover" fill sizes="56px" className="object-cover" />
+                ) : (
+                  <Music className="w-6 h-6 m-auto absolute inset-0 text-white/30" />
+                )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                  <ChevronDown className="w-5 h-5 text-white" onClick={() => { audioRef.current?.pause(); setActiveBeatId(null); setIsPlayingAudio(false); }} />
+                </div>
+              </div>
+              <div className="min-w-0">
+                <Link href={`/product/${activeBeat.slug}`} className="font-bold text-sm truncate hover:underline hover:text-brand-gold">{activeBeat.title}</Link>
+                <Link href={`/producers/${activeBeat.seller.id}`} className="block text-xs text-slate-400 hover:text-white hover:underline truncate mt-0.5">
+                  {activeBeat.seller?.displayName || activeBeat.seller?.username}
+                </Link>
+              </div>
+              <button
+                onClick={() => toggleLike(activeBeat.id)}
+                className={`ml-2 p-1.5 rounded-lg transition-colors flex-shrink-0 ${likedIds.has(activeBeat.id) ? "text-rose-400" : "text-slate-500 hover:text-white"}`}
+              >
+                <Heart className={`w-4 h-4 ${likedIds.has(activeBeat.id) ? "fill-current" : ""}`} />
+              </button>
+            </div>
+
+            {/* Ligne 2 : Contrôles de lecture & Barre de progression */}
+            <div className="flex flex-col items-center justify-center gap-1.5 w-1/3 max-w-[600px]">
+              <div className="flex items-center gap-5">
+                <button
+                  onClick={() => togglePlay(activeBeat.id)}
+                  className="w-8 h-8 rounded-full bg-white hover:scale-105 text-black flex items-center justify-center transition-transform"
+                >
+                  {isBuffering ? (
+                    <div className="w-4 h-4 border-2 border-black border-r-transparent rounded-full animate-spin" />
+                  ) : isPlayingAudio ? (
+                    <Pause className="w-4 h-4 fill-current" />
+                  ) : (
+                    <Play className="w-4 h-4 fill-current ml-0.5" />
+                  )}
+                </button>
+              </div>
+
+              {/* Barre de progression avec temps */}
+              <div className="flex items-center gap-3 w-full text-[11px] text-slate-400 font-medium">
+                <span className="w-8 text-right">{formatDuration(currentTime) || "0:00"}</span>
+                <div className="relative flex-1 h-1 bg-white/10 rounded-full group flex items-center cursor-pointer">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={progress}
+                    onChange={handleSeek}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div
+                    className="h-full bg-white group-hover:bg-brand-gold transition-colors rounded-full"
+                    style={{ width: `${progress}%` }}
+                  >
+                    <div className="absolute top-1/2 -translate-y-1/2 -right-1.5 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm" />
+                  </div>
+                </div>
+                <span className="w-8 text-left">{formatDuration(duration) || "0:00"}</span>
+              </div>
+            </div>
+
+            <div className="w-[30%] min-w-[200px] flex justify-end gap-6 items-center">
+              <div className="flex items-center gap-2 group w-32">
+                <button
+                  onClick={toggleMute}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  {isMuted || volume === 0 ? (
+                    <VolumeX className="w-4 h-4" />
+                  ) : (
+                    <Volume2 className="w-4 h-4" />
+                  )}
+                </button>
+                <div className="relative flex-1 h-1.5 bg-white/10 rounded-full flex items-center">
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div
+                    className="h-full bg-slate-300 group-hover:bg-brand-gold transition-colors rounded-full"
+                    style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
+                  />
+                </div>
+              </div>
+              
+              <div className="h-6 w-px bg-white/10 hidden sm:block" />
+
+              <div className="flex items-center gap-3">
+                <div className="text-xs font-bold text-brand-gold hidden sm:block">
+                  {Number(activeBeat.basicPrice ?? 0).toFixed(2)}€
+                </div>
+                <button className="btn-primary p-2 rounded-lg text-xs font-semibold flex items-center justify-center hover:scale-105 transition-transform">
+                  <ShoppingCart className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

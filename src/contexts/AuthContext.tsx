@@ -8,8 +8,30 @@ interface User {
   username: string;
   role: "BUYER" | "SELLER" | "ADMIN";
   displayName?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  bio?: string | null;
+  website?: string | null;
+  phone?: string | null;
+  instagram?: string | null;
+  twitter?: string | null;
+  youtube?: string | null;
+  country?: string | null;
   avatar?: string | null;
   createdAt?: string;
+  twoFactorEnabled?: boolean;
+  notificationPrefs?: any;
+  musicPrefs?: any;
+  sellerProfile?: {
+    artistName: string;
+    description: string | null;
+    genres: string[];
+    paypalEmail?: string | null;
+    totalSales: number;
+    totalRevenue: number | string;
+    averageRating: number | string | null;
+    verified: boolean;
+  } | null;
 }
 
 interface AuthContextType {

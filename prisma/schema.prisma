@@ -47,10 +47,16 @@ model User {
   instagram     String?
   twitter       String?
   youtube       String?
+  country       String?
   
   // Verification & Security
   emailVerified Boolean     @default(false)
   verifiedAt    DateTime?
+  twoFactorEnabled Boolean  @default(false)
+  
+  // Preferences
+  notificationPrefs Json?
+  musicPrefs        Json?
   
   // RGPD & Consent
   gdprConsent   Boolean     @default(false)
