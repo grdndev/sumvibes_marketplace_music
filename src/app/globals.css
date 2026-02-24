@@ -1,22 +1,34 @@
+/* Style custom pour les listes déroulantes (select/options) */
+select,
+select:focus,
+select:active {
+  background-color: rgba(14, 0, 72, 0.95) !important;
+  color: #fff !important;
+  border-color: var(--card-border) !important;
+}
+option {
+  background-color: rgba(14, 0, 72, 0.95) !important;
+  color: #fff !important;
+}
 @import "tailwindcss";
 
 @theme {
-  --color-brand-gold: #FECC33;
-  --color-brand-gold-dark: #E5B82E;
-  --color-brand-purple: #0E0048;
-  --color-brand-purple-dark: #0A0035;
-  --color-brand-pink: #FECC33;
-  --color-brand-cyan: #0E0048;
-  --color-brand-dark: #0A0A0F;
+  --color-brand-gold: #fecc33;
+  --color-brand-gold-dark: #e5b82e;
+  --color-brand-purple: #0e0048;
+  --color-brand-purple-dark: #0a0035;
+  --color-brand-pink: #fecc33;
+  --color-brand-cyan: #0e0048;
+  --color-brand-dark: #0a0a0f;
   --color-brand-darker: #050508;
-  --font-sans: 'Poppins', system-ui, -apple-system, sans-serif;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
 }
 
 :root {
-  --background: #0E0048;
-  --background-secondary: #1A1060;
-  --foreground: #FFFFFF;
+  --background: #0e0048;
+  --background-secondary: #1a1060;
+  --foreground: #ffffff;
   --card: rgba(26, 16, 96, 0.5);
   --card-hover: rgba(35, 20, 110, 0.7);
   --card-border: rgba(254, 204, 51, 0.2);
@@ -27,7 +39,7 @@
 }
 
 body {
-  background: #0E0048;
+  background: #0e0048;
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -58,7 +70,7 @@ body {
 
 /* Premium Gradients */
 .text-gradient {
-  background: linear-gradient(135deg, #FECC33 0%, #FFFFFF 50%, #FECC33 100%);
+  background: linear-gradient(135deg, #fecc33 0%, #ffffff 50%, #fecc33 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -69,38 +81,55 @@ body {
 .bg-gradient-premium {
   position: relative;
   background:
-    radial-gradient(circle at 20% 30%, rgba(254, 204, 51, 0.08), transparent 60%),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.03), transparent 50%);
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(254, 204, 51, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(255, 255, 255, 0.03),
+      transparent 50%
+    );
 }
 
 .bg-gradient-premium::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background:
-    radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.02), transparent 50%),
-    radial-gradient(circle at 30% 80%, rgba(254, 204, 51, 0.06), transparent 50%);
+    radial-gradient(
+      circle at 70% 40%,
+      rgba(255, 255, 255, 0.02),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 30% 80%,
+      rgba(254, 204, 51, 0.06),
+      transparent 50%
+    );
   animation: gradient-float 15s ease-in-out infinite;
   pointer-events: none;
 }
 
 /* Animated Glow Effects */
 .glow-gold {
-  box-shadow: 0 0 20px rgba(var(--accent-gold), 0.3),
+  box-shadow:
+    0 0 20px rgba(var(--accent-gold), 0.3),
     0 0 40px rgba(var(--accent-gold), 0.15);
 }
 
 .glow-purple {
-  box-shadow: 0 0 20px rgba(var(--accent-purple), 0.3),
+  box-shadow:
+    0 0 20px rgba(var(--accent-purple), 0.3),
     0 0 40px rgba(var(--accent-purple), 0.15);
 }
 
 /* Smooth Animations */
 @keyframes gradient-shift {
-
   0%,
   100% {
     background-position: 0% 50%;
@@ -112,7 +141,6 @@ body {
 }
 
 @keyframes gradient-float {
-
   0%,
   100% {
     opacity: 1;
@@ -138,7 +166,6 @@ body {
 }
 
 @keyframes pulse-glow {
-
   0%,
   100% {
     box-shadow: 0 0 20px rgba(var(--accent-purple), 0.3);
@@ -157,7 +184,7 @@ body {
 }
 
 .btn-primary::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -166,7 +193,9 @@ body {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition:
+    width 0.6s,
+    height 0.6s;
 }
 
 .btn-primary:hover::before {
@@ -184,16 +213,24 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0E0048;
+  background: #0e0048;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(var(--accent-purple), 0.5), rgba(var(--accent-gold), 0.5));
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-purple), 0.5),
+    rgba(var(--accent-gold), 0.5)
+  );
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(var(--accent-purple), 0.8), rgba(var(--accent-gold), 0.8));
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-purple), 0.8),
+    rgba(var(--accent-gold), 0.8)
+  );
 }
 
 /* Smooth transitions with respect for reduced motion */

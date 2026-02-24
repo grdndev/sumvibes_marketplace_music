@@ -3,14 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
-import { Search, Star, Music, TrendingUp, CheckCircle } from "lucide-react";
+import { Search, Music, TrendingUp } from "lucide-react";
 import { useProducers } from "@/hooks/useProducers";
 
 export default function ProducersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const { producers, loading } = useProducers(searchQuery);
 
-  const genres = ["Tous", "Trap", "Hip-Hop", "R&B", "Lo-Fi", "Pop", "Drill", "Afrobeat"];
+  const genres = [
+    "Tous",
+    "Trap",
+    "Hip-Hop",
+    "R&B",
+    "Lo-Fi",
+    "Pop",
+    "Drill",
+    "Afrobeat",
+  ];
 
   return (
     <div className="relative min-h-screen bg-gradient-premium">
@@ -23,7 +32,8 @@ export default function ProducersPage() {
               Nos <span className="text-gradient">Producteurs</span> 🎹
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl">
-              Découvrez les talents qui font vivre SUMVIBES. Des compositeurs passionnés, vérifiés et prêts à collaborer.
+              Découvrez les talents qui font vivre SUMVIBES. Des compositeurs
+              passionnés, vérifiés et prêts à collaborer.
             </p>
           </div>
         </section>
@@ -81,8 +91,12 @@ export default function ProducersPage() {
             ) : producers.length === 0 ? (
               <div className="text-center py-20">
                 <Music className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                <h3 className="text-xl font-bold mb-2">Aucun producteur trouvé</h3>
-                <p className="text-slate-400">Essayez de modifier vos critères de recherche</p>
+                <h3 className="text-xl font-bold mb-2">
+                  Aucun producteur trouvé
+                </h3>
+                <p className="text-slate-400">
+                  Essayez de modifier vos critères de recherche
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -94,24 +108,30 @@ export default function ProducersPage() {
                   >
                     {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
-                      {producer.avatar ? (
-                        <img src={producer.avatar} alt={producer.displayName || producer.username} className="w-16 h-16 rounded-full object-cover" />
+                      {producer.user?.avatar ? (
+                        <img
+                          src={producer.user.avatar}
+                          alt={
+                            producer.user.displayName || producer.user.username
+                          }
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
                       ) : (
                         <div className="w-16 h-16 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink flex items-center justify-center text-2xl font-bold">
-                          {(producer.displayName || producer.username)[0].toUpperCase()}
+                          {(producer.user?.displayName ||
+                            producer.user?.username ||
+                            "?")[0]?.toUpperCase()}
                         </div>
                       )}
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-xl group-hover:text-brand-gold">{producer.displayName || producer.username}</h3>
-                          {producer.isVerified && <CheckCircle className="w-5 h-5 text-brand-gold fill-brand-gold/20" />}
+                          <h3 className="font-bold text-xl group-hover:text-brand-gold">
+                            {producer.user?.displayName ||
+                              producer.user?.username}
+                          </h3>
+                          {/* Vérification si besoin : {producer.isVerified && ...} */}
                         </div>
-                        {producer.rating && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="w-4 h-4 fill-brand-gold text-brand-gold" />
-                            <span className="text-sm text-brand-gold font-bold">{producer.rating.toFixed(1)}</span>
-                          </div>
-                        )}
+                        {/* Note : rating/isVerified à adapter si tu veux les afficher depuis SellerProfile */}
                       </div>
                     </div>
 
@@ -126,7 +146,12 @@ export default function ProducersPage() {
                     {producer.genres && producer.genres.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-6">
                         {producer.genres.map((genre: string) => (
-                          <span key={genre} className="glass px-3 py-1 rounded-full text-xs">{genre}</span>
+                          <span
+                            key={genre}
+                            className="glass px-3 py-1 rounded-full text-xs"
+                          >
+                            {genre}
+                          </span>
                         ))}
                       </div>
                     )}
@@ -137,14 +162,20 @@ export default function ProducersPage() {
                         <div className="flex items-center justify-center gap-1 text-brand-gold mb-1">
                           <Music className="w-4 h-4" />
                         </div>
-                        <div className="font-bold">{producer._count?.beats || 0}</div>
+                        <div className="font-bold">
+                          {producer.user?.beats
+                            ? producer.user.beats.length
+                            : producer._count?.beats || 0}
+                        </div>
                         <div className="text-xs text-slate-500">Beats</div>
                       </div>
                       <div className="text-center">
                         <div className="flex items-center justify-center gap-1 text-brand-gold mb-1">
                           <TrendingUp className="w-4 h-4" />
                         </div>
-                        <div className="font-bold">{producer._count?.sales || 0}</div>
+                        <div className="font-bold">
+                          {producer._count?.sales || 0}
+                        </div>
                         <div className="text-xs text-slate-500">Ventes</div>
                       </div>
                     </div>

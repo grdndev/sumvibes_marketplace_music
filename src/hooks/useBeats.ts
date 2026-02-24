@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 interface Beat {
   id: string;
@@ -46,6 +46,7 @@ interface Beat {
     favorites: number;
     purchases?: number;
   };
+  instruments?: string[];
 }
 
 interface BeatsFilters {
@@ -56,7 +57,7 @@ interface BeatsFilters {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
-  sort?: 'latest' | 'popular' | 'price_low' | 'price_high';
+  sort?: "latest" | "popular" | "price_low" | "price_high";
   page?: number;
   limit?: number;
 }
@@ -75,21 +76,32 @@ export function useBeats(filters?: BeatsFilters) {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Mémoriser les filtres pour éviter les boucles infinies
-  const filtersRef = useRef<string>('');
+  const filtersRef = useRef<string>("");
 
   useEffect(() => {
     const filtersString = JSON.stringify(filters || {});
-    
+
     // Ne refetch que si les filtres ont vraiment changé
     if (filtersString === filtersRef.current) {
       return;
     }
-    
+
     filtersRef.current = filtersString;
     fetchBeats();
-  }, [filters?.genre, filters?.mood, filters?.minBpm, filters?.maxBpm, filters?.minPrice, filters?.maxPrice, filters?.search, filters?.sort, filters?.page, filters?.limit]);
+  }, [
+    filters?.genre,
+    filters?.mood,
+    filters?.minBpm,
+    filters?.maxBpm,
+    filters?.minPrice,
+    filters?.maxPrice,
+    filters?.search,
+    filters?.sort,
+    filters?.page,
+    filters?.limit,
+  ]);
 
   const fetchBeats = async () => {
     try {
@@ -97,22 +109,24 @@ export function useBeats(filters?: BeatsFilters) {
       setError(null);
 
       const params = new URLSearchParams();
-      if (filters?.genre) params.append('genre', filters.genre);
-      if (filters?.mood) params.append('mood', filters.mood);
-      if (filters?.minBpm) params.append('minBpm', filters.minBpm.toString());
-      if (filters?.maxBpm) params.append('maxBpm', filters.maxBpm.toString());
-      if (filters?.minPrice) params.append('minPrice', filters.minPrice.toString());
-      if (filters?.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
-      if (filters?.search) params.append('search', filters.search);
-      if (filters?.sort) params.append('sort', filters.sort);
-      if (filters?.page) params.append('page', filters.page.toString());
-      if (filters?.limit) params.append('limit', filters.limit.toString());
+      if (filters?.genre) params.append("genre", filters.genre);
+      if (filters?.mood) params.append("mood", filters.mood);
+      if (filters?.minBpm) params.append("minBpm", filters.minBpm.toString());
+      if (filters?.maxBpm) params.append("maxBpm", filters.maxBpm.toString());
+      if (filters?.minPrice)
+        params.append("minPrice", filters.minPrice.toString());
+      if (filters?.maxPrice)
+        params.append("maxPrice", filters.maxPrice.toString());
+      if (filters?.search) params.append("search", filters.search);
+      if (filters?.sort) params.append("sort", filters.sort);
+      if (filters?.page) params.append("page", filters.page.toString());
+      if (filters?.limit) params.append("limit", filters.limit.toString());
 
       const res = await fetch(`/api/beats?${params.toString()}`);
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors du chargement des beats');
+        throw new Error(data.error || "Erreur lors du chargement des beats");
       }
 
       setBeats(data.beats);
@@ -120,7 +134,7 @@ export function useBeats(filters?: BeatsFilters) {
       setPage(data.page);
       setTotalPages(data.totalPages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
     }
@@ -149,12 +163,12 @@ export function useBeat(id: string) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors du chargement du beat');
+        throw new Error(data.error || "Erreur lors du chargement du beat");
       }
 
       setBeat(data.beat);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
     }

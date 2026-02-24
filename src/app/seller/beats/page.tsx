@@ -19,22 +19,23 @@ import Image from "next/image";
 
 const GENRES = [
   "Trap",
-  "BoomBap",
-  "Afro",
-  "RnB",
-  "Pop",
+  "Hip-Hop",
+  "R&B",
+  "Afrobeat",
   "Drill",
-  "House",
-  "Electro",
+  "Pop",
+  "Reggaeton",
+  "Lo-Fi",
+  "Boom Bap",
 ];
 const MOODS = [
+  "Dark",
   "Chill",
   "Uplifting",
-  "Dark",
-  "Happy",
-  "Sad",
+  "Energetic",
+  "Romantic",
   "Aggressive",
-  "Dreamy",
+  "Melancholic",
 ];
 const INSTRUMENTS = [
   "Piano",
@@ -312,24 +313,58 @@ export default function SellerBeatsPage() {
               />
             </div>
             <div className="grid grid-cols-3 gap-3">
-              {(
-                [
-                  ["BPM", "bpm", "140", "number"],
-                  ["Durée (s)", "duration", "180", "number"],
-                  ["Tonalité", "key", "Am", "text"],
-                ] as const
-              ).map(([label, name, ph, type]) => (
-                <div key={name}>
-                  <FieldLabel>{label}</FieldLabel>
-                  <Input
-                    type={type}
-                    name={name}
-                    value={form[name as keyof FormState] as string}
-                    onChange={handleChange}
-                    placeholder={ph}
-                  />
-                </div>
-              ))}
+              {/* BPM */}
+              <div>
+                <FieldLabel>BPM</FieldLabel>
+                <Input
+                  type="number"
+                  name="bpm"
+                  value={form.bpm}
+                  onChange={handleChange}
+                  placeholder="140"
+                />
+              </div>
+              {/* Durée */}
+              <div>
+                <FieldLabel>Durée (s)</FieldLabel>
+                <Input
+                  type="number"
+                  name="duration"
+                  value={form.duration}
+                  onChange={handleChange}
+                  placeholder="180"
+                />
+              </div>
+              {/* Tonalité */}
+              <div>
+                <FieldLabel>Tonalité</FieldLabel>
+                <select
+                  name="key"
+                  value={form.key}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white/[0.07] border border-white/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold focus:bg-white/10 focus:ring-2 focus:ring-brand-gold/20 transition-all duration-200 text-sm appearance-none dark:bg-white/[0.07] dark:text-white dark:border-white/20 dark:focus:bg-white/10"
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.07)",
+                    color: "#fff",
+                  }}
+                  required
+                >
+                  <option value="">Sélectionner</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                  <option value="G">G</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="Cm">Cm</option>
+                  <option value="Dm">Dm</option>
+                  <option value="Em">Em</option>
+                  <option value="Fm">Fm</option>
+                  <option value="Gm">Gm</option>
+                  <option value="Am">Am</option>
+                </select>
+              </div>
             </div>
           </div>
         );

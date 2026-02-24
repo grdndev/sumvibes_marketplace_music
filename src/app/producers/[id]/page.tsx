@@ -4,8 +4,20 @@ import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import {
-  Music, Play, Star, TrendingUp, Award, CheckCircle, Heart, ShoppingCart,
-  Globe, MessageCircle, ChevronLeft, User, Loader2, AlertCircle
+  Music,
+  Play,
+  Star,
+  TrendingUp,
+  Award,
+  CheckCircle,
+  Heart,
+  ShoppingCart,
+  Globe,
+  MessageCircle,
+  ChevronLeft,
+  User,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 
 interface ProducerBeat {
@@ -37,7 +49,11 @@ interface Producer {
   } | null;
 }
 
-export default function ProducerProfilePage({ params }: { params: Promise<{ id: string }> }) {
+export default function ProducerProfilePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const [producer, setProducer] = useState<Producer | null>(null);
   const [beats, setBeats] = useState<ProducerBeat[]>([]);
@@ -71,31 +87,44 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
     load();
   }, [id]);
 
-  if (loading) return (
-    <div className="relative min-h-screen bg-gradient-premium">
-      <Navbar />
-      <main className="pt-20 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
-      </main>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="relative min-h-screen bg-gradient-premium">
+        <Navbar />
+        <main className="pt-20 flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
+        </main>
+      </div>
+    );
 
-  if (error || !producer) return (
-    <div className="relative min-h-screen bg-gradient-premium">
-      <Navbar />
-      <main className="pt-20 flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Producteur introuvable</h2>
-          <Link href="/producers" className="btn-primary px-6 py-3 rounded-full mt-4 inline-block">Retour</Link>
-        </div>
-      </main>
-    </div>
-  );
+  if (error || !producer)
+    return (
+      <div className="relative min-h-screen bg-gradient-premium">
+        <Navbar />
+        <main className="pt-20 flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Producteur introuvable</h2>
+            <Link
+              href="/producers"
+              className="btn-primary px-6 py-3 rounded-full mt-4 inline-block"
+            >
+              Retour
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
 
   const profile = producer.sellerProfile;
-  const displayName = profile?.artistName || producer.displayName || producer.username;
-  const genres = profile?.genres?.length ? profile.genres : beats.flatMap(b => b.genre).filter((v, i, a) => a.indexOf(v) === i).slice(0, 5);
+  const displayName =
+    profile?.artistName || producer.displayName || producer.username;
+  const genres = profile?.genres?.length
+    ? profile.genres
+    : beats
+        .flatMap((b) => b.genre)
+        .filter((v, i, a) => a.indexOf(v) === i)
+        .slice(0, 5);
   const totalPlays = beats.reduce((s, b) => s + b.plays, 0);
 
   return (
@@ -103,7 +132,10 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
       <Navbar />
       <main className="pt-20">
         <div className="mx-auto max-w-7xl px-6 py-6">
-          <Link href="/producers" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold">
+          <Link
+            href="/producers"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold"
+          >
             <ChevronLeft className="w-5 h-5" /> Tous les producteurs
           </Link>
         </div>
@@ -117,14 +149,23 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
               <div className="px-8 pb-8 -mt-12">
                 <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
                   <div className="w-24 h-24 rounded-2xl bg-brand-dark border-4 border-brand-dark overflow-hidden flex-shrink-0">
-                    {producer.avatar
-                      ? <img src={producer.avatar} alt={displayName} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full bg-gradient-to-br from-brand-purple/30 to-brand-gold/30 flex items-center justify-center"><User className="w-10 h-10 text-brand-gold" /></div>
-                    }
+                    {producer.avatar ? (
+                      <img
+                        src={producer.avatar}
+                        alt={displayName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-brand-purple/30 to-brand-gold/30 flex items-center justify-center">
+                        <User className="w-10 h-10 text-brand-gold" />
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-3xl md:text-4xl font-bold font-display">{displayName}</h1>
+                      <h1 className="text-3xl md:text-4xl font-bold font-display">
+                        {displayName}
+                      </h1>
                       {profile?.verified && (
                         <span className="bg-brand-gold/20 text-brand-gold text-sm px-3 py-1 rounded-full font-bold flex items-center gap-1">
                           <CheckCircle className="w-4 h-4" /> Vérifié
@@ -132,13 +173,23 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
                       )}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-slate-400">
-                      {(profile?.averageRating ?? 0) > 0 && <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-brand-gold text-brand-gold" />{(profile!.averageRating).toFixed(1)}</span>}
-                      <span>{beats.length} beat{beats.length !== 1 ? "s" : ""}</span>
+                      {(profile?.averageRating ?? 0) > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Star className="w-4 h-4 fill-brand-gold text-brand-gold" />
+                          {profile!.averageRating.toFixed(1)}
+                        </span>
+                      )}
+                      <span>
+                        {beats.length} beat{beats.length !== 1 ? "s" : ""}
+                      </span>
                       {genres.length > 0 && <span>{genres.join(" · ")}</span>}
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <Link href="/community/messages" className="glass rounded-xl px-5 py-3 font-semibold hover:bg-white/10 flex items-center gap-2">
+                    <Link
+                      href="/community/messages"
+                      className="glass rounded-xl px-5 py-3 font-semibold hover:bg-white/10 flex items-center gap-2"
+                    >
                       <MessageCircle className="w-5 h-5" /> Message
                     </Link>
                     <button className="glass rounded-xl px-5 py-3 font-semibold hover:bg-white/10 flex items-center gap-2">
@@ -157,7 +208,9 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
               {profile?.bio && (
                 <div className="glass rounded-2xl p-6">
                   <h3 className="font-bold text-lg mb-3">À propos</h3>
-                  <p className="text-slate-300 text-sm leading-relaxed">{profile.bio}</p>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    {profile.bio}
+                  </p>
                 </div>
               )}
               <div className="glass rounded-2xl p-6">
@@ -165,11 +218,32 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { icon: Music, val: beats.length, label: "Beats" },
-                    { icon: TrendingUp, val: profile?.totalSales ?? 0, label: "Ventes" },
-                    { icon: Play, val: totalPlays > 999 ? `${(totalPlays / 1000).toFixed(0)}K` : totalPlays, label: "Écoutes" },
-                    { icon: Award, val: (profile?.averageRating ?? 0) > 0 ? (profile!.averageRating).toFixed(1) : "—", label: "Note" },
+                    {
+                      icon: TrendingUp,
+                      val: profile?.totalSales ?? 0,
+                      label: "Ventes",
+                    },
+                    {
+                      icon: Play,
+                      val:
+                        totalPlays > 999
+                          ? `${(totalPlays / 1000).toFixed(0)}K`
+                          : totalPlays,
+                      label: "Écoutes",
+                    },
+                    {
+                      icon: Award,
+                      val:
+                        (profile?.averageRating ?? 0) > 0
+                          ? profile!.averageRating.toFixed(1)
+                          : "—",
+                      label: "Note",
+                    },
                   ].map(({ icon: Icon, val, label }) => (
-                    <div key={label} className="text-center glass rounded-xl p-4">
+                    <div
+                      key={label}
+                      className="text-center glass rounded-xl p-4"
+                    >
                       <Icon className="w-5 h-5 mx-auto mb-2 text-brand-gold" />
                       <div className="font-bold text-xl">{val}</div>
                       <div className="text-xs text-slate-400">{label}</div>
@@ -181,47 +255,111 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
                 <div className="glass rounded-2xl p-6">
                   <h3 className="font-bold text-lg mb-4">Liens</h3>
                   <div className="space-y-3">
-                    {profile?.website && <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-slate-300 hover:text-brand-gold"><Globe className="w-5 h-5" /> Site web</a>}
-                    {profile?.instagram && <div className="flex items-center gap-3 text-sm text-slate-300"><span className="text-lg">📸</span> {profile.instagram}</div>}
+                    {profile?.website && (
+                      <a
+                        href={profile.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-sm text-slate-300 hover:text-brand-gold"
+                      >
+                        <Globe className="w-5 h-5" /> Site web
+                      </a>
+                    )}
+                    {profile?.instagram && (
+                      <div className="flex items-center gap-3 text-sm text-slate-300">
+                        <span className="text-lg">📸</span> {profile.instagram}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
               {genres.length > 0 && (
                 <div className="glass rounded-2xl p-6">
                   <h3 className="font-bold text-lg mb-4">Genres</h3>
-                  <div className="flex flex-wrap gap-2">{genres.map(g => <span key={g} className="glass px-3 py-1.5 rounded-full text-sm">{g}</span>)}</div>
+                  <div className="flex flex-wrap gap-2">
+                    {genres.map((g) => (
+                      <span
+                        key={g}
+                        className="glass px-3 py-1.5 rounded-full text-sm"
+                      >
+                        {g}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
             <div className="lg:col-span-2">
-              <h2 className="text-2xl font-bold font-display mb-6">Beats disponibles ({beats.length})</h2>
+              <h2 className="text-2xl font-bold font-display mb-6">
+                Beats disponibles ({beats.length})
+              </h2>
               {beats.length > 0 ? (
                 <div className="space-y-4">
-                  {beats.map(beat => (
-                    <div key={beat.id} className="glass rounded-2xl p-5 flex items-center gap-5 hover:scale-[1.01] group">
+                  {beats.map((beat) => (
+                    <div
+                      key={beat.id}
+                      className="glass rounded-2xl p-5 flex items-center gap-5 hover:scale-[1.01] group"
+                    >
                       <div className="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-brand-purple/20 to-brand-pink/20">
-                        {beat.coverImage
-                          ? <img src={beat.coverImage} alt={beat.title} className="w-full h-full object-cover" />
-                          : <div className="w-full h-full flex items-center justify-center"><Music className="w-7 h-7 text-white/30" /></div>
-                        }
-                        <Link href={`/product/${beat.slug}`} className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 rounded-xl">
+                        {beat.coverImage ? (
+                          <img
+                            src={beat.coverImage}
+                            alt={beat.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Music className="w-7 h-7 text-white/30" />
+                          </div>
+                        )}
+                        <Link
+                          href={`/product/${beat.slug}`}
+                          className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 rounded-xl"
+                        >
                           <Play className="w-6 h-6 text-brand-gold fill-current" />
                         </Link>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <Link href={`/product/${beat.slug}`} className="font-bold text-lg truncate hover:text-brand-gold block">{beat.title}</Link>
+                        <Link
+                          href={`/product/${beat.slug}`}
+                          className="font-bold text-lg truncate hover:text-brand-gold block"
+                        >
+                          {beat.title}
+                        </Link>
                         <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
-                          <span className="glass px-2 py-0.5 rounded">{beat.bpm} BPM</span>
-                          {beat.genre[0] && <span className="glass px-2 py-0.5 rounded">{beat.genre[0]}</span>}
-                          {beat.mood[0] && <span className="glass px-2 py-0.5 rounded">{beat.mood[0]}</span>}
+                          <span className="glass px-2 py-0.5 rounded">
+                            {beat.bpm} BPM
+                          </span>
+                          {beat.genre[0] && (
+                            <span className="glass px-2 py-0.5 rounded">
+                              {beat.genre[0]}
+                            </span>
+                          )}
+                          {beat.mood[0] && (
+                            <span className="glass px-2 py-0.5 rounded">
+                              {beat.mood[0]}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div className="hidden md:flex items-center gap-1 text-sm text-slate-400"><Play className="w-3 h-3" />{beat.plays.toLocaleString()}</div>
-                      <div className="text-xl font-bold text-gradient">{Number(beat.basicPrice).toFixed(2)} €</div>
+                      <div className="hidden md:flex items-center gap-1 text-sm text-slate-400">
+                        <Play className="w-3 h-3" />
+                        {beat.plays.toLocaleString()}
+                      </div>
+                      <div className="text-xl font-bold text-gradient">
+                        {Number(beat.basicPrice).toFixed(2)} €
+                      </div>
                       <div className="flex gap-2">
-                        <button className="glass rounded-xl p-2 hover:bg-brand-purple/20"><Heart className="w-4 h-4" /></button>
-                        <Link href={`/product/${beat.slug}`} className="glass rounded-xl p-2 hover:bg-brand-purple/20"><ShoppingCart className="w-4 h-4" /></Link>
+                        <button className="glass rounded-xl p-2 hover:bg-brand-purple/20">
+                          <Heart className="w-4 h-4" />
+                        </button>
+                        <Link
+                          href={`/product/${beat.slug}`}
+                          className="glass rounded-xl p-2 hover:bg-brand-purple/20"
+                        >
+                          <ShoppingCart className="w-4 h-4" />
+                        </Link>
                       </div>
                     </div>
                   ))}
@@ -229,63 +367,9 @@ export default function ProducerProfilePage({ params }: { params: Promise<{ id: 
               ) : (
                 <div className="glass rounded-2xl p-12 text-center">
                   <Music className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-                  <p className="text-slate-400">Aucun beat publié pour lConsole Error
-
-
-A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-See more info here: https://nextjs.org/docs/messages/react-hydration-error
-
-
-  ...
-    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
-      <AppDevOverlayErrorBoundary globalError={[...]}>
-        <ReplaySsrOnlyErrors>
-        <DevRootHTTPAccessFallbackBoundary>
-          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
-            <HTTPAccessFallbackErrorBoundary pathname="/seller/beats" notFound={<NotAllowedRootHTTPFallbackError>} ...>
-              <RedirectBoundary>
-                <RedirectErrorBoundary router={{...}}>
-                  <Head>
-                  <__next_root_layout_boundary__>
-                    <SegmentViewNode type="layout" pagePath="layout.tsx">
-                      <SegmentTrieNode>
-                      <link>
-                      <script>
-                      <script>
-                      <RootLayout>
-                        <html lang="fr">
-                          <head>
-                          <body
-                            className="poppins_94d6a2b8-module__7LZuca__variable cormorant_garamond_b7907521-module__e..."
--                           cz-shortcut-listen="true"
-                          >
-                  ...
-src\app\layout.tsx (36:7) @ RootLayout
-
-
-  34 |         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
-  35 |       </head>
-> 36 |       <body className={`${poppins.variable} ${cormorant.variable} antialiased`}>
-     |       ^
-  37 |         <AuthProvider>
-  38 |           {children}
-  39 |         </AuthProvider>
-Call Stack
-18
-
-Show 16 ignore-listed frame(s)
-body
-<anonymous>
-RootLayout
-src\app\layout.tsx (36:7)instant</p>
+                  <p className="text-slate-400">
+                    Aucun beat publié pour le moment.
+                  </p>
                 </div>
               )}
             </div>
@@ -293,7 +377,9 @@ src\app\layout.tsx (36:7)instant</p>
         </section>
       </main>
       <footer className="border-t border-white/10 px-6 py-8">
-        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">© 2026 SUMVIBES by SAS BE GREAT.</div>
+        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
+          © 2026 SUMVIBES by SAS BE GREAT.
+        </div>
       </footer>
     </div>
   );

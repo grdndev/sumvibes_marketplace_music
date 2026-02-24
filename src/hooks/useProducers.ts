@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface Producer {
   id: string;
@@ -14,6 +14,23 @@ interface Producer {
     sales: number;
   };
   genres?: string[];
+  user: {
+    id: string;
+    displayName?: string;
+    username: string;
+    avatar?: string;
+    beats?: Array<{
+      id: string;
+      title: string;
+      slug: string;
+      coverImage?: string;
+      bpm?: number;
+      genre?: string[];
+      mood?: string[];
+      basicPrice?: number;
+      plays?: number;
+    }>;
+  };
 }
 
 export function useProducers(search?: string) {
@@ -32,20 +49,22 @@ export function useProducers(search?: string) {
 
       // On va chercher les utilisateurs avec le rôle SELLER
       const params = new URLSearchParams();
-      params.append('role', 'SELLER');
-      if (search) params.append('search', search);
-      params.append('limit', '50');
+      params.append("role", "SELLER");
+      if (search) params.append("search", search);
+      params.append("limit", "50");
 
       const res = await fetch(`/api/admin/users?${params.toString()}`);
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors du chargement des producteurs');
+        throw new Error(
+          data.error || "Erreur lors du chargement des producteurs",
+        );
       }
 
       setProducers(data.users || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       // En cas d'erreur, on retourne un tableau vide
       setProducers([]);
     } finally {
@@ -64,7 +83,6 @@ export function useProducer(id: string) {
   useEffect(() => {
     fetchProducer();
   }, [id]);
-
   const fetchProducer = async () => {
     try {
       setLoading(true);
@@ -74,12 +92,14 @@ export function useProducer(id: string) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors du chargement du producteur');
+        throw new Error(
+          data.error || "Erreur lors du chargement du producteur",
+        );
       }
 
       setProducer(data.user);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
     }
