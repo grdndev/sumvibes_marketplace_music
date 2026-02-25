@@ -40,14 +40,17 @@ import { useBeats } from "@/hooks/useBeats";
 const GENRES = [
   "Tous",
   "Trap",
+  "Rnb",
+  "Pop",
   "Hip-Hop",
-  "R&B",
   "Afrobeat",
   "Drill",
-  "Pop",
   "Reggaeton",
   "Lo-Fi",
-  "Boom Bap",
+  "Soul",
+  "Dancehall",
+  "Electro",
+  "Jazz",
 ];
 const MOODS = [
   "Tous",

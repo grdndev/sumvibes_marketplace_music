@@ -107,18 +107,22 @@ const STATUS_MAP: Record<
   },
 };
 const STATUSES = ["PUBLISHED", "PENDING", "DRAFT", "REJECTED", "ARCHIVED"];
+
 const GENRES = [
   "Trap",
-  "BoomBap",
-  "Afro",
-  "RnB",
+  "Rnb",
   "Pop",
+  "Hip-Hop",
+  "Afrobeat",
   "Drill",
-  "House",
+  "Reggaeton",
+  "Lo-Fi",
+  "Soul",
+  "Dancehall",
   "Electro",
   "Jazz",
-  "Soul",
 ];
+
 const MOODS = [
   "Chill",
   "Uplifting",

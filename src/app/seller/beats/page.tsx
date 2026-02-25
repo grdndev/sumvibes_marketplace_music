@@ -19,15 +19,19 @@ import Image from "next/image";
 
 const GENRES = [
   "Trap",
+  "Rnb",
+  "Pop",
   "Hip-Hop",
-  "R&B",
   "Afrobeat",
   "Drill",
-  "Pop",
   "Reggaeton",
   "Lo-Fi",
-  "Boom Bap",
+  "Soul",
+  "Dancehall",
+  "Electro",
+  "Jazz",
 ];
+
 const MOODS = [
   "Dark",
   "Chill",
@@ -37,6 +41,7 @@ const MOODS = [
   "Aggressive",
   "Melancholic",
 ];
+
 const INSTRUMENTS = [
   "Piano",
   "Guitar",
