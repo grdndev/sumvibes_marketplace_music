@@ -84,7 +84,7 @@ AWS_S3_BUCKET="..."
 ### Installation
 ```bash
 # Installer dépendances
-npm install
+npm install --save-dev prisma dotenv
 
 # Générer le client Prisma
 npx prisma generate
