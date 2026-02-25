@@ -9,6 +9,20 @@ import { useProducers } from "@/hooks/useProducers";
 export default function ProducersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const { producers, loading } = useProducers(searchQuery);
+  const [expandedGenres, setExpandedGenres] = useState<Set<string>>(new Set());
+
+  const toggleExpandGenres = (e: React.MouseEvent, producerId: string) => {
+    e.preventDefault();
+    setExpandedGenres((prev) => {
+      const next = new Set(prev);
+      if (next.has(producerId)) {
+        next.delete(producerId);
+      } else {
+        next.add(producerId);
+      }
+      return next;
+    });
+  };
 
   const genres = [
     "Tous",
@@ -104,7 +118,7 @@ export default function ProducersPage() {
                   <Link
                     key={producer.id}
                     href={`/producers/${producer.id}`}
-                    className="glass rounded-3xl p-8 hover:-translate-y-3 hover:shadow-2xl hover:shadow-brand-purple/30 group"
+                    className="glass rounded-3xl p-8 hover:-translate-y-3 hover:shadow-2xl hover:shadow-brand-purple/30 group flex flex-col h-full"
                   >
                     {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
@@ -145,7 +159,7 @@ export default function ProducersPage() {
                     {/* Genres */}
                     {producer.genres && producer.genres.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-6">
-                        {producer.genres.map((genre: string) => (
+                        {(expandedGenres.has(producer.id) ? producer.genres : producer.genres.slice(0, 4)).map((genre: string) => (
                           <span
                             key={genre}
                             className="glass px-3 py-1 rounded-full text-xs"
@@ -153,11 +167,27 @@ export default function ProducersPage() {
                             {genre}
                           </span>
                         ))}
+                        {producer.genres.length > 4 && !expandedGenres.has(producer.id) && (
+                          <button
+                            onClick={(e) => toggleExpandGenres(e, producer.id)}
+                            className="glass px-3 py-1 rounded-full text-xs text-brand-gold hover:bg-white/10 transition-colors"
+                          >
+                            +{producer.genres.length - 4}
+                          </button>
+                        )}
+                        {producer.genres.length > 4 && expandedGenres.has(producer.id) && (
+                          <button
+                            onClick={(e) => toggleExpandGenres(e, producer.id)}
+                            className="glass px-3 py-1 rounded-full text-xs text-brand-gold hover:bg-white/10 transition-colors"
+                          >
+                            Réduire
+                          </button>
+                        )}
                       </div>
                     )}
 
                     {/* Stats */}
-                    <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4 pt-6 mt-auto border-t border-white/10">
                       <div className="text-center">
                         <div className="flex items-center justify-center gap-1 text-brand-gold mb-1">
                           <Music className="w-4 h-4" />

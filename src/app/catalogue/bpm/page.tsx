@@ -4,40 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { ChevronLeft, Play, ShoppingCart, Heart, Clock, Music } from "lucide-react";
+import { useBeats } from "@/hooks/useBeats";
+import { useCart } from "@/hooks/useCart";
 
-const bpmRanges = [
-  { id: "60-80", label: "60-80 BPM", description: "Ballades, Lo-Fi, Chill", emoji: "🌙", count: 87 },
-  { id: "80-100", label: "80-100 BPM", description: "R&B, Soul, Reggaeton", emoji: "💜", count: 156 },
-  { id: "100-120", label: "100-120 BPM", description: "Pop, Dancehall, Afrobeat", emoji: "🌟", count: 203 },
-  { id: "120-140", label: "120-140 BPM", description: "House, Électro, Dance", emoji: "💿", count: 134 },
-  { id: "140-160", label: "140-160 BPM", description: "Trap, Drill, Hip-Hop", emoji: "🔥", count: 298 },
-  { id: "160-180", label: "160-180 BPM", description: "Drum & Bass, Jungle", emoji: "⚡", count: 65 },
-  { id: "180+", label: "180+ BPM", description: "Hardstyle, Speedcore", emoji: "🚀", count: 28 },
+const bpmRangesBase = [
+  { id: "60-80", label: "60-80 BPM", description: "Ballades, Lo-Fi, Chill", emoji: "🌙", min: 60, max: 79 },
+  { id: "80-100", label: "80-100 BPM", description: "R&B, Soul, Reggaeton", emoji: "💜", min: 80, max: 99 },
+  { id: "100-120", label: "100-120 BPM", description: "Pop, Dancehall, Afrobeat", emoji: "🌟", min: 100, max: 119 },
+  { id: "120-140", label: "120-140 BPM", description: "House, Électro, Dance", emoji: "💿", min: 120, max: 139 },
+  { id: "140-160", label: "140-160 BPM", description: "Trap, Drill, Hip-Hop", emoji: "🔥", min: 140, max: 159 },
+  { id: "160-180", label: "160-180 BPM", description: "Drum & Bass, Jungle", emoji: "⚡", min: 160, max: 179 },
+  { id: "180+", label: "180+ BPM", description: "Hardstyle, Speedcore", emoji: "🚀", min: 180, max: 999 },
 ];
 
-const beatsByBpm: Record<string, Array<{ title: string; producer: string; bpm: number; price: number; genre: string; key: string; duration: string }>> = {
-  "60-80": [
-    { title: "Midnight Rain", producer: "ChillMaster", bpm: 72, price: 24.99, genre: "Lo-Fi", key: "Am", duration: "3:45" },
-    { title: "Slow Burn", producer: "MelodyQueen", bpm: 68, price: 29.99, genre: "R&B", key: "Fm", duration: "4:10" },
-    { title: "Whisper", producer: "SoulVibes", bpm: 75, price: 19.99, genre: "Soul", key: "Bb", duration: "3:22" },
-  ],
-  "140-160": [
-    { title: "Dark Shadows", producer: "BeatMaker92", bpm: 140, price: 29.99, genre: "Trap", key: "Cm", duration: "3:24" },
-    { title: "Night Rider", producer: "TrapKing_FR", bpm: 145, price: 39.99, genre: "Trap", key: "Gm", duration: "3:12" },
-    { title: "Venom", producer: "DrillKid", bpm: 150, price: 34.99, genre: "Drill", key: "Dm", duration: "2:58" },
-    { title: "Inferno", producer: "BassMaster", bpm: 142, price: 24.99, genre: "Trap", key: "Em", duration: "3:45" },
-  ],
-  "100-120": [
-    { title: "Sunshine", producer: "AfroKing", bpm: 108, price: 34.99, genre: "Afrobeat", key: "G", duration: "3:35" },
-    { title: "Fiesta", producer: "LatinFlow", bpm: 100, price: 29.99, genre: "Reggaeton", key: "Am", duration: "3:18" },
-    { title: "Island Breeze", producer: "TropicalProd", bpm: 112, price: 24.99, genre: "Dancehall", key: "C", duration: "3:42" },
-  ],
-};
-
 export default function BpmPage() {
+  const { beats: allBeats, loading } = useBeats({});
+  const { addToCart } = useCart();
   const [selectedRange, setSelectedRange] = useState<string | null>(null);
 
-  const currentBeats = selectedRange ? beatsByBpm[selectedRange] || [] : [];
+  const bpmRanges = bpmRangesBase.map((range) => {
+    const count = allBeats.filter((b) => (b.bpm ?? 0) >= range.min && (b.bpm ?? 0) <= range.max).length;
+    return { ...range, count };
+  });
+
+  const selectedRangeObj = bpmRanges.find((r) => r.id === selectedRange);
+  const currentBeats = selectedRangeObj
+    ? allBeats.filter((b) => (b.bpm ?? 0) >= selectedRangeObj.min && (b.bpm ?? 0) <= selectedRangeObj.max)
+    : [];
 
   return (
     <div className="relative min-h-screen bg-gradient-premium">
@@ -111,23 +104,23 @@ export default function BpmPage() {
               {currentBeats.length > 0 ? (
                 <div className="space-y-3">
                   {currentBeats.map((beat, i) => (
-                    <div key={i} className="glass rounded-xl p-4 flex items-center gap-4 hover:bg-white/5">
-                      <button className="w-12 h-12 rounded-full bg-brand-gold/10 flex items-center justify-center hover:bg-brand-gold/20 flex-shrink-0">
+                    <div key={beat.id} className="glass rounded-xl p-4 flex items-center gap-4 hover:bg-white/5">
+                      <Link href={`/product/${beat.slug}`} className="w-12 h-12 rounded-full bg-brand-gold/10 flex items-center justify-center hover:bg-brand-gold/20 flex-shrink-0">
                         <Play className="w-5 h-5 text-brand-gold ml-0.5" />
-                      </button>
+                      </Link>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-sm">{beat.title}</h4>
-                        <p className="text-xs text-slate-400">{beat.producer}</p>
+                        <Link href={`/product/${beat.slug}`} className="font-bold text-sm hover:text-brand-gold">{beat.title}</Link>
+                        <p className="text-xs text-slate-400">{beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || beat.seller?.username || "—"}</p>
                       </div>
                       <div className="hidden md:flex items-center gap-6 text-xs text-slate-400">
                         <span className="text-brand-gold font-bold">{beat.bpm} BPM</span>
-                        <span className="glass px-2 py-0.5 rounded-full">{beat.genre}</span>
-                        <span>{beat.key}</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {beat.duration}</span>
+                        {beat.genre?.[0] && <span className="glass px-2 py-0.5 rounded-full">{beat.genre[0]}</span>}
+                        {beat.key && <span>{beat.key}</span>}
+                        {beat.duration ? <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.floor(beat.duration / 60)}:{String(beat.duration % 60).padStart(2, "0")}</span> : <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> —</span>}
                       </div>
                       <button className="glass p-2 rounded-lg hover:bg-white/10"><Heart className="w-4 h-4" /></button>
-                      <div className="text-brand-gold font-bold text-sm">{beat.price}€</div>
-                      <button className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1">
+                      <div className="text-brand-gold font-bold text-sm">{Number(beat.basicPrice ?? beat.premiumPrice ?? 0).toFixed(2)}€</div>
+                      <button onClick={() => addToCart(beat.id, "basic")} className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1">
                         <ShoppingCart className="w-4 h-4" /> Ajouter
                       </button>
                     </div>

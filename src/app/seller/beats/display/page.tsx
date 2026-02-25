@@ -124,14 +124,13 @@ const GENRES = [
 ];
 
 const MOODS = [
+  "Dark",
   "Chill",
   "Uplifting",
-  "Dark",
-  "Happy",
-  "Sad",
-  "Aggressive",
-  "Dreamy",
+  "Energetic",
   "Romantic",
+  "Aggressive",
+  "Melancholic",
 ];
 const INSTRUMENTS = [
   "Piano",

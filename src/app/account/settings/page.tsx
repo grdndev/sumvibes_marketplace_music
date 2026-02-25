@@ -37,18 +37,18 @@ const baseTabs = [
 
 // Liste centralisée des genres musicaux
 const GENRES = [
-  "trap",
-  "rnb",
-  "pop",
-  "hip-hop",
-  "afrobeat",
-  "drill",
-  "reggaeton",
-  "lo-fi",
-  "soul",
-  "dancehall",
-  "electro",
-  "jazz",
+  "Trap",
+  "Rnb",
+  "Pop",
+  "Hip-Hop",
+  "Afrobeat",
+  "Drill",
+  "Reggaeton",
+  "Lo-Fi",
+  "Soul",
+  "Dancehall",
+  "Electro",
+  "Jazz",
 ];
 
 export default function SettingsPage() {
@@ -862,14 +862,13 @@ export default function SettingsPage() {
                   </label>
                   <div className="flex flex-wrap gap-3">
                     {[
-                      "Sombre",
-                      "Joyeux",
-                      "Énergique",
-                      "Mélancolique",
-                      "Romantique",
-                      "Agressif",
-                      "Calme",
-                      "Festif",
+                      "Dark",
+                      "Chill",
+                      "Uplifting",
+                      "Energetic",
+                      "Romantic",
+                      "Aggressive",
+                      "Melancholic",
                     ].map((mood) => (
                       <label key={mood} className="cursor-pointer">
                         <input
