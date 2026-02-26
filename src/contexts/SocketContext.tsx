@@ -120,13 +120,20 @@ function AuthedSocketProvider({
     socket.on("connect", joinRoom);
     socket.on("reconnect", joinRoom);
 
-    socket.on("new-message", (message: IncomingMessage) => {
+    // IMPORTANT : stocker la référence du handler pour ne retirer QUE celui-ci
+    // lors du cleanup (socket.off sans référence retire TOUS les listeners).
+    const handleNewMsg = (message: IncomingMessage) => {
+      console.log("[SOCKET CONTEXT] new-message reçu:", message);
+      // Si l'utilisateur est en train de lire cette conversation, ne pas incrémenter
       if (activeConversationIdRef.current === message.senderId) return;
+      // Ne pas incrémenter pour les messages qu'on a soi-même envoyés
+      if (message.senderId === userId) return;
       setUnreadBySender((prev) => ({
         ...prev,
         [message.senderId]: (prev[message.senderId] ?? 0) + 1,
       }));
-    });
+    };
+    socket.on("new-message", handleNewMsg);
 
     const handleVisibilityChange = () => {
       if (document.visibilityState !== "visible") return;
@@ -163,7 +170,8 @@ function AuthedSocketProvider({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       socket.off("connect", joinRoom);
       socket.off("reconnect", joinRoom);
-      socket.off("new-message");
+      // Retirer UNIQUEMENT ce handler, pas tous les listeners "new-message"
+      socket.off("new-message", handleNewMsg);
       socket.disconnect();
     };
   }, [socket, userId]);
