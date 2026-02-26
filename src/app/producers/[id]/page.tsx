@@ -187,7 +187,7 @@ export default function ProducerProfilePage({
                   </div>
                   <div className="flex gap-3">
                     <Link
-                      href="/community/messages"
+                      href={`/community/messages?new=${id}`}
                       className="glass rounded-xl px-5 py-3 font-semibold hover:bg-white/10 flex items-center gap-2"
                     >
                       <MessageCircle className="w-5 h-5" /> Message

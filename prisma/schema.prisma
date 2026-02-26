@@ -79,6 +79,8 @@ model User {
   forumComments ForumComment[]
   referrals     Referral[]  @relation("Referrer")
   referredBy    Referral?   @relation("Referred")
+  channelsAsUserOne Channel[] @relation("ChannelUserOne")
+  channelsAsUserTwo Channel[] @relation("ChannelUserTwo")
   
   @@index([email])
   @@index([username])
@@ -528,4 +530,21 @@ model Analytics {
   @@index([eventType])
   @@index([userId])
   @@index([createdAt])
+}
+
+// ============================================
+// CHANNEL
+// ============================================
+
+model Channel {
+  id          String   @id @default(cuid())
+  userOneId   String
+  userOne     User     @relation("ChannelUserOne", fields: [userOneId], references: [id], onDelete: Cascade)
+  userTwoId   String
+  userTwo     User     @relation("ChannelUserTwo", fields: [userTwoId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([userOneId, userTwoId])
+  @@index([userOneId])
+  @@index([userTwoId])
 }
