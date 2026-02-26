@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -45,6 +44,11 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - sumvibes_network
 
@@ -58,8 +62,33 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: rootpassword
+      ME_CONFIG_BASICAUTH_USERNAME: sumvibes_admin
+      ME_CONFIG_BASICAUTH_PASSWORD: sumvibes_pass
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
+    networks:
+      - sumvibes_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sumvibes_app
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     networks:
       - sumvibes_network
 
