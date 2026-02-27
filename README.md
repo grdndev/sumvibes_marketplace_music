@@ -89,16 +89,14 @@ graph TD
 # Cloner le dépôt
 git clone https://github.com/grdndev/sumvibes_marketplace_music.git
 
-# Installer les dépendances
-npm install
 
-# Configuration .env
-# Copiez .env.example vers .env et renseignez vos clés :
+# Configuration .env et configuration .env.docker
+# Copiez .simple.env vers .env et .env.docker puis renseignez vos clés :
 # NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=...
 # SUPABASE_URL=...
 
-# Lancer en local
-npm run dev
+# Lancer le docker
+docker compose up --build
 ```
 
 ---
