@@ -212,10 +212,25 @@ export async function POST(req: NextRequest) {
     });
 
     if (!channel) {
-      channel = await Channel.create({
-        userOneId: decoded.userId,
-        userTwoId: receiverId,
-      });
+      try {
+        channel = await Channel.create({
+          userOneId: decoded.userId,
+          userTwoId: receiverId,
+        });
+      } catch (createErr: any) {
+        // Duplicate key: channel was created by a concurrent request — fetch it
+        if (createErr.code === 11000) {
+          channel = await Channel.findOne({
+            $or: [
+              { userOneId: decoded.userId, userTwoId: receiverId },
+              { userOneId: receiverId, userTwoId: decoded.userId },
+            ],
+          });
+          if (!channel) throw createErr;
+        } else {
+          throw createErr;
+        }
+      }
     }
 
     const message = await Message.create({
@@ -251,8 +266,11 @@ export async function POST(req: NextRequest) {
     };
 
     return NextResponse.json(responseMsg, { status: 201 });
-  } catch (error) {
-    console.error("Error in POST /api/messages:", error);
-    return serverError();
+  } catch (error: any) {
+    console.error("Error in POST /api/messages:", error?.message ?? error, error?.stack);
+    return NextResponse.json(
+      { error: "Erreur serveur", detail: error?.message ?? String(error) },
+      { status: 500 }
+    );
   }
 }

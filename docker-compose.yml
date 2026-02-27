@@ -1,18 +1,5 @@
 services:
 
-  frontend:
-    build: .
-    container_name: sumvibes_frontend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - sumvibes_network
-    env_file: ".env.docker"
-
   postgres:
     image: postgres:16-alpine
     container_name: sumvibes_postgres
@@ -21,6 +8,8 @@ services:
       POSTGRES_USER: sumvibes_user
       POSTGRES_PASSWORD: sumvibes_password
       POSTGRES_DB: sumvibes_db
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -31,8 +20,81 @@ services:
     networks:
       - sumvibes_network
 
+  adminer:
+    image: adminer:4
+    container_name: sumvibes_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sumvibes_network
+
+  mongodb:
+    image: mongo:7
+    container_name: sumvibes_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: sumvibes_mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sumvibes_network
+
+  mongo-express:
+    image: mongo-express:1
+    container_name: sumvibes_mongo_express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: rootpassword
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - sumvibes_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sumvibes_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://sumvibes_user:sumvibes_password@postgres:5432/sumvibes_db
+      MONGODB_URI: mongodb://root:rootpassword@mongodb:27017/sumvibes_mongo_db?authSource=admin
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    networks:
+      - sumvibes_network
+
 volumes:
   postgres_data:
+  mongodb_data:
 
 networks:
   sumvibes_network:

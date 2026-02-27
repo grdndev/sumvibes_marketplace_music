@@ -626,7 +626,11 @@ function MessagesContent() {
           },
           body: JSON.stringify({ receiverId: activeConvId, content }),
         });
-        if (!res.ok) throw new Error("Send failed");
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.error("[Send] API error:", res.status, errData);
+          throw new Error(errData.detail || errData.error || "Send failed");
+        }
 
         const saved: Message = await res.json();
 

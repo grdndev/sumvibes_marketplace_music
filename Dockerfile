@@ -3,16 +3,15 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --save-dev prisma dotenv
+
+RUN npm install
 
 COPY . .
 
-RUN npx prisma generate
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
 
+EXPOSE 3000
 
-COPY entrypoint.sh /app/entrypoint.sh
-
-ENTRYPOINT ["sh", "/app/entrypoint.sh"]
-# Pour la production, build puis start
-RUN npm run build
-CMD ["npm", "start"]
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["npm", "run", "dev"]
