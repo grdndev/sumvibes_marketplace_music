@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:current-alpine3.23
 
 WORKDIR /app
 
@@ -8,7 +8,6 @@ RUN npm install
 
 COPY . .
 
-COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
 EXPOSE 3000
