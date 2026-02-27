@@ -86,9 +86,9 @@ export default function SellerDashboardPage() {
 
   if (!user || user.role !== "SELLER") {
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
-        <main className="pt-20 flex items-center justify-center min-h-screen">
+        <main className="flex-1 pt-20 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-brand-gold animate-spin mx-auto mb-4" />
             <p className="text-slate-400">Chargement...</p>
@@ -101,16 +101,16 @@ export default function SellerDashboardPage() {
   const maxRevenue = stats?.salesByDay?.reduce((m, d) => Math.max(m, Number(d.revenue)), 1) || 1;
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient">Dashboard Vendeur</h1>
-              <p className="text-slate-400 mt-2">Bonjour, {user.displayName || user.username} ðŸ‘‹</p>
+              <p className="text-slate-400 mt-2">Bonjour, {user.displayName || user.username} ??</p>
             </div>
             <div className="flex gap-3">
               <Link href="/seller/beats" className="btn-primary px-6 py-3 rounded-full font-semibold flex items-center gap-2">
@@ -134,22 +134,22 @@ export default function SellerDashboardPage() {
                 <div className="glass rounded-2xl p-6">
                   <DollarSign className="w-8 h-8 text-green-400 mb-3" />
                   <div className="text-2xl font-bold text-gradient">{formatCurrency(Number(stats.period.revenue))}</div>
-                  <div className="text-sm text-slate-400">Revenus ({period === 'month' ? 'ce mois' : period === 'week' ? 'cette semaine' : 'cette annÃ©e'})</div>
+                  <div className="text-sm text-slate-400">Revenus ({period === 'month' ? 'ce mois' : period === 'week' ? 'cette semaine' : 'cette année'})</div>
                 </div>
                 <div className="glass rounded-2xl p-6">
                   <ShoppingCart className="w-8 h-8 text-brand-gold mb-3" />
                   <div className="text-2xl font-bold text-gradient">{stats.period.sales}</div>
-                  <div className="text-sm text-slate-400">Ventes ({period === 'month' ? 'ce mois' : period === 'week' ? 'cette semaine' : 'cette annÃ©e'})</div>
+                  <div className="text-sm text-slate-400">Ventes ({period === 'month' ? 'ce mois' : period === 'week' ? 'cette semaine' : 'cette année'})</div>
                 </div>
                 <div className="glass rounded-2xl p-6">
                   <Eye className="w-8 h-8 text-blue-400 mb-3" />
                   <div className="text-2xl font-bold text-gradient">{stats.overview.totalPlays.toLocaleString()}</div>
-                  <div className="text-sm text-slate-400">Ã‰coutes totales</div>
+                  <div className="text-sm text-slate-400">Écoutes totales</div>
                 </div>
                 <div className="glass rounded-2xl p-6">
                   <Music className="w-8 h-8 text-purple-400 mb-3" />
                   <div className="text-2xl font-bold text-gradient">{stats.overview.totalBeats}</div>
-                  <div className="text-sm text-slate-400">Beats publiÃ©s</div>
+                  <div className="text-sm text-slate-400">Beats publiés</div>
                 </div>
               </div>
 
@@ -167,7 +167,7 @@ export default function SellerDashboardPage() {
                     >
                       <option value="week">7 derniers jours</option>
                       <option value="month">Ce mois</option>
-                      <option value="year">Cette annÃ©e</option>
+                      <option value="year">Cette année</option>
                     </select>
                   </div>
                   {stats.salesByDay.length > 0 ? (
@@ -185,7 +185,7 @@ export default function SellerDashboardPage() {
                     </div>
                   ) : (
                     <div className="h-48 flex items-center justify-center">
-                      <p className="text-slate-500">Pas encore de ventes sur cette pÃ©riode</p>
+                      <p className="text-slate-500">Pas encore de ventes sur cette période</p>
                     </div>
                   )}
                 </div>
@@ -235,7 +235,7 @@ export default function SellerDashboardPage() {
               {/* Recent Sales */}
               <div className="glass rounded-3xl p-8 mt-8">
                 <h2 className="text-xl font-bold font-display mb-6 flex items-center gap-2">
-                  <ShoppingCart className="w-6 h-6 text-brand-gold" /> Ventes rÃ©centes
+                  <ShoppingCart className="w-6 h-6 text-brand-gold" /> Ventes récentes
                 </h2>
                 {stats.recentSales.length > 0 ? (
                   <div className="overflow-x-auto">
@@ -277,9 +277,9 @@ export default function SellerDashboardPage() {
                 ) : (
                   <div className="text-center py-8 text-slate-500">
                     <ShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>Pas encore de ventes sur cette pÃ©riode</p>
+                    <p>Pas encore de ventes sur cette période</p>
                     <Link href="/seller/beats" className="text-brand-gold text-sm mt-2 inline-block hover:underline">
-                      Uploadez votre premier beat â†’
+                      Uploadez votre premier beat ?
                     </Link>
                   </div>
                 )}
@@ -304,7 +304,7 @@ export default function SellerDashboardPage() {
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div><span className="text-slate-400">Ã‰coutes:</span> <span className="font-bold">{beat.plays.toLocaleString()}</span></div>
+                          <div><span className="text-slate-400">Écoutes:</span> <span className="font-bold">{beat.plays.toLocaleString()}</span></div>
                           <div><span className="text-slate-400">Ventes:</span> <span className="font-bold">{beat.sales}</span></div>
                         </div>
                       </Link>
@@ -315,8 +315,8 @@ export default function SellerDashboardPage() {
             </>
           ) : (
             <div className="text-center py-20">
-              <p className="text-slate-400">Erreur de chargement des donnÃ©es</p>
-              <button onClick={fetchStats} className="btn-primary px-6 py-3 rounded-full mt-4">RÃ©essayer</button>
+              <p className="text-slate-400">Erreur de chargement des données</p>
+              <button onClick={fetchStats} className="btn-primary px-6 py-3 rounded-full mt-4">Réessayer</button>
             </div>
           )}
         </div>
@@ -324,7 +324,7 @@ export default function SellerDashboardPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

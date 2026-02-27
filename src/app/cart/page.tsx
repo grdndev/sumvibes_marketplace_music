@@ -22,9 +22,9 @@ export default function CartPage() {
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
-        <main className="pt-20 flex items-center justify-center min-h-screen">
+        <main className="flex-1 pt-20 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Connectez-vous pour voir votre panier</h1>
             <Link href="/login" className="text-brand-gold hover:underline">
@@ -37,13 +37,13 @@ export default function CartPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="mx-auto max-w-6xl px-6 py-12">
           <h1 className="text-4xl md:text-5xl font-bold font-display mb-2">
-            Votre Panier <span className="text-gradient">ðŸ›’</span>
+            Votre Panier <span className="text-gradient">??</span>
           </h1>
           <p className="text-slate-400 mb-10">{cart.count} article{cart.count > 1 ? "s" : ""} dans votre panier</p>
 
@@ -73,7 +73,7 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xl font-bold text-gradient">{item.price} â‚¬</div>
+                      <div className="text-xl font-bold text-gradient">{item.price} €</div>
                       <button
                         onClick={() => handleRemove(item.id)}
                         className="mt-2 text-slate-500 hover:text-red-400 flex items-center gap-1 text-sm ml-auto"
@@ -94,20 +94,20 @@ export default function CartPage() {
               {/* Order Summary */}
               <div className="lg:col-span-1">
                 <div className="glass rounded-3xl p-8 sticky top-28">
-                  <h2 className="text-xl font-bold mb-6">RÃ©capitulatif</h2>
+                  <h2 className="text-xl font-bold mb-6">Récapitulatif</h2>
 
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-slate-300">
                       <span>Sous-total</span>
-                      <span>{subtotal.toFixed(2)} â‚¬</span>
+                      <span>{subtotal.toFixed(2)} €</span>
                     </div>
                     <div className="flex justify-between text-slate-300">
                       <span>TVA (20%)</span>
-                      <span>{tax.toFixed(2)} â‚¬</span>
+                      <span>{tax.toFixed(2)} €</span>
                     </div>
                     <div className="border-t border-white/10 pt-4 flex justify-between">
                       <span className="font-bold text-lg">Total</span>
-                      <span className="text-2xl font-bold text-gradient">{total.toFixed(2)} â‚¬</span>
+                      <span className="text-2xl font-bold text-gradient">{total.toFixed(2)} €</span>
                     </div>
                   </div>
 
@@ -138,7 +138,7 @@ export default function CartPage() {
 
                   <div className="mt-6 flex items-center gap-2 text-sm text-slate-400">
                     <Shield className="w-4 h-4 text-brand-gold" />
-                    Paiement 100% sÃ©curisÃ© via Stripe
+                    Paiement 100% sécurisé via Stripe
                   </div>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export default function CartPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

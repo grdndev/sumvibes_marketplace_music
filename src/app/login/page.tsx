@@ -41,16 +41,16 @@ export default function LoginPage() {
       // Redirect to account page
       router.push("/account");
     } catch {
-      setError("Erreur rÃ©seau. RÃ©essayez.");
+      setError("Erreur réseau. Réessayez.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
-      <main className="pt-20 flex items-center justify-center min-h-screen px-6">
+      <main className="flex-1 pt-20 flex items-center justify-center min-h-screen px-6">
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-10">
@@ -59,7 +59,7 @@ export default function LoginPage() {
               <span className="text-3xl font-bold text-gradient font-display">SUMVIBES</span>
             </div>
             <h1 className="text-3xl font-bold font-display mb-2">Bon retour parmi nous</h1>
-            <p className="text-slate-400">Connectez-vous pour accÃ©der Ã  votre espace</p>
+            <p className="text-slate-400">Connectez-vous pour accéder à votre espace</p>
           </div>
 
           {/* Form */}
@@ -99,7 +99,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                   required
                   className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/50"
                 />
@@ -119,7 +119,7 @@ export default function LoginPage() {
                 Se souvenir de moi
               </label>
               <Link href="/help" className="text-brand-gold hover:text-brand-gold-dark">
-                Mot de passe oubliÃ© ?
+                Mot de passe oublié ?
               </Link>
             </div>
 
@@ -144,7 +144,7 @@ export default function LoginPage() {
             <p className="text-slate-400">
               Pas encore de compte ?{" "}
               <Link href="/register" className="text-brand-gold hover:text-brand-gold-dark font-semibold">
-                CrÃ©er un compte gratuitement
+                Créer un compte gratuitement
               </Link>
             </p>
           </div>

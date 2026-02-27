@@ -4,78 +4,78 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { BookOpen, Clock, ArrowRight, Tag } from "lucide-react";
 
-const CATEGORIES = ["Tous", "Actualit√©s", "Tutoriels", "Interviews", "Tendances", "Conseils"];
+const CATEGORIES = ["Tous", "ActualitÈs", "Tutoriels", "Interviews", "Tendances", "Conseils"];
 
 const MOCK_ARTICLES = [
   {
     slug: "comment-vendre-beats-en-ligne",
     title: "Comment vendre ses beats en ligne en 2026",
-    excerpt: "Guide complet pour d√©marrer la vente de vos productions musicales sur les plateformes en ligne. De l'inscription √† la premi√®re vente.",
+    excerpt: "Guide complet pour dÈmarrer la vente de vos productions musicales sur les plateformes en ligne. De l'inscription ‡ la premiËre vente.",
     category: "Tutoriels",
     date: "28 Jan 2026",
     readTime: "8 min",
-    image: "üìù",
+    image: "??",
   },
   {
     slug: "top-10-tendances-trap-2026",
     title: "Top 10 des tendances Trap en 2026",
-    excerpt: "D√©couvrez les sons, les techniques de production et les styles qui dominent la sc√®ne trap cette ann√©e.",
+    excerpt: "DÈcouvrez les sons, les techniques de production et les styles qui dominent la scËne trap cette annÈe.",
     category: "Tendances",
     date: "25 Jan 2026",
     readTime: "5 min",
-    image: "üî•",
+    image: "??",
   },
   {
     slug: "interview-xavier-jarvis",
     title: "Interview exclusive : Xavier Jarvis",
-    excerpt: "Le fondateur de SUMVIBES nous parle de sa vision, des d√©fis rencontr√©s et de l'avenir de la plateforme.",
+    excerpt: "Le fondateur de SUMVIBES nous parle de sa vision, des dÈfis rencontrÈs et de l'avenir de la plateforme.",
     category: "Interviews",
     date: "20 Jan 2026",
     readTime: "12 min",
-    image: "üé§",
+    image: "??",
   },
   {
     slug: "mixer-son-beat-comme-un-pro",
     title: "Mixer son beat comme un pro : le guide ultime",
-    excerpt: "Les secrets du mixage professionnel d√©voil√©s. EQ, compression, spatialisation : ma√Ætrisez chaque √©tape.",
+    excerpt: "Les secrets du mixage professionnel dÈvoilÈs. EQ, compression, spatialisation : maÓtrisez chaque Ètape.",
     category: "Tutoriels",
     date: "15 Jan 2026",
     readTime: "15 min",
-    image: "üéõÔ∏è",
+    image: "???",
   },
   {
     slug: "lancement-sumvibes-marketplace",
-    title: "SUMVIBES : une nouvelle √®re pour la production musicale",
-    excerpt: "Annonce officielle du lancement de SUMVIBES, la marketplace premium d√©di√©e aux compositeurs et artistes.",
-    category: "Actualit√©s",
+    title: "SUMVIBES : une nouvelle Ëre pour la production musicale",
+    excerpt: "Annonce officielle du lancement de SUMVIBES, la marketplace premium dÈdiÈe aux compositeurs et artistes.",
+    category: "ActualitÈs",
     date: "1 Jan 2026",
     readTime: "4 min",
-    image: "üöÄ",
+    image: "??",
   },
   {
     slug: "proteger-ses-droits-auteur",
-    title: "Prot√©ger ses droits d'auteur en tant que beatmaker",
-    excerpt: "Tout ce que vous devez savoir sur la propri√©t√© intellectuelle, les licences et la protection de vos cr√©ations.",
+    title: "ProtÈger ses droits d'auteur en tant que beatmaker",
+    excerpt: "Tout ce que vous devez savoir sur la propriÈtÈ intellectuelle, les licences et la protection de vos crÈations.",
     category: "Conseils",
     date: "10 Jan 2026",
     readTime: "10 min",
-    image: "üõ°Ô∏è",
+    image: "???",
   },
 ];
 
 export default function BlogPage() {
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="px-6 py-12 md:py-16">
           <div className="mx-auto max-w-7xl">
             <h1 className="text-4xl md:text-6xl font-bold font-display mb-4">
-              Blog & <span className="text-gradient">News</span> üì∞
+              Blog & <span className="text-gradient">News</span> ??
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl">
-              Actualit√©s, tutoriels et tendances du monde de la production musicale
+              ActualitÈs, tutoriels et tendances du monde de la production musicale
             </p>
 
             {/* Categories */}
@@ -151,7 +151,7 @@ export default function BlogPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          ¬© 2026 SUMVIBES by SAS BE GREAT. Tous droits r√©serv√©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits rÈservÈs.
         </div>
       </footer>
     </div>

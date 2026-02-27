@@ -13,10 +13,10 @@ export default function CheckoutConfirmationPage() {
   const total = purchases.reduce((sum, p) => sum + p.price, 0) * 1.2;
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="mx-auto max-w-3xl px-6 py-16 text-center">
           {/* Success Icon */}
           <div className="mb-8">
@@ -24,10 +24,10 @@ export default function CheckoutConfirmationPage() {
               <CheckCircle className="w-14 h-14 text-green-400" />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold font-display mb-4">
-              Paiement <span className="text-gradient">ConfirmÃ©</span> ! ðŸŽ‰
+              Paiement <span className="text-gradient">Confirmé</span> ! ??
             </h1>
             <p className="text-xl text-slate-300">
-              Merci pour votre achat ! Vos fichiers sont prÃªts Ã  Ãªtre tÃ©lÃ©chargÃ©s.
+              Merci pour votre achat ! Vos fichiers sont prêts à être téléchargés.
             </p>
           </div>
 
@@ -39,8 +39,8 @@ export default function CheckoutConfirmationPage() {
                 <div className="font-bold text-lg font-mono">{orderNumber}</div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-slate-400">Total payÃ©</div>
-                <div className="text-2xl font-bold text-gradient">{total.toFixed(2)} â‚¬</div>
+                <div className="text-sm text-slate-400">Total payé</div>
+                <div className="text-2xl font-bold text-gradient">{total.toFixed(2)} €</div>
               </div>
             </div>
 
@@ -52,12 +52,12 @@ export default function CheckoutConfirmationPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-bold truncate">{item.title}</div>
-                    <div className="text-sm text-slate-400">Prod. by {item.producer} â€” Licence {item.license}</div>
+                    <div className="text-sm text-slate-400">Prod. by {item.producer} — Licence {item.license}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button className="glass rounded-xl px-4 py-2 text-sm font-semibold hover:bg-brand-gold/20 hover:text-brand-gold flex items-center gap-2">
                       <Download className="w-4 h-4" />
-                      TÃ©lÃ©charger
+                      Télécharger
                     </button>
                   </div>
                 </div>
@@ -69,7 +69,7 @@ export default function CheckoutConfirmationPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <button className="glass rounded-2xl p-6 hover:scale-105 flex flex-col items-center gap-3 group">
               <Download className="w-8 h-8 text-brand-gold group-hover:scale-110" />
-              <span className="font-bold">Tout tÃ©lÃ©charger</span>
+              <span className="font-bold">Tout télécharger</span>
               <span className="text-xs text-slate-400">Fichiers + Licences</span>
             </button>
             <button className="glass rounded-2xl p-6 hover:scale-105 flex flex-col items-center gap-3 group">
@@ -79,26 +79,26 @@ export default function CheckoutConfirmationPage() {
             </button>
             <button className="glass rounded-2xl p-6 hover:scale-105 flex flex-col items-center gap-3 group">
               <Mail className="w-8 h-8 text-brand-gold group-hover:scale-110" />
-              <span className="font-bold">Email envoyÃ©</span>
-              <span className="text-xs text-slate-400">VÃ©rifiez votre boÃ®te</span>
+              <span className="font-bold">Email envoyé</span>
+              <span className="text-xs text-slate-400">Vérifiez votre boîte</span>
             </button>
           </div>
 
           {/* Info Notice */}
           <div className="glass rounded-2xl p-6 mb-8 text-left">
-            <h3 className="font-bold mb-3">ðŸ“‹ Important :</h3>
+            <h3 className="font-bold mb-3">?? Important :</h3>
             <ul className="space-y-2 text-sm text-slate-300">
-              <li>â€¢ Vos fichiers sont disponibles Ã  tout moment dans votre espace &quot;TÃ©lÃ©chargements&quot;.</li>
-              <li>â€¢ La licence d&apos;utilisation au format PDF accompagne chaque fichier.</li>
-              <li>â€¢ Un email rÃ©capitulatif vous a Ã©tÃ© envoyÃ© avec tous les dÃ©tails.</li>
-              <li>â€¢ Pour toute question, contactez notre support.</li>
+              <li>• Vos fichiers sont disponibles à tout moment dans votre espace &quot;Téléchargements&quot;.</li>
+              <li>• La licence d&apos;utilisation au format PDF accompagne chaque fichier.</li>
+              <li>• Un email récapitulatif vous a été envoyé avec tous les détails.</li>
+              <li>• Pour toute question, contactez notre support.</li>
             </ul>
           </div>
 
           {/* Navigation */}
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/account/downloads" className="btn-primary rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark px-8 py-4 font-bold text-black hover:scale-105 flex items-center gap-3">
-              Mes tÃ©lÃ©chargements
+              Mes téléchargements
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link href="/catalogue" className="glass rounded-full px-8 py-4 font-bold hover:bg-white/10 flex items-center gap-3">
@@ -111,7 +111,7 @@ export default function CheckoutConfirmationPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

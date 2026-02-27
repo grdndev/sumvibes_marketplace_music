@@ -726,7 +726,7 @@ export default function SellerBeatsPage() {
   return (
     <div className="min-h-screen bg-gradient-premium">
       <Navbar />
-      <main className="pt-20 pb-16">
+      <main className="flex-1 pt-20 pb-16">
         <div className="mx-auto max-w-[560px] px-4">
           <div className="text-center pt-10 mb-10">
             <h1 className="text-gradient text-4xl font-black font-display tracking-tight leading-tight">

@@ -10,37 +10,37 @@ const FAQ_CATEGORIES = [
     name: "Achat & Paiement",
     icon: ShoppingCart,
     questions: [
-      { q: "Comment acheter un beat sur SUMVIBES ?", a: "Parcourez notre catalogue, Ã©coutez les previews, sÃ©lectionnez la licence souhaitÃ©e, ajoutez au panier et procÃ©dez au paiement via Stripe ou PayPal. Vos fichiers sont disponibles immÃ©diatement aprÃ¨s le paiement." },
-      { q: "Quels modes de paiement sont acceptÃ©s ?", a: "Nous acceptons les cartes bancaires (Visa, Mastercard, American Express) via Stripe ainsi que PayPal. Tous les paiements sont sÃ©curisÃ©s et cryptÃ©s." },
-      { q: "Puis-je obtenir un remboursement ?", a: "En raison de la nature numÃ©rique de nos produits, les remboursements sont traitÃ©s au cas par cas. Contactez notre support dans les 48h suivant l'achat pour toute demande." },
-      { q: "Comment tÃ©lÃ©charger mes fichiers aprÃ¨s achat ?", a: "AprÃ¨s le paiement, vos fichiers sont disponibles sur la page de confirmation et dans votre espace 'TÃ©lÃ©chargements'. Un email avec les liens de tÃ©lÃ©chargement vous est aussi envoyÃ©." },
+      { q: "Comment acheter un beat sur SUMVIBES ?", a: "Parcourez notre catalogue, écoutez les previews, sélectionnez la licence souhaitée, ajoutez au panier et procédez au paiement via Stripe ou PayPal. Vos fichiers sont disponibles immédiatement après le paiement." },
+      { q: "Quels modes de paiement sont acceptés ?", a: "Nous acceptons les cartes bancaires (Visa, Mastercard, American Express) via Stripe ainsi que PayPal. Tous les paiements sont sécurisés et cryptés." },
+      { q: "Puis-je obtenir un remboursement ?", a: "En raison de la nature numérique de nos produits, les remboursements sont traités au cas par cas. Contactez notre support dans les 48h suivant l'achat pour toute demande." },
+      { q: "Comment télécharger mes fichiers après achat ?", a: "Après le paiement, vos fichiers sont disponibles sur la page de confirmation et dans votre espace 'Téléchargements'. Un email avec les liens de téléchargement vous est aussi envoyé." },
     ],
   },
   {
     name: "Licences",
     icon: Shield,
     questions: [
-      { q: "Quelle est la diffÃ©rence entre les licences ?", a: "La Licence Basic permet une utilisation limitÃ©e (5 000 copies, 100K streams). La Licence Premium offre plus de droits (50 000 copies, 500K streams, radio). La Licence Exclusive vous donne les droits complets et exclusifs sur le beat." },
-      { q: "Puis-je utiliser un beat achetÃ© pour un clip ?", a: "Oui, selon la licence choisie. La Licence Basic permet 1 clip, la Premium 3 clips, et l'Exclusive offre un usage illimitÃ©." },
-      { q: "Qu'est-ce qu'une licence exclusive ?", a: "Une licence exclusive signifie que le beat est retirÃ© de la vente et que vous en devenez le seul dÃ©tenteur. Les acheteurs prÃ©cÃ©dents conservent leurs droits selon leur licence." },
+      { q: "Quelle est la différence entre les licences ?", a: "La Licence Basic permet une utilisation limitée (5 000 copies, 100K streams). La Licence Premium offre plus de droits (50 000 copies, 500K streams, radio). La Licence Exclusive vous donne les droits complets et exclusifs sur le beat." },
+      { q: "Puis-je utiliser un beat acheté pour un clip ?", a: "Oui, selon la licence choisie. La Licence Basic permet 1 clip, la Premium 3 clips, et l'Exclusive offre un usage illimité." },
+      { q: "Qu'est-ce qu'une licence exclusive ?", a: "Une licence exclusive signifie que le beat est retiré de la vente et que vous en devenez le seul détenteur. Les acheteurs précédents conservent leurs droits selon leur licence." },
     ],
   },
   {
     name: "Vente & Producteurs",
     icon: Music,
     questions: [
-      { q: "Comment devenir vendeur sur SUMVIBES ?", a: "Inscrivez-vous en tant que 'Compositeur / Vendeur', complÃ©tez votre profil et commencez Ã  uploader vos beats. Chaque beat passe par une vÃ©rification qualitÃ© avant publication." },
-      { q: "Quelles sont les commissions de la plateforme ?", a: "SUMVIBES prÃ©lÃ¨ve une commission de 15% sur chaque vente. Vous conservez 85% de vos revenus. Les frais de paiement (Stripe/PayPal) sont inclus dans cette commission." },
-      { q: "Comment retirer mes revenus ?", a: "Rendez-vous dans votre Dashboard Vendeur > Demandes de retrait. Le montant minimum est de 50â‚¬. Les virements sont traitÃ©s sous 3 Ã  5 jours ouvrÃ©s." },
+      { q: "Comment devenir vendeur sur SUMVIBES ?", a: "Inscrivez-vous en tant que 'Compositeur / Vendeur', complétez votre profil et commencez à uploader vos beats. Chaque beat passe par une vérification qualité avant publication." },
+      { q: "Quelles sont les commissions de la plateforme ?", a: "SUMVIBES prélève une commission de 15% sur chaque vente. Vous conservez 85% de vos revenus. Les frais de paiement (Stripe/PayPal) sont inclus dans cette commission." },
+      { q: "Comment retirer mes revenus ?", a: "Rendez-vous dans votre Dashboard Vendeur > Demandes de retrait. Le montant minimum est de 50€. Les virements sont traités sous 3 à 5 jours ouvrés." },
     ],
   },
   {
-    name: "Compte & SÃ©curitÃ©",
+    name: "Compte & Sécurité",
     icon: Users,
     questions: [
-      { q: "Comment modifier mes informations personnelles ?", a: "AccÃ©dez Ã  Mon Compte > ParamÃ¨tres pour modifier votre profil, votre email, votre mot de passe et vos prÃ©fÃ©rences de notification." },
-      { q: "J'ai oubliÃ© mon mot de passe", a: "Cliquez sur 'Mot de passe oubliÃ©' sur la page de connexion. Un email de rÃ©initialisation vous sera envoyÃ©." },
-      { q: "Mes donnÃ©es sont-elles protÃ©gÃ©es ?", a: "Oui, SUMVIBES est conforme au RGPD. Vos donnÃ©es personnelles sont cryptÃ©es et ne sont jamais partagÃ©es avec des tiers sans votre consentement." },
+      { q: "Comment modifier mes informations personnelles ?", a: "Accédez à Mon Compte > Paramètres pour modifier votre profil, votre email, votre mot de passe et vos préférences de notification." },
+      { q: "J'ai oublié mon mot de passe", a: "Cliquez sur 'Mot de passe oublié' sur la page de connexion. Un email de réinitialisation vous sera envoyé." },
+      { q: "Mes données sont-elles protégées ?", a: "Oui, SUMVIBES est conforme au RGPD. Vos données personnelles sont cryptées et ne sont jamais partagées avec des tiers sans votre consentement." },
     ],
   },
 ];
@@ -54,10 +54,10 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="px-6 py-12 md:py-16 text-center">
           <div className="mx-auto max-w-4xl">
             <HelpCircle className="w-16 h-16 mx-auto mb-6 text-brand-gold" />
@@ -65,7 +65,7 @@ export default function HelpPage() {
               Centre d&apos;<span className="text-gradient">Aide</span>
             </h1>
             <p className="text-xl text-slate-400 mb-8">
-              Trouvez rapidement les rÃ©ponses Ã  vos questions
+              Trouvez rapidement les réponses à vos questions
             </p>
 
             {/* Search */}
@@ -131,8 +131,8 @@ export default function HelpPage() {
         <section className="px-6 pb-24">
           <div className="mx-auto max-w-3xl glass rounded-3xl p-12 text-center">
             <MessageCircle className="w-12 h-12 mx-auto mb-4 text-brand-gold" />
-            <h2 className="text-2xl font-bold mb-3">Vous n&apos;avez pas trouvÃ© votre rÃ©ponse ?</h2>
-            <p className="text-slate-400 mb-6">Notre Ã©quipe support est disponible pour vous aider</p>
+            <h2 className="text-2xl font-bold mb-3">Vous n&apos;avez pas trouvé votre réponse ?</h2>
+            <p className="text-slate-400 mb-6">Notre équipe support est disponible pour vous aider</p>
             <Link href="/contact" className="btn-primary inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark px-8 py-4 font-bold text-black hover:scale-105">
               <CreditCard className="w-5 h-5" />
               Contacter le support
@@ -143,7 +143,7 @@ export default function HelpPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

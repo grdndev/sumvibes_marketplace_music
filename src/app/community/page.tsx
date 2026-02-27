@@ -10,14 +10,14 @@ import { MessageSquare, Users, Briefcase, TrendingUp, Star, ArrowRight, Music, F
 const stats = [
   { label: "Membres actifs", value: "12 500+", icon: Users },
   { label: "Discussions", value: "3 200+", icon: MessageSquare },
-  { label: "Services propos√©s", value: "850+", icon: Briefcase },
+  { label: "Services proposÈs", value: "850+", icon: Briefcase },
   { label: "Collaborations", value: "1 400+", icon: TrendingUp },
 ];
 
 const services = [
-  { title: "Mixage & Mastering professionnel", author: "StudioPro", price: "√Ä partir de 50‚Ç¨", category: "Mixage", emoji: "üéõÔ∏è" },
-  { title: "Toplining / √âcriture de textes", author: "LyricQueen", price: "√Ä partir de 30‚Ç¨", category: "√âcriture", emoji: "‚úçÔ∏è" },
-  { title: "Artwork & Pochettes d'album", author: "DesignBeats", price: "√Ä partir de 25‚Ç¨", category: "Design", emoji: "üé®" },
+  { title: "Mixage & Mastering professionnel", author: "StudioPro", price: "¿ partir de 50Ä", category: "Mixage", emoji: "???" },
+  { title: "Toplining / …criture de textes", author: "LyricQueen", price: "¿ partir de 30Ä", category: "…criture", emoji: "??" },
+  { title: "Artwork & Pochettes d'album", author: "DesignBeats", price: "¿ partir de 25Ä", category: "Design", emoji: "??" },
 ];
 
 export default function CommunityPage() {
@@ -31,10 +31,10 @@ export default function CommunityPage() {
     .slice(0, 4);
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-24 pb-20 px-4 md:px-6">
+      <main className="flex-1 pt-24 pb-20 px-4 md:px-6">
         {/* Hub Header */}
         <section className="relative mx-auto max-w-7xl text-center mb-16 mt-8">
             <div className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-sm mb-6 border border-brand-gold/20 shadow-[0_0_15px_rgba(254,204,51,0.15)]">
@@ -46,11 +46,11 @@ export default function CommunityPage() {
               <br />avec les producteurs
             </h1>
             <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-light">
-              √âchangez avec des milliers d'artistes sur le forum, proposez ou trouvez des services professionnels, et d√©veloppez votre r√©seau musical.
+              …changez avec des milliers d'artistes sur le forum, proposez ou trouvez des services professionnels, et dÈveloppez votre rÈseau musical.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/community/forum" className="btn-primary px-8 py-3.5 rounded-full font-bold text-lg flex items-center gap-2 shadow-[0_4px_14px_0_rgba(254,204,51,0.39)] hover:shadow-[0_6px_20px_rgba(254,204,51,0.23)]">
-                <MessageSquare className="w-5 h-5" /> Acc√©der au Forum
+                <MessageSquare className="w-5 h-5" /> AccÈder au Forum
               </Link>
               <Link href="/community/services" className="glass px-8 py-3.5 rounded-full font-bold text-lg hover:border-brand-gold/50 transition-colors flex items-center gap-2 shadow-lg">
                 <Briefcase className="w-5 h-5" /> Explorer les Services
@@ -78,7 +78,7 @@ export default function CommunityPage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
             <div className="flex items-center justify-between mb-8 relative z-10">
               <h2 className="text-2xl font-bold font-display flex items-center gap-3">
-                <MessageSquare className="w-7 h-7 text-brand-gold fill-brand-gold/20" /> Derni√®res Discussions
+                <MessageSquare className="w-7 h-7 text-brand-gold fill-brand-gold/20" /> DerniËres Discussions
               </h2>
               <Link href="/community/forum" className="text-brand-gold text-sm font-bold uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-4">
                 Tout voir <ArrowRight className="w-4 h-4" />
@@ -108,7 +108,7 @@ export default function CommunityPage() {
                     </div>
                     <div className="glass px-4 py-2 rounded-xl text-sm font-medium flex-shrink-0 flex flex-col items-center justify-center min-w-[3.5rem] bg-black/40">
                       <span className="text-white">{post._count?.replies || 0}</span>
-                      <span className="text-[10px] text-slate-500 uppercase">R√©p.</span>
+                      <span className="text-[10px] text-slate-500 uppercase">RÈp.</span>
                     </div>
                   </Link>
                 ))}
@@ -122,7 +122,7 @@ export default function CommunityPage() {
                     onClick={() => setShowNewPostModal(true)}
                     className="btn-primary px-6 py-2.5 rounded-full font-semibold text-sm inline-flex items-center gap-2 shadow-lg"
                   >
-                    <Plus className="w-4 h-4" /> D√©marrer un sujet
+                    <Plus className="w-4 h-4" /> DÈmarrer un sujet
                   </button>
                 )}
               </div>
@@ -137,9 +137,9 @@ export default function CommunityPage() {
             </h2>
             <div className="space-y-5 relative z-10">
               {[
-                { name: "BeatMaker92", rank: "Diamant üíé", beats: 145, ventes: 890, colors: "from-brand-gold to-yellow-500 text-black shadow-[0_0_15px_rgba(254,204,51,0.5)]" },
-                { name: "MelodyQueen", rank: "Platine üèÜ", beats: 98, ventes: 1200, colors: "from-slate-300 to-slate-400 text-black shadow-[0_0_15px_rgba(203,213,225,0.3)]" },
-                { name: "TrapKing_FR", rank: "Or ü•á", beats: 210, ventes: 650, colors: "from-amber-600 to-amber-500 text-black shadow-[0_0_15px_rgba(217,119,6,0.4)]" }
+                { name: "BeatMaker92", rank: "Diamant ??", beats: 145, ventes: 890, colors: "from-brand-gold to-yellow-500 text-black shadow-[0_0_15px_rgba(254,204,51,0.5)]" },
+                { name: "MelodyQueen", rank: "Platine ??", beats: 98, ventes: 1200, colors: "from-slate-300 to-slate-400 text-black shadow-[0_0_15px_rgba(203,213,225,0.3)]" },
+                { name: "TrapKing_FR", rank: "Or ??", beats: 210, ventes: 650, colors: "from-amber-600 to-amber-500 text-black shadow-[0_0_15px_rgba(217,119,6,0.4)]" }
               ].map((m, i) => (
                 <div key={i} className="glass bg-black/20 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${m.colors} flex flex-col items-center justify-center font-black text-lg`}>
@@ -159,7 +159,7 @@ export default function CommunityPage() {
         <section className="mx-auto max-w-7xl mb-20">
           <div className="flex items-center justify-between mb-8 px-2">
             <h2 className="text-3xl font-bold font-display flex items-center gap-3">
-              <Briefcase className="w-8 h-8 text-brand-gold fill-brand-gold/20" /> Services √† la une
+              <Briefcase className="w-8 h-8 text-brand-gold fill-brand-gold/20" /> Services ‡ la une
             </h2>
             <Link href="/community/services" className="glass px-5 py-2 rounded-full font-bold text-sm hover:border-brand-gold/50 transition-colors flex items-center gap-2">
               Tous les services <ArrowRight className="w-4 h-4" />
@@ -193,9 +193,9 @@ export default function CommunityPage() {
               <div className="w-20 h-20 rounded-full glass bg-black/40 flex items-center justify-center mx-auto mb-8 shadow-inner border border-white/20">
                  <MessageSquare className="w-10 h-10 text-brand-gold" />
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold font-display mb-6">Messagerie Priv√©e</h2>
+              <h2 className="text-4xl md:text-5xl font-bold font-display mb-6">Messagerie PrivÈe</h2>
               <p className="text-slate-300 text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed">
-                N√©gociez vos contrats, √©changez vos maquettes et cr√©ez les hits de demain directement via notre messagerie int√©gr√©e.
+                NÈgociez vos contrats, Èchangez vos maquettes et crÈez les hits de demain directement via notre messagerie intÈgrÈe.
               </p>
               <Link href="/community/messages" className="btn-primary px-10 py-4 rounded-full font-bold text-lg inline-flex items-center gap-3 shadow-[0_4px_20px_0_rgba(254,204,51,0.4)] hover:shadow-[0_6px_30px_rgba(254,204,51,0.3)] hover:scale-105 transition-all">
                 <MessageSquare className="w-6 h-6" /> Ouvrir la messagerie
@@ -207,7 +207,7 @@ export default function CommunityPage() {
 
       <footer className="border-t border-white/10 px-6 py-8 mt-12 bg-black/20">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm font-medium">
-          ¬© 2026 SUMVIBES by SAS BE GREAT. Tous droits r√©serv√©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits rÈservÈs.
         </div>
       </footer>
     </div>

@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import { useBeats } from "@/hooks/useBeats";
 
-// ─── Constantes ───────────────────────────────────────────────────────────────
+// --- Constantes ---------------------------------------------------------------
 
 const GENRES = [
   "Tous",
@@ -65,9 +65,9 @@ const MOODS = [
 const BPM_RANGES = [
   { label: "Tous les BPM", min: undefined, max: undefined },
   { label: "< 80 BPM", min: 0, max: 80 },
-  { label: "80 – 100", min: 80, max: 100 },
-  { label: "100 – 120", min: 100, max: 120 },
-  { label: "120 – 140", min: 120, max: 140 },
+  { label: "80 � 100", min: 80, max: 100 },
+  { label: "100 � 120", min: 100, max: 120 },
+  { label: "120 � 140", min: 120, max: 140 },
   { label: "> 140 BPM", min: 140, max: 999 },
 ];
 
@@ -84,18 +84,18 @@ const GENRE_GRADIENT: Record<string, string> = {
 };
 
 const GENRE_EMOJI: Record<string, string> = {
-  Trap: "🔥",
-  "Hip-Hop": "🎤",
-  "R&B": "💜",
-  Afrobeat: "🌍",
-  Drill: "⚡",
-  Pop: "🌟",
-  Reggaeton: "🌴",
-  "Lo-Fi": "🌙",
-  "Boom Bap": "🥁",
+  Trap: "??",
+  "Hip-Hop": "??",
+  "R&B": "??",
+  Afrobeat: "??",
+  Drill: "?",
+  Pop: "??",
+  Reggaeton: "??",
+  "Lo-Fi": "??",
+  "Boom Bap": "??",
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ------------------------------------------------------------------
 
 function formatDuration(secs?: number | null) {
   if (!secs || isNaN(secs) || !isFinite(secs)) return "0:00";
@@ -107,7 +107,7 @@ function coverSrc(raw: string) {
   return `/uploads/covers/${raw}`;
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// --- Page ---------------------------------------------------------------------
 
 export default function CataloguePage() {
   // Filtres
@@ -146,7 +146,7 @@ export default function CataloguePage() {
       const beat = allBeats.find((b) => b.id === id);
       const url = beat?.previewUrl || beat?.audioUrl || beat?.mainFileUrl;
       if (!url) {
-        alert("Aperçu audio non disponible.");
+        alert("Aper�u audio non disponible.");
         return;
       }
       if (audioRef.current) {
@@ -245,14 +245,14 @@ export default function CataloguePage() {
     setSearchQuery("");
   };
 
-  // Charge TOUS les beats une seule fois — le filtrage se fait entièrement côté client
+  // Charge TOUS les beats une seule fois � le filtrage se fait enti�rement c�t� client
   const { beats: allBeats, loading } = useBeats({});
 
   const activeBeat = useMemo(() => {
     return allBeats.find((b) => b.id === activeBeatId);
   }, [allBeats, activeBeatId]);
 
-  // ── Filtrage + tri 100% client ─────────────────────────────────────────────
+  // -- Filtrage + tri 100% client ---------------------------------------------
   const { beats, total } = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
 
@@ -300,7 +300,7 @@ export default function CataloguePage() {
         return Number(a.basicPrice ?? 0) - Number(b.basicPrice ?? 0);
       if (sortBy === "price_high")
         return Number(b.basicPrice ?? 0) - Number(a.basicPrice ?? 0);
-      // latest (défaut)
+      // latest (d�faut)
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
@@ -315,20 +315,20 @@ export default function CataloguePage() {
     sortBy,
   ]);
 
-  // ─── Render ───────────────────────────────────────────────────────────────
+  // --- Render ---------------------------------------------------------------
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
       <audio ref={audioRef} className="hidden" />
 
-      <main className="pt-20">
-        {/* ── Header (inchangé) ─────────────────────────────────────────── */}
+      <main className="flex-1 pt-20">
+        {/* -- Header (inchang�) ------------------------------------------- */}
         <section className="px-6 py-12 md:py-16">
           <div className="mx-auto max-w-7xl">
             <h1 className="text-4xl md:text-6xl font-bold font-display mb-4">
-              Catalogue <span className="text-gradient">Musical</span> 🎶
+              Catalogue <span className="text-gradient">Musical</span> ??
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl">
               Explorez des milliers de productions premium. Filtrez par genre,
@@ -357,11 +357,11 @@ export default function CataloguePage() {
           </div>
         </section>
 
-        {/* ── Barre de filtres ──────────────────────────────────────────── */}
+        {/* -- Barre de filtres -------------------------------------------- */}
         <section className="px-6 pb-8">
           <div className="mx-auto max-w-7xl">
             <div className="glass rounded-2xl p-4 flex flex-col lg:flex-row gap-4 items-center">
-              {/* Recherche — titre ET artiste */}
+              {/* Recherche � titre ET artiste */}
               <div className="relative flex-1 w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <input
@@ -446,16 +446,16 @@ export default function CataloguePage() {
                     }}
                   >
                     <option value="latest" className="bg-brand-dark">
-                      Plus récents
+                      Plus r�cents
                     </option>
                     <option value="popular" className="bg-brand-dark">
                       Populaires
                     </option>
                     <option value="price_low" className="bg-brand-dark">
-                      Prix ↑
+                      Prix ?
                     </option>
                     <option value="price_high" className="bg-brand-dark">
-                      Prix ↓
+                      Prix ?
                     </option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
@@ -467,7 +467,7 @@ export default function CataloguePage() {
                     onClick={resetFilters}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/15 text-slate-400 text-xs font-semibold hover:border-red-400/50 hover:text-red-400 transition-all"
                   >
-                    <X className="w-3.5 h-3.5" /> Réinitialiser
+                    <X className="w-3.5 h-3.5" /> R�initialiser
                   </button>
                 )}
               </div>
@@ -518,7 +518,7 @@ export default function CataloguePage() {
                 )}
                 {selectedBpm.min !== undefined && (
                   <ActivePill
-                    label={`⚡ ${selectedBpm.label}`}
+                    label={`? ${selectedBpm.label}`}
                     onRemove={() => setSelectedBpm(BPM_RANGES[0])}
                     color="emerald"
                   />
@@ -650,16 +650,16 @@ export default function CataloguePage() {
                       className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pr-9 text-white text-sm focus:outline-none cursor-pointer"
                     >
                       <option value="latest" className="bg-brand-dark">
-                        Plus récents
+                        Plus r�cents
                       </option>
                       <option value="popular" className="bg-brand-dark">
                         Populaires
                       </option>
                       <option value="price_low" className="bg-brand-dark">
-                        Prix ↑
+                        Prix ?
                       </option>
                       <option value="price_high" className="bg-brand-dark">
-                        Prix ↓
+                        Prix ?
                       </option>
                     </select>
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500 pointer-events-none" />
@@ -669,7 +669,7 @@ export default function CataloguePage() {
                       onClick={resetFilters}
                       className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-colors"
                     >
-                      <X className="w-3.5 h-3.5" /> Réinitialiser
+                      <X className="w-3.5 h-3.5" /> R�initialiser
                     </button>
                   )}
                 </div>
@@ -678,14 +678,14 @@ export default function CataloguePage() {
           </div>
         </section>
 
-        {/* ── Résultats ─────────────────────────────────────────────────── */}
+        {/* -- R�sultats --------------------------------------------------- */}
         <section className="px-6 pb-24">
           <div className="mx-auto max-w-7xl">
             <div className="flex items-center justify-between mb-6">
               <p className="text-slate-400 text-sm">
                 {loading
                   ? "Chargement..."
-                  : `${typeof total === "number" ? total : 0} résultat${(typeof total === "number" ? total : 0) !== 1 ? "s" : ""}`}
+                  : `${typeof total === "number" ? total : 0} r�sultat${(typeof total === "number" ? total : 0) !== 1 ? "s" : ""}`}
                 {searchQuery && !loading && (
                   <span className="text-slate-600 ml-1">
                     pour <span className="text-white/70">"{searchQuery}"</span>
@@ -729,11 +729,11 @@ export default function CataloguePage() {
               </div>
             ) : beats.length === 0 ? (
               <div className="glass rounded-3xl p-12 text-center">
-                <div className="text-6xl mb-4">🎵</div>
-                <p className="text-xl text-slate-400">Aucun beat trouvé</p>
+                <div className="text-6xl mb-4">??</div>
+                <p className="text-xl text-slate-400">Aucun beat trouv�</p>
                 <p className="text-sm text-slate-500 mt-2">
                   {searchQuery
-                    ? `Aucun résultat pour "${searchQuery}" — essayez un autre nom ou titre`
+                    ? `Aucun r�sultat pour "${searchQuery}" � essayez un autre nom ou titre`
                     : "Essayez de modifier vos filtres"}
                 </p>
                 {(activeFilterCount > 0 || searchQuery) && (
@@ -741,12 +741,12 @@ export default function CataloguePage() {
                     onClick={resetFilters}
                     className="mt-5 px-5 py-2.5 rounded-xl bg-brand-gold text-slate-900 text-sm font-black hover:brightness-110 transition-all"
                   >
-                    Réinitialiser
+                    R�initialiser
                   </button>
                 )}
               </div>
             ) : viewMode === "grid" ? (
-              /* ── Vue Grille (inchangée) ── */
+              /* -- Vue Grille (inchang�e) -- */
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {beats.map((beat) => {
                   const genre0 = beat.genre?.[0] ?? "";
@@ -754,7 +754,7 @@ export default function CataloguePage() {
                   const gradient =
                     GENRE_GRADIENT[genre0] ??
                     "from-brand-purple/30 to-brand-pink/25";
-                  const emoji = GENRE_EMOJI[genre0] ?? "🎵";
+                  const emoji = GENRE_EMOJI[genre0] ?? "??";
                   const isLiked = likedIds.has(beat.id);
                   const isActive = activeBeatId === beat.id;
                   const isPlaying = isActive && isPlayingAudio;
@@ -824,13 +824,13 @@ export default function CataloguePage() {
                         {beat.bpm && <span>{beat.bpm} BPM</span>}
                         {beat.key && (
                           <>
-                            <span className="text-slate-700">·</span>
+                            <span className="text-slate-700">�</span>
                             <span>{beat.key}</span>
                           </>
                         )}
                         {duration && (
                           <>
-                            <span className="text-slate-700">·</span>
+                            <span className="text-slate-700">�</span>
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {duration}
@@ -839,14 +839,14 @@ export default function CataloguePage() {
                         )}
                         {mood0 && (
                           <>
-                            <span className="text-slate-700">·</span>
+                            <span className="text-slate-700">�</span>
                             <span>{mood0}</span>
                           </>
                         )}
                       </div>
                       <div className="flex items-center justify-between pt-3 border-t border-white/10">
                         <span className="text-brand-gold font-bold text-sm">
-                          {Number(beat.basicPrice ?? 0).toFixed(2)}€
+                          {Number(beat.basicPrice ?? 0).toFixed(2)}�
                         </span>
                         <div className="flex items-center gap-2">
                           <button
@@ -869,7 +869,7 @@ export default function CataloguePage() {
                 })}
               </div>
             ) : (
-              /* ── Vue Liste (inchangée) ── */
+              /* -- Vue Liste (inchang�e) -- */
               <div className="space-y-3">
                 {beats.map((beat) => {
                   const genre0 = beat.genre?.[0] ?? "";
@@ -946,7 +946,7 @@ export default function CataloguePage() {
                       </button>
 
                       <div className="text-brand-gold font-bold text-sm flex-shrink-0">
-                        {Number(beat.basicPrice ?? 0).toFixed(2)}€
+                        {Number(beat.basicPrice ?? 0).toFixed(2)}�
                       </div>
 
                       <button className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 flex-shrink-0">
@@ -963,7 +963,7 @@ export default function CataloguePage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
+          � 2026 SUMVIBES by SAS BE GREAT. Tous droits r�serv�s.
         </div>
       </footer>
 
@@ -974,7 +974,7 @@ export default function CataloguePage() {
         }
       `}</style>
 
-      {/* ── Player flottant type Spotify ── */}
+      {/* -- Player flottant type Spotify -- */}
       {activeBeat && (
         <div className="fixed bottom-0 left-0 right-0 glass z-50 border-t border-brand-gold/10 backdrop-blur-xl bg-[#0a0a0f]/95 animate-in slide-in-from-bottom-5">
           <div className="mx-auto max-w-[1400px] px-4 py-3 flex items-center justify-between h-20">
@@ -1004,7 +1004,7 @@ export default function CataloguePage() {
               </button>
             </div>
 
-            {/* Ligne 2 : Contrôles de lecture & Barre de progression */}
+            {/* Ligne 2 : Contr�les de lecture & Barre de progression */}
             <div className="flex flex-col items-center justify-center gap-1.5 w-1/3 max-w-[600px]">
               <div className="flex items-center gap-5">
                 <button
@@ -1078,7 +1078,7 @@ export default function CataloguePage() {
 
               <div className="flex items-center gap-3">
                 <div className="text-xs font-bold text-brand-gold hidden sm:block">
-                  {Number(activeBeat.basicPrice ?? 0).toFixed(2)}€
+                  {Number(activeBeat.basicPrice ?? 0).toFixed(2)}�
                 </div>
                 <button className="btn-primary p-2 rounded-lg text-xs font-semibold flex items-center justify-center hover:scale-105 transition-transform">
                   <ShoppingCart className="w-4 h-4" />
@@ -1093,7 +1093,7 @@ export default function CataloguePage() {
   );
 }
 
-// ─── Composants locaux ────────────────────────────────────────────────────────
+// --- Composants locaux --------------------------------------------------------
 
 function SelectFilter({
   value,

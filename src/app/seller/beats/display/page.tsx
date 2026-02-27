@@ -1019,7 +1019,7 @@ export default function SellerBeatsPage() {
     return (
       <div className="min-h-screen bg-gradient-premium">
         <Navbar />
-        <main className="pt-28 flex flex-col items-center gap-4 text-center px-4">
+        <main className="flex-1 pt-28 flex flex-col items-center gap-4 text-center px-4">
           <div className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-amber-400" />
           </div>
@@ -1040,7 +1040,7 @@ export default function SellerBeatsPage() {
     return (
       <div className="min-h-screen bg-gradient-premium">
         <Navbar />
-        <main className="pt-28 flex flex-col items-center gap-3 text-center px-4">
+        <main className="flex-1 pt-28 flex flex-col items-center gap-3 text-center px-4">
           <div className="w-16 h-16 rounded-2xl bg-red-400/10 border border-red-400/25 flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-red-400" />
           </div>
@@ -1073,7 +1073,7 @@ export default function SellerBeatsPage() {
         />
       )}
 
-      <main className="pt-24 pb-20 px-4 max-w-4xl mx-auto">
+      <main className="flex-1 pt-24 pb-20 px-4 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>

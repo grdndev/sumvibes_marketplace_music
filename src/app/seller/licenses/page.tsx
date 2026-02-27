@@ -14,10 +14,10 @@ const defaultLicenses = [
     format: "MP3",
     streams: "50 000",
     distribution: "2 plateformes",
-    credits: "CrÃ©dit obligatoire",
+    credits: "Crédit obligatoire",
     exclusive: false,
-    description: "IdÃ©ale pour les artistes indÃ©pendants qui dÃ©butent. Usage non-commercial.",
-    features: ["Fichier MP3 haute qualitÃ©", "3 tÃ©lÃ©chargements", "50 000 streams max", "Usage non-commercial", "CrÃ©dit producteur obligatoire"],
+    description: "Idéale pour les artistes indépendants qui débutent. Usage non-commercial.",
+    features: ["Fichier MP3 haute qualité", "3 téléchargements", "50 000 streams max", "Usage non-commercial", "Crédit producteur obligatoire"],
   },
   {
     id: 2,
@@ -27,10 +27,10 @@ const defaultLicenses = [
     format: "WAV + MP3",
     streams: "500 000",
     distribution: "Toutes plateformes",
-    credits: "CrÃ©dit recommandÃ©",
+    credits: "Crédit recommandé",
     exclusive: false,
-    description: "Pour les projets sÃ©rieux avec distribution commerciale.",
-    features: ["Fichiers WAV + MP3", "5 tÃ©lÃ©chargements", "500 000 streams max", "Usage commercial autorisÃ©", "Distribution sur toutes les plateformes", "CrÃ©dit producteur recommandÃ©"],
+    description: "Pour les projets sérieux avec distribution commerciale.",
+    features: ["Fichiers WAV + MP3", "5 téléchargements", "500 000 streams max", "Usage commercial autorisé", "Distribution sur toutes les plateformes", "Crédit producteur recommandé"],
   },
   {
     id: 3,
@@ -38,12 +38,12 @@ const defaultLicenses = [
     active: true,
     price: 199.99,
     format: "WAV + Stems + Projet",
-    streams: "IllimitÃ©",
+    streams: "Illimité",
     distribution: "Toutes plateformes",
     credits: "Non obligatoire",
     exclusive: true,
-    description: "Droits complets et exclusifs. Le beat est retirÃ© du catalogue aprÃ¨s achat.",
-    features: ["WAV + Stems + Fichier projet", "TÃ©lÃ©chargements illimitÃ©s", "Streams illimitÃ©s", "Droits complets transfÃ©rÃ©s", "Beat retirÃ© du catalogue", "Aucun crÃ©dit obligatoire"],
+    description: "Droits complets et exclusifs. Le beat est retiré du catalogue après achat.",
+    features: ["WAV + Stems + Fichier projet", "Téléchargements illimités", "Streams illimités", "Droits complets transférés", "Beat retiré du catalogue", "Aucun crédit obligatoire"],
   },
 ];
 
@@ -71,10 +71,10 @@ export default function SellerLicensesPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <Link href="/seller/dashboard" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-6">
             <ChevronLeft className="w-5 h-5" /> Retour au dashboard
@@ -86,13 +86,13 @@ export default function SellerLicensesPage() {
               <p className="text-slate-400 mt-2">Configurez vos types de licences et tarifs</p>
             </div>
             <button className="glass px-6 py-3 rounded-full font-semibold hover:bg-white/10 flex items-center gap-2 self-start">
-              <Plus className="w-5 h-5" /> Licence personnalisÃ©e
+              <Plus className="w-5 h-5" /> Licence personnalisée
             </button>
           </div>
 
           {saved && (
             <div className="glass rounded-xl p-4 mb-6 border border-green-500/20 bg-green-500/5 text-green-400 text-sm font-semibold flex items-center gap-2">
-              <CheckCircle className="w-5 h-5" /> Licences mises Ã  jour avec succÃ¨s !
+              <CheckCircle className="w-5 h-5" /> Licences mises à jour avec succès !
             </div>
           )}
 
@@ -103,8 +103,8 @@ export default function SellerLicensesPage() {
               <div>
                 <h3 className="font-bold text-sm text-brand-gold mb-1">Commission SUMVIBES</h3>
                 <p className="text-sm text-slate-300">
-                  SUMVIBES prÃ©lÃ¨ve une commission de <span className="text-brand-gold font-bold">15%</span> sur chaque vente.
-                  Le reste vous est intÃ©gralement reversÃ©. Les retraits sont possibles Ã  partir de 50â‚¬.
+                  SUMVIBES prélève une commission de <span className="text-brand-gold font-bold">15%</span> sur chaque vente.
+                  Le reste vous est intégralement reversé. Les retraits sont possibles à partir de 50€.
                 </p>
               </div>
             </div>
@@ -147,18 +147,18 @@ export default function SellerLicensesPage() {
                         className="w-24 px-3 py-2 bg-white/5 border border-brand-gold/50 rounded-lg text-white text-xl font-bold focus:outline-none"
                         step="0.01"
                       />
-                      <span className="text-slate-400">â‚¬</span>
+                      <span className="text-slate-400">€</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <span className="text-3xl font-bold text-gradient">{license.price}â‚¬</span>
+                      <span className="text-3xl font-bold text-gradient">{license.price}€</span>
                       <button onClick={() => setEditingId(license.id)} className="glass p-1.5 rounded-lg hover:bg-white/10">
                         <Edit className="w-4 h-4 text-slate-400" />
                       </button>
                     </div>
                   )}
                   <p className="text-xs text-slate-400 mt-1">
-                    Net aprÃ¨s commission : <span className="text-white font-bold">{(license.price * 0.85).toFixed(2)}â‚¬</span>
+                    Net après commission : <span className="text-white font-bold">{(license.price * 0.85).toFixed(2)}€</span>
                   </p>
                 </div>
 
@@ -180,7 +180,7 @@ export default function SellerLicensesPage() {
                   <div className="flex justify-between"><span>Format:</span> <span className="text-white">{license.format}</span></div>
                   <div className="flex justify-between"><span>Streams:</span> <span className="text-white">{license.streams}</span></div>
                   <div className="flex justify-between"><span>Distribution:</span> <span className="text-white">{license.distribution}</span></div>
-                  <div className="flex justify-between"><span>CrÃ©dits:</span> <span className="text-white">{license.credits}</span></div>
+                  <div className="flex justify-between"><span>Crédits:</span> <span className="text-white">{license.credits}</span></div>
                 </div>
 
                 {editingId === license.id && (
@@ -200,9 +200,9 @@ export default function SellerLicensesPage() {
           {/* Custom License Section */}
           <div className="glass rounded-3xl p-8 border-2 border-dashed border-white/10 text-center">
             <FileText className="w-12 h-12 text-brand-gold mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">CrÃ©er une licence personnalisÃ©e</h3>
+            <h3 className="text-xl font-bold mb-2">Créer une licence personnalisée</h3>
             <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-              DÃ©finissez des termes spÃ©cifiques pour rÃ©pondre aux besoins particuliers de vos clients. IdÃ©al pour les collaborations sur mesure.
+              Définissez des termes spécifiques pour répondre aux besoins particuliers de vos clients. Idéal pour les collaborations sur mesure.
             </p>
             <button className="btn-primary px-6 py-3 rounded-full font-semibold flex items-center gap-2 mx-auto">
               <Plus className="w-5 h-5" /> Nouvelle licence
@@ -213,7 +213,7 @@ export default function SellerLicensesPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

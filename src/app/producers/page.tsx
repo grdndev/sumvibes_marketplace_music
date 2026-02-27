@@ -36,18 +36,18 @@ export default function ProducersPage() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="px-6 py-12 md:py-16">
           <div className="mx-auto max-w-7xl">
             <h1 className="text-4xl md:text-6xl font-bold font-display mb-4">
-              Nos <span className="text-gradient">Producteurs</span> ðŸŽ¹
+              Nos <span className="text-gradient">Producteurs</span> ??
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl">
-              DÃ©couvrez les talents qui font vivre SUMVIBES. Des compositeurs
-              passionnÃ©s, vÃ©rifiÃ©s et prÃªts Ã  collaborer.
+              Découvrez les talents qui font vivre SUMVIBES. Des compositeurs
+              passionnés, vérifiés et prêts à collaborer.
             </p>
           </div>
         </section>
@@ -106,10 +106,10 @@ export default function ProducersPage() {
               <div className="text-center py-20">
                 <Music className="w-16 h-16 mx-auto mb-4 text-slate-600" />
                 <h3 className="text-xl font-bold mb-2">
-                  Aucun producteur trouvÃ©
+                  Aucun producteur trouvé
                 </h3>
                 <p className="text-slate-400">
-                  Essayez de modifier vos critÃ¨res de recherche
+                  Essayez de modifier vos critères de recherche
                 </p>
               </div>
             ) : (
@@ -143,9 +143,9 @@ export default function ProducersPage() {
                             {producer.user?.displayName ||
                               producer.user?.username}
                           </h3>
-                          {/* VÃ©rification si besoin : {producer.isVerified && ...} */}
+                          {/* Vérification si besoin : {producer.isVerified && ...} */}
                         </div>
-                        {/* Note : rating/isVerified Ã  adapter si tu veux les afficher depuis SellerProfile */}
+                        {/* Note : rating/isVerified à adapter si tu veux les afficher depuis SellerProfile */}
                       </div>
                     </div>
 
@@ -180,7 +180,7 @@ export default function ProducersPage() {
                             onClick={(e) => toggleExpandGenres(e, producer.id)}
                             className="glass px-3 py-1 rounded-full text-xs text-brand-gold hover:bg-white/10 transition-colors"
                           >
-                            RÃ©duire
+                            Réduire
                           </button>
                         )}
                       </div>
@@ -219,7 +219,7 @@ export default function ProducersPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

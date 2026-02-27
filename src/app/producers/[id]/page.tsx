@@ -89,7 +89,7 @@ export default function ProducerProfilePage({
 
   if (loading)
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
         <main className="pt-20 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
@@ -99,7 +99,7 @@ export default function ProducerProfilePage({
 
   if (error || !producer)
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
         <main className="pt-20 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
@@ -128,9 +128,9 @@ export default function ProducerProfilePage({
   const totalPlays = beats.reduce((s, b) => s + b.plays, 0);
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-6">
           <Link
             href="/producers"

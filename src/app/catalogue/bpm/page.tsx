@@ -8,13 +8,13 @@ import { useBeats } from "@/hooks/useBeats";
 import { useCart } from "@/hooks/useCart";
 
 const bpmRangesBase = [
-  { id: "60-80", label: "60-80 BPM", description: "Ballades, Lo-Fi, Chill", emoji: "ðŸŒ™", min: 60, max: 79 },
-  { id: "80-100", label: "80-100 BPM", description: "R&B, Soul, Reggaeton", emoji: "ðŸ’œ", min: 80, max: 99 },
-  { id: "100-120", label: "100-120 BPM", description: "Pop, Dancehall, Afrobeat", emoji: "ðŸŒŸ", min: 100, max: 119 },
-  { id: "120-140", label: "120-140 BPM", description: "House, Ã‰lectro, Dance", emoji: "ðŸ’¿", min: 120, max: 139 },
-  { id: "140-160", label: "140-160 BPM", description: "Trap, Drill, Hip-Hop", emoji: "ðŸ”¥", min: 140, max: 159 },
-  { id: "160-180", label: "160-180 BPM", description: "Drum & Bass, Jungle", emoji: "âš¡", min: 160, max: 179 },
-  { id: "180+", label: "180+ BPM", description: "Hardstyle, Speedcore", emoji: "ðŸš€", min: 180, max: 999 },
+  { id: "60-80", label: "60-80 BPM", description: "Ballades, Lo-Fi, Chill", emoji: "??", min: 60, max: 79 },
+  { id: "80-100", label: "80-100 BPM", description: "R&B, Soul, Reggaeton", emoji: "??", min: 80, max: 99 },
+  { id: "100-120", label: "100-120 BPM", description: "Pop, Dancehall, Afrobeat", emoji: "??", min: 100, max: 119 },
+  { id: "120-140", label: "120-140 BPM", description: "House, Électro, Dance", emoji: "??", min: 120, max: 139 },
+  { id: "140-160", label: "140-160 BPM", description: "Trap, Drill, Hip-Hop", emoji: "??", min: 140, max: 159 },
+  { id: "160-180", label: "160-180 BPM", description: "Drum & Bass, Jungle", emoji: "?", min: 160, max: 179 },
+  { id: "180+", label: "180+ BPM", description: "Hardstyle, Speedcore", emoji: "??", min: 180, max: 999 },
 ];
 
 export default function BpmPage() {
@@ -33,10 +33,10 @@ export default function BpmPage() {
     : [];
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <Link href="/catalogue" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-6">
             <ChevronLeft className="w-5 h-5" /> Retour au catalogue
@@ -110,16 +110,16 @@ export default function BpmPage() {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link href={`/product/${beat.slug}`} className="font-bold text-sm hover:text-brand-gold">{beat.title}</Link>
-                        <p className="text-xs text-slate-400">{beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || beat.seller?.username || "â€”"}</p>
+                        <p className="text-xs text-slate-400">{beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || beat.seller?.username || "—"}</p>
                       </div>
                       <div className="hidden md:flex items-center gap-6 text-xs text-slate-400">
                         <span className="text-brand-gold font-bold">{beat.bpm} BPM</span>
                         {beat.genre?.[0] && <span className="glass px-2 py-0.5 rounded-full">{beat.genre[0]}</span>}
                         {beat.key && <span>{beat.key}</span>}
-                        {beat.duration ? <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.floor(beat.duration / 60)}:{String(beat.duration % 60).padStart(2, "0")}</span> : <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> â€”</span>}
+                        {beat.duration ? <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.floor(beat.duration / 60)}:{String(beat.duration % 60).padStart(2, "0")}</span> : <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> —</span>}
                       </div>
                       <button className="glass p-2 rounded-lg hover:bg-white/10"><Heart className="w-4 h-4" /></button>
-                      <div className="text-brand-gold font-bold text-sm">{Number(beat.basicPrice ?? beat.premiumPrice ?? 0).toFixed(2)}â‚¬</div>
+                      <div className="text-brand-gold font-bold text-sm">{Number(beat.basicPrice ?? beat.premiumPrice ?? 0).toFixed(2)}€</div>
                       <button onClick={() => addToCart(beat.id, "basic")} className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1">
                         <ShoppingCart className="w-4 h-4" /> Ajouter
                       </button>
@@ -139,9 +139,9 @@ export default function BpmPage() {
 
           {!selectedRange && (
             <div className="glass rounded-3xl p-12 text-center">
-              <div className="text-6xl mb-4">ðŸŽµ</div>
-              <h3 className="text-xl font-bold mb-2">SÃ©lectionnez une plage de BPM</h3>
-              <p className="text-slate-400">Cliquez sur un tempo ci-dessus pour dÃ©couvrir les beats disponibles.</p>
+              <div className="text-6xl mb-4">??</div>
+              <h3 className="text-xl font-bold mb-2">Sélectionnez une plage de BPM</h3>
+              <p className="text-slate-400">Cliquez sur un tempo ci-dessus pour découvrir les beats disponibles.</p>
             </div>
           )}
         </div>
@@ -149,7 +149,7 @@ export default function BpmPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

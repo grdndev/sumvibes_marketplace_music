@@ -50,11 +50,11 @@ export default function RegisterPage() {
       return;
     }
     if (formData.password.length < 8) {
-      setError("Le mot de passe doit contenir au moins 8 caractÃ¨res.");
+      setError("Le mot de passe doit contenir au moins 8 caractères.");
       return;
     }
     if (!formData.gdprConsent) {
-      setError("Vous devez accepter les conditions gÃ©nÃ©rales.");
+      setError("Vous devez accepter les conditions générales.");
       return;
     }
 
@@ -88,16 +88,16 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-2xl px-6 py-12">
           <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient mb-4">
-              CrÃ©er un compte
+              Créer un compte
             </h1>
-            <p className="text-slate-300">Rejoignez la communautÃ© SUMVIBES</p>
+            <p className="text-slate-300">Rejoignez la communauté SUMVIBES</p>
           </div>
 
           {/* Role Selection */}
@@ -152,7 +152,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                  PrÃ©nom
+                  Prénom
                 </label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -162,7 +162,7 @@ export default function RegisterPage() {
                     value={formData.firstName}
                     onChange={handleChange}
                     required
-                    placeholder="Votre prÃ©nom"
+                    placeholder="Votre prénom"
                     className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                   />
                 </div>
@@ -250,7 +250,7 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                     className="w-full pl-12 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                   />
                   <button
@@ -266,7 +266,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Minimum 8 caractÃ¨res
+                  Minimum 8 caractères
                 </p>
               </div>
               <div>
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                     className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                   />
                 </div>
@@ -301,17 +301,17 @@ export default function RegisterPage() {
                 <span className="text-sm text-slate-400">
                   J&apos;accepte les{" "}
                   <Link href="/cgv" className="text-brand-gold hover:underline">
-                    Conditions GÃ©nÃ©rales de Vente
+                    Conditions Générales de Vente
                   </Link>{" "}
                   et la{" "}
                   <Link
                     href="/privacy"
                     className="text-brand-gold hover:underline"
                   >
-                    Politique de ConfidentialitÃ©
+                    Politique de Confidentialité
                   </Link>
-                  . ConformÃ©ment au RGPD, vos donnÃ©es sont traitÃ©es de maniÃ¨re
-                  sÃ©curisÃ©e.
+                  . Conformément au RGPD, vos données sont traitées de manière
+                  sécurisée.
                 </span>
               </label>
             </div>
@@ -325,13 +325,13 @@ export default function RegisterPage() {
                 "Inscription en cours..."
               ) : (
                 <>
-                  CrÃ©er mon compte <ArrowRight className="w-5 h-5" />
+                  Créer mon compte <ArrowRight className="w-5 h-5" />
                 </>
               )}
             </button>
 
             <p className="text-center text-sm text-slate-400 mt-6">
-              DÃ©jÃ  un compte ?{" "}
+              Déjà un compte ?{" "}
               <Link
                 href="/login"
                 className="text-brand-gold hover:underline font-semibold"
@@ -348,10 +348,10 @@ export default function RegisterPage() {
             </h3>
             <div className="space-y-3">
               {[
-                "AccÃ¨s Ã  des milliers de beats de qualitÃ© professionnelle",
-                "CommunautÃ© active de producteurs et artistes",
-                "Paiements sÃ©curisÃ©s et licences claires",
-                "Support rÃ©actif et accompagnement personnalisÃ©",
+                "Accès à des milliers de beats de qualité professionnelle",
+                "Communauté active de producteurs et artistes",
+                "Paiements sécurisés et licences claires",
+                "Support réactif et accompagnement personnalisé",
               ].map((benefit, i) => (
                 <div
                   key={i}
@@ -368,7 +368,7 @@ export default function RegisterPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

@@ -68,13 +68,13 @@ export default function AdminPage() {
   };
 
   if (!user || user.role !== "ADMIN") return (
-    <div className="relative min-h-screen bg-gradient-premium"><Navbar />
-      <main className="pt-20 flex items-center justify-center min-h-[60vh]">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium"><Navbar />
+      <main className="flex-1 pt-20 flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">AccÃ¨s refusÃ©</h2>
-          <p className="text-slate-400">Cette page est rÃ©servÃ©e aux administrateurs.</p>
-          <Link href="/" className="btn-primary px-6 py-3 rounded-full mt-4 inline-block">Retour Ã  l'accueil</Link>
+          <h2 className="text-2xl font-bold mb-2">Accès refusé</h2>
+          <p className="text-slate-400">Cette page est réservée aux administrateurs.</p>
+          <Link href="/" className="btn-primary px-6 py-3 rounded-full mt-4 inline-block">Retour à l'accueil</Link>
         </div>
       </main>
     </div>
@@ -84,8 +84,8 @@ export default function AdminPage() {
   const period = adminStats?.period;
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium"><Navbar />
-      <main className="pt-20">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium"><Navbar />
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
@@ -114,9 +114,9 @@ export default function AdminPage() {
                 <div className="space-y-8">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                      { label: "Utilisateurs", value: overview?.totalUsers?.toLocaleString() ?? "â€”", icon: Users, color: "text-blue-400" },
-                      { label: "Beats publiÃ©s", value: overview?.totalBeats?.toLocaleString() ?? "â€”", icon: Music, color: "text-brand-gold" },
-                      { label: "Revenus plateforme", value: overview?.totalRevenue ? `${Number(overview.totalRevenue).toFixed(0)}â‚¬` : "â€”", icon: DollarSign, color: "text-green-400" },
+                      { label: "Utilisateurs", value: overview?.totalUsers?.toLocaleString() ?? "—", icon: Users, color: "text-blue-400" },
+                      { label: "Beats publiés", value: overview?.totalBeats?.toLocaleString() ?? "—", icon: Music, color: "text-brand-gold" },
+                      { label: "Revenus plateforme", value: overview?.totalRevenue ? `${Number(overview.totalRevenue).toFixed(0)}€` : "—", icon: DollarSign, color: "text-green-400" },
                       { label: "Beats en attente", value: pendingBeats.length.toString(), icon: Clock, color: "text-yellow-400" },
                     ].map(s => (
                       <div key={s.label} className="glass rounded-2xl p-6">
@@ -133,7 +133,7 @@ export default function AdminPage() {
                         <Clock className="w-5 h-5 text-yellow-400" /> Beats en attente ({pendingBeats.length})
                       </h3>
                       {pendingBeats.length === 0 ? (
-                        <p className="text-slate-500 text-sm">Aucun beat en attente de modÃ©ration</p>
+                        <p className="text-slate-500 text-sm">Aucun beat en attente de modération</p>
                       ) : (
                         <div className="space-y-3">
                           {pendingBeats.map(beat => (
@@ -141,7 +141,7 @@ export default function AdminPage() {
                               <div className="flex-1 min-w-0">
                                 <div className="font-semibold text-sm truncate">{beat.title}</div>
                                 <div className="text-xs text-slate-400">
-                                  {beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || "â€”"} Â· {beat.genre?.[0]}
+                                  {beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || "—"} · {beat.genre?.[0]}
                                 </div>
                               </div>
                               <div className="flex gap-1">
@@ -167,7 +167,7 @@ export default function AdminPage() {
                       {period ? (
                         <div className="space-y-4">
                           {[
-                            { label: "Revenus", val: `${Number(period.revenue ?? 0).toFixed(2)} â‚¬`, color: "text-green-400" },
+                            { label: "Revenus", val: `${Number(period.revenue ?? 0).toFixed(2)} €`, color: "text-green-400" },
                             { label: "Ventes", val: period.sales ?? 0, color: "text-brand-gold" },
                             { label: "Nouveaux utilisateurs", val: period.newUsers ?? 0, color: "text-blue-400" },
                             { label: "Nouveaux beats", val: period.newBeats ?? 0, color: "text-purple-400" },
@@ -178,7 +178,7 @@ export default function AdminPage() {
                             </div>
                           ))}
                         </div>
-                      ) : <p className="text-slate-500 text-sm">DonnÃ©es non disponibles</p>}
+                      ) : <p className="text-slate-500 text-sm">Données non disponibles</p>}
                     </div>
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function AdminPage() {
                     </div>
                     <select value={userRole} onChange={e => setUserRole(e.target.value)}
                       className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none">
-                      <option value="all">Tous les rÃ´les</option>
+                      <option value="all">Tous les rôles</option>
                       <option value="BUYER">Acheteurs</option>
                       <option value="SELLER">Vendeurs</option>
                       <option value="ADMIN">Admins</option>
@@ -210,14 +210,14 @@ export default function AdminPage() {
                       <thead>
                         <tr className="text-left text-sm text-slate-400 border-b border-white/10">
                           <th className="p-4 font-semibold">Utilisateur</th>
-                          <th className="p-4 font-semibold">RÃ´le</th>
+                          <th className="p-4 font-semibold">Rôle</th>
                           <th className="p-4 font-semibold">Inscrit</th>
                           <th className="p-4 font-semibold">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {users.length === 0 ? (
-                          <tr><td colSpan={4} className="p-8 text-center text-slate-500">Aucun utilisateur trouvÃ©</td></tr>
+                          <tr><td colSpan={4} className="p-8 text-center text-slate-500">Aucun utilisateur trouvé</td></tr>
                         ) : users.map(u => (
                           <tr key={u.id} className="border-b border-white/5 text-sm hover:bg-white/5">
                             <td className="p-4">
@@ -247,7 +247,7 @@ export default function AdminPage() {
 
               {activeTab === "beats" && (
                 <div>
-                  <h2 className="text-xl font-bold font-display mb-4">Beats en attente de modÃ©ration</h2>
+                  <h2 className="text-xl font-bold font-display mb-4">Beats en attente de modération</h2>
                   {pendingBeats.length === 0 ? (
                     <div className="glass rounded-2xl p-12 text-center">
                       <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
@@ -263,7 +263,7 @@ export default function AdminPage() {
                           <div className="flex-1 min-w-0">
                             <div className="font-bold">{beat.title}</div>
                             <div className="text-sm text-slate-400">
-                              {beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || "â€”"} Â· {beat.genre?.[0]} Â· {beat.bpm} BPM
+                              {beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || "—"} · {beat.genre?.[0]} · {beat.bpm} BPM
                             </div>
                             <div className="text-xs text-slate-500 mt-1">{new Date(beat.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</div>
                           </div>
@@ -291,9 +291,9 @@ export default function AdminPage() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
-                      { label: "Revenus totaux", val: overview?.totalRevenue ? `${Number(overview.totalRevenue).toFixed(2)} â‚¬` : "â€”", icon: DollarSign, color: "text-green-400" },
-                      { label: "Ventes totales", val: overview?.totalSales?.toLocaleString() ?? "â€”", icon: ShoppingCart, color: "text-brand-gold" },
-                      { label: "Commission (15%)", val: overview?.totalRevenue ? `${(Number(overview.totalRevenue) * 0.15).toFixed(2)} â‚¬` : "â€”", icon: TrendingUp, color: "text-purple-400" },
+                      { label: "Revenus totaux", val: overview?.totalRevenue ? `${Number(overview.totalRevenue).toFixed(2)} €` : "—", icon: DollarSign, color: "text-green-400" },
+                      { label: "Ventes totales", val: overview?.totalSales?.toLocaleString() ?? "—", icon: ShoppingCart, color: "text-brand-gold" },
+                      { label: "Commission (15%)", val: overview?.totalRevenue ? `${(Number(overview.totalRevenue) * 0.15).toFixed(2)} €` : "—", icon: TrendingUp, color: "text-purple-400" },
                     ].map(s => (
                       <div key={s.label} className="glass rounded-2xl p-6">
                         <s.icon className={`w-8 h-8 ${s.color} mb-3`} />
@@ -313,7 +313,7 @@ export default function AdminPage() {
         </div>
       </main>
       <footer className="border-t border-white/10 px-6 py-8">
-        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">Â© 2026 SUMVIBES by SAS BE GREAT.</div>
+        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">© 2026 SUMVIBES by SAS BE GREAT.</div>
       </footer>
     </div>
   );

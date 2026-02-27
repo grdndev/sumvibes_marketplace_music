@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
@@ -7,10 +8,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
     const search = searchParams.get("search");
+    const sort = searchParams.get("sort") || "latest";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
-    const where: any = {};
+    const where: Prisma.ForumPostWhereInput = { status: "PUBLISHED" };
 
     if (category) {
       where.category = category;
@@ -22,6 +24,17 @@ export async function GET(req: NextRequest) {
         { content: { contains: search, mode: "insensitive" } },
       ];
     }
+
+    // Prisma orderBy: for relation counts use _count syntax
+    type OrderBy = Record<string, string | object>;
+    const sortOrder: OrderBy[] = [
+      { pinned: "desc" },
+      ...(sort === "popular"
+        ? [{ likes: "desc" }]
+        : sort === "trending"
+        ? [{ _count: { comments: "desc" } }]
+        : [{ createdAt: "desc" }]),
+    ];
 
     const [posts, total] = await Promise.all([
       prisma.forumPost.findMany({
@@ -41,7 +54,7 @@ export async function GET(req: NextRequest) {
             select: { comments: true },
           },
         },
-        orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+        orderBy: sortOrder,
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -86,9 +99,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (title.trim().length > 200) {
+      return NextResponse.json(
+        { error: "Le titre ne peut pas dépasser 200 caractères" },
+        { status: 400 }
+      );
+    }
+
     if (!content || content.trim().length < 20) {
       return NextResponse.json(
         { error: "Le contenu doit contenir au moins 20 caractères" },
+        { status: 400 }
+      );
+    }
+
+    if (content.trim().length > 10000) {
+      return NextResponse.json(
+        { error: "Le contenu ne peut pas dépasser 10 000 caractères" },
         { status: 400 }
       );
     }

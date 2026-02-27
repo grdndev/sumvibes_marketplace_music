@@ -20,7 +20,7 @@ type NextApiResponseWithSocket = {
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
   if (!res.socket.server.io) {
-    console.log("[SOCKET SERVER] Initializing Socket.IO server...");
+ 
     const io = new ServerIO(res.socket.server as NetServer, {
       path: "/api/socket/io",
       addTrailingSlash: false,
@@ -31,12 +31,12 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
     res.socket.server.io = io;
 
     io.on("connection", (socket) => {
-      console.log(`[SOCKET SERVER] Client connected: ${socket.id}`);
+      
 
       socket.on("join-room", (userId: string) => {
         socket.join(userId);
         // Liste les rooms actuelles de ce socket
-        console.log(`[SOCKET SERVER] ${socket.id} joined room "${userId}". Rooms: ${[...socket.rooms].join(", ")}`);
+       
       });
 
       socket.on("send-message", async (data: unknown) => {
@@ -81,11 +81,11 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
       );
 
       socket.on("disconnect", (reason) => {
-        console.log(`[SOCKET SERVER] Client disconnected: ${socket.id} (${reason})`);
+        
       });
     });
   } else {
-    console.log("[SOCKET SERVER] Socket.IO already initialized.");
+ 
   }
 
   res.end();

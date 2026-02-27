@@ -99,14 +99,14 @@ export default function AccountPage() {
     { label: "Achats", value: stats.totalPurchases.toString(), icon: ShoppingBag, color: "text-brand-gold" },
     { label: "Downloads", value: stats.totalDownloads.toString(), icon: Download, color: "text-green-400" },
     { label: "Favoris", value: stats.totalFavorites.toString(), icon: Heart, color: "text-red-400" },
-    { label: "DÃ©pensÃ©", value: `${stats.totalSpent.toFixed(0)}â‚¬`, icon: CreditCard, color: "text-blue-400" },
+    { label: "Dépensé", value: `${stats.totalSpent.toFixed(0)}€`, icon: CreditCard, color: "text-blue-400" },
   ];
 
   if (!user) {
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
-        <main className="pt-20 flex items-center justify-center min-h-screen">
+        <main className="flex-1 pt-20 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Connexion requise</h1>
             <Link href="/login" className="btn-primary px-8 py-3 rounded-full">
@@ -118,10 +118,10 @@ export default function AccountPage() {
     );
   }
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           {/* Profile Header */}
           <div className="glass rounded-3xl p-8 mb-8">
@@ -148,7 +148,7 @@ export default function AccountPage() {
                 </div>
               </div>
               <Link href="/account/settings" className="glass px-6 py-3 rounded-full font-semibold hover:bg-white/10 flex items-center gap-2">
-                <Settings className="w-5 h-5" /> ParamÃ¨tres
+                <Settings className="w-5 h-5" /> Paramètres
               </Link>
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function AccountPage() {
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold font-display flex items-center gap-2">
-                  <ShoppingBag className="w-6 h-6 text-brand-gold" /> Achats rÃ©cents
+                  <ShoppingBag className="w-6 h-6 text-brand-gold" /> Achats récents
                 </h2>
                 <Link href="/account/downloads" className="text-brand-gold text-sm font-semibold flex items-center gap-1 hover:underline">
                   Tout voir <ArrowRight className="w-4 h-4" />
@@ -187,7 +187,7 @@ export default function AccountPage() {
                     <ShoppingBag className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>Aucun achat pour le moment</p>
                     <Link href="/catalogue" className="text-brand-gold text-sm hover:underline mt-2 inline-block">
-                      DÃ©couvrir le catalogue
+                      Découvrir le catalogue
                     </Link>
                   </div>
                 ) : (
@@ -199,7 +199,7 @@ export default function AccountPage() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-sm">{purchase.beat.title}</h4>
                         <p className="text-xs text-slate-400">
-                          {purchase.beat.seller.displayName || purchase.beat.seller.username} Â· {purchase.beat.genre}
+                          {purchase.beat.seller.displayName || purchase.beat.seller.username} · {purchase.beat.genre}
                         </p>
                       </div>
                       <div className="hidden md:block text-right">
@@ -210,7 +210,7 @@ export default function AccountPage() {
                           <Clock className="w-3 h-3" /> {new Date(purchase.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </div>
                       </div>
-                      <div className="text-brand-gold font-bold text-sm">{purchase.amount.toFixed(2)}â‚¬</div>
+                      <div className="text-brand-gold font-bold text-sm">{purchase.amount.toFixed(2)}€</div>
                       <button className="btn-primary px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1">
                         <Download className="w-4 h-4" />
                       </button>
@@ -228,12 +228,12 @@ export default function AccountPage() {
                 <div className="space-y-2">
                   <Link href="/account/downloads" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
                     <Download className="w-5 h-5 text-green-400" />
-                    <span className="text-sm">Mes tÃ©lÃ©chargements</span>
+                    <span className="text-sm">Mes téléchargements</span>
                     <ArrowRight className="w-4 h-4 ml-auto text-slate-400" />
                   </Link>
                   <Link href="/account/settings" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
                     <Settings className="w-5 h-5 text-blue-400" />
-                    <span className="text-sm">ParamÃ¨tres du compte</span>
+                    <span className="text-sm">Paramètres du compte</span>
                     <ArrowRight className="w-4 h-4 ml-auto text-slate-400" />
                   </Link>
                   <Link href="/catalogue" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
@@ -274,7 +274,7 @@ export default function AccountPage() {
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-sm truncate">{fav.beat.title}</div>
                           <div className="text-xs text-slate-400">
-                            {fav.beat.seller.displayName || fav.beat.seller.username} Â· {fav.beat.bpm} BPM
+                            {fav.beat.seller.displayName || fav.beat.seller.username} · {fav.beat.bpm} BPM
                           </div>
                         </div>
                         <Star className="w-4 h-4 text-brand-gold flex-shrink-0" />
@@ -290,7 +290,7 @@ export default function AccountPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

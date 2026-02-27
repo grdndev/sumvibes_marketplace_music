@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSocket } from "@/contexts/SocketContext"; // ← contexte global
+import { useSocket } from "@/contexts/SocketContext"; // ? contexte global
 import {
   ChevronLeft,
   Search,
@@ -21,7 +21,7 @@ import {
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 interface Conversation {
   userId: string;
@@ -52,7 +52,7 @@ interface UserResult {
   sellerProfile?: { artistName: string } | null;
 }
 
-// ─── Page wrapper ─────────────────────────────────────────────────────────────
+// --- Page wrapper -------------------------------------------------------------
 
 export default function MessagesPage() {
   return (
@@ -68,13 +68,13 @@ export default function MessagesPage() {
   );
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ------------------------------------------------------------------
 
 function timeAgo(d: string): string {
   if (!d) return "";
   const diff = Date.now() - new Date(d).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "à l'instant";
+  if (mins < 1) return "� l'instant";
   if (mins < 60) return `${mins}min`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h`;
@@ -120,7 +120,7 @@ function UserAvatar({
   );
 }
 
-// ─── New Conversation Modal ───────────────────────────────────────────────────
+// --- New Conversation Modal ---------------------------------------------------
 
 function NewConversationModal({
   onClose,
@@ -236,7 +236,7 @@ function NewConversationModal({
             <input
               ref={inputRef}
               type="text"
-              placeholder="Rechercher un utilisateur…"
+              placeholder="Rechercher un utilisateur�"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50 transition-all"
@@ -259,7 +259,7 @@ function NewConversationModal({
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 gap-2 text-slate-500">
               <User className="w-8 h-8 opacity-30" />
-              <p className="text-sm">Aucun utilisateur trouvé</p>
+              <p className="text-sm">Aucun utilisateur trouv�</p>
             </div>
           ) : (
             filtered.map((u) => {
@@ -281,7 +281,7 @@ function NewConversationModal({
                     </p>
                   </div>
                   <span className="text-xs text-brand-gold/60 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                    Écrire →
+                    �crire ?
                   </span>
                 </button>
               );
@@ -292,7 +292,7 @@ function NewConversationModal({
         <div className="px-5 py-3 border-t border-white/5">
           <p className="text-xs text-slate-600 text-center">
             {!loadingUsers &&
-              `${filtered.length} utilisateur${filtered.length !== 1 ? "s" : ""} • `}
+              `${filtered.length} utilisateur${filtered.length !== 1 ? "s" : ""} � `}
             <kbd className="px-1 py-0.5 bg-white/10 rounded text-slate-400">
               Echap
             </kbd>{" "}
@@ -310,13 +310,13 @@ function NewConversationModal({
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// --- Main component -----------------------------------------------------------
 
 function MessagesContent() {
   const { user } = useAuth();
 
-  // ← Plus de socket local — on utilise le socket global du contexte
-  // Ce socket reste actif même quand l'user change de page ou d'onglet.
+  // ? Plus de socket local � on utilise le socket global du contexte
+  // Ce socket reste actif m�me quand l'user change de page ou d'onglet.
   const {
     socket,
     unreadBySender,
@@ -359,7 +359,7 @@ function MessagesContent() {
   }, []);
   useEffect(scrollToBottom, [messages, scrollToBottom]);
 
-  // ── Fetch conversations ──────────────────────────────────────────────────
+  // -- Fetch conversations --------------------------------------------------
   useEffect(() => {
     const fetchContacts = async () => {
       setLoading(true);
@@ -400,7 +400,7 @@ function MessagesContent() {
                     displayName:
                       u.displayName || u.sellerProfile?.artistName || null,
                     avatar: u.avatar ?? null,
-                    lastMessage: "Nouvelle conversation…",
+                    lastMessage: "Nouvelle conversation�",
                     lastMessageAt: new Date().toISOString(),
                     unreadCount: 0,
                   },
@@ -425,21 +425,21 @@ function MessagesContent() {
     else setLoading(false);
   }, [user, newUserId, syncUnread]);
 
-  // ── Listener "new-message" branché sur le socket.io global ──────────────
-  // Le socket du contexte reste actif même hors de cette page.
-  // Ici on branche juste la logique propre à la vue chat.
+  // -- Listener "new-message" branch� sur le socket.io global --------------
+  // Le socket du contexte reste actif m�me hors de cette page.
+  // Ici on branche juste la logique propre � la vue chat.
   useEffect(() => {
     if (!socket || !user) return;
 
     const handleNewMessage = (message: Message) => {
-      console.log("[SOCKET] new-message reçu:", message);
+      console.log("[SOCKET] new-message re�u:", message);
 
-      // Ignorer les messages envoyés par soi-même (déjà affichés en optimistic)
+      // Ignorer les messages envoy�s par soi-m�me (d�j� affich�s en optimistic)
       if (message.senderId === user.id) return;
 
       const currentConvId = activeConvIdRef.current;
 
-      // Ajouter le message dans la fenêtre si la conversation est active
+      // Ajouter le message dans la fen�tre si la conversation est active
       if (message.senderId === currentConvId) {
         setMessages((prev) => {
           if (prev.some((m) => m.id === message.id)) return prev;
@@ -447,13 +447,13 @@ function MessagesContent() {
         });
       }
 
-      // Mettre à jour la liste des conversations
+      // Mettre � jour la liste des conversations
       setConversations((prev) => {
         const exists = prev.some((c) => c.userId === message.senderId);
         const isActive = message.senderId === currentConvId;
 
         if (exists) {
-          // Mettre à jour la conversation existante
+          // Mettre � jour la conversation existante
           return prev.map((c) => {
             if (c.userId !== message.senderId) return c;
             return {
@@ -464,8 +464,8 @@ function MessagesContent() {
             };
           });
         } else {
-          // Première fois qu'on reçoit un message de cet expéditeur :
-          // ajouter une nouvelle entrée dans la liste puis enrichir avec l'API
+          // Premi�re fois qu'on re�oit un message de cet exp�diteur :
+          // ajouter une nouvelle entr�e dans la liste puis enrichir avec l'API
           const newConv = {
             userId: message.senderId,
             username: "...",
@@ -520,11 +520,11 @@ function MessagesContent() {
     );
   }, [unreadBySender]);
 
-  // ── Fetch messages initial + polling toutes les 3s (fallback si socket KO) ─
+  // -- Fetch messages initial + polling toutes les 3s (fallback si socket KO) -
   useEffect(() => {
     if (!activeConvId) return;
 
-    // Marquer lu dans le contexte global → badge navbar à 0 immédiatement
+    // Marquer lu dans le contexte global ? badge navbar � 0 imm�diatement
     markAsRead(activeConvId);
 
     const fetchMessages = async (isInitial = false) => {
@@ -544,17 +544,17 @@ function MessagesContent() {
         );
 
         if (isInitial) {
-          // Premier chargement : remplacer complètement
+          // Premier chargement : remplacer compl�tement
           setMessages(fetched);
         } else {
-          // Polling : fusionner — ajouter uniquement les nouveaux messages
+          // Polling : fusionner � ajouter uniquement les nouveaux messages
           setMessages((prev) => {
             const prevIds = new Set(prev.map((m) => m.id));
             // Garder les pending (optimistic) + ajouter les nouveaux
             const pending = prev.filter((m) => m.pending);
             const newOnes = fetched.filter((m) => !prevIds.has(m.id));
             if (newOnes.length === 0) return prev; // rien de nouveau
-            // Retirer les pending dont le vrai message est arrivé
+            // Retirer les pending dont le vrai message est arriv�
             const pendingFiltered = pending.filter(
               (p) => !newOnes.some((n) => n.content === p.content && n.senderId === p.senderId),
             );
@@ -575,12 +575,12 @@ function MessagesContent() {
     // Chargement initial
     fetchMessages(true);
 
-    // Polling toutes les 3 secondes (fallback si socket ne délivre pas)
+    // Polling toutes les 3 secondes (fallback si socket ne d�livre pas)
     const interval = setInterval(() => fetchMessages(false), 3000);
     return () => clearInterval(interval);
   }, [activeConvId, markAsRead]);
 
-  // ── Send message — optimiste ─────────────────────────────────────────────
+  // -- Send message � optimiste ---------------------------------------------
   const handleSend = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -589,7 +589,7 @@ function MessagesContent() {
       const content = text.trim();
       setText("");
 
-      // 1. Afficher immédiatement (état pending)
+      // 1. Afficher imm�diatement (�tat pending)
       const tempId = `temp-${Date.now()}`;
       const optimistic: Message = {
         id: tempId,
@@ -639,7 +639,7 @@ function MessagesContent() {
           prev.map((m) => (m.id === tempId ? { ...saved, pending: false } : m)),
         );
 
-        // 3. Émettre via le socket global (destinataire reçoit en temps réel)
+        // 3. �mettre via le socket global (destinataire re�oit en temps r�el)
         socket?.emit("send-message", saved);
       } catch (err) {
         console.error("Send error", err);
@@ -652,7 +652,7 @@ function MessagesContent() {
     [text, activeConvId, user, sending, socket],
   );
 
-  // ── Sélectionner un user depuis le modal ─────────────────────────────────
+  // -- S�lectionner un user depuis le modal ---------------------------------
   const handleSelectNewUser = useCallback(
     (selectedUser: UserResult) => {
       setShowNewConv(false);
@@ -669,7 +669,7 @@ function MessagesContent() {
           displayName: selectedUser.displayName ?? null,
           avatar: selectedUser.avatar ?? null,
           artistName: selectedUser.sellerProfile?.artistName ?? null,
-          lastMessage: "Nouvelle conversation…",
+          lastMessage: "Nouvelle conversation�",
           lastMessageAt: new Date().toISOString(),
           unreadCount: 0,
         },
@@ -682,7 +682,7 @@ function MessagesContent() {
     [conversations],
   );
 
-  // ── Derived ──────────────────────────────────────────────────────────────
+  // -- Derived --------------------------------------------------------------
   const filtered = conversations.filter((c) => {
     const name = c.artistName || c.displayName || c.username || "";
     return name.toLowerCase().includes(search.toLowerCase());
@@ -693,9 +693,9 @@ function MessagesContent() {
     setShowMobileList(false);
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // -- Render ----------------------------------------------------------------
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
       {showNewConv && user && (
@@ -706,7 +706,7 @@ function MessagesContent() {
         />
       )}
 
-      <main className="pt-24 pb-20 px-4 md:px-6">
+      <main className="flex-1 pt-24 pb-20 px-4 md:px-6">
         <div className="mx-auto max-w-7xl">
           <Link
             href="/community"
@@ -718,10 +718,10 @@ function MessagesContent() {
           <div className="mb-8 relative z-10 flex items-end justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient drop-shadow-lg mb-2">
-                Messagerie Privée
+                Messagerie Priv�e
               </h1>
               <p className="text-slate-300 font-light">
-                Gérez vos collaborations et contrats en direct.
+                G�rez vos collaborations et contrats en direct.
               </p>
             </div>
             <button
@@ -737,7 +737,7 @@ function MessagesContent() {
             style={{ height: "calc(100vh - 240px)", minHeight: "500px" }}
           >
             <div className="flex h-full">
-              {/* ── Sidebar ─────────────────────────────────────────────── */}
+              {/* -- Sidebar ----------------------------------------------- */}
               <div
                 className={`w-full md:w-80 border-r border-white/10 flex flex-col ${!showMobileList && activeConvId ? "hidden md:flex" : "flex"}`}
               >
@@ -746,7 +746,7 @@ function MessagesContent() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-gold transition-colors" />
                     <input
                       type="text"
-                      placeholder="Rechercher…"
+                      placeholder="Rechercher�"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-brand-gold/50 transition-colors"
@@ -774,7 +774,7 @@ function MessagesContent() {
                         onClick={() => setShowNewConv(true)}
                         className="mt-1 text-xs text-brand-gold/70 hover:text-brand-gold transition-colors underline underline-offset-2"
                       >
-                        Démarrer une conversation
+                        D�marrer une conversation
                       </button>
                     </div>
                   ) : (
@@ -818,7 +818,7 @@ function MessagesContent() {
                 </div>
               </div>
 
-              {/* ── Chat Window ─────────────────────────────────────────── */}
+              {/* -- Chat Window ------------------------------------------- */}
               <div
                 className={`flex-1 flex flex-col ${showMobileList && !activeConvId ? "hidden md:flex" : "flex"}`}
               >
@@ -892,7 +892,7 @@ function MessagesContent() {
                               >
                                 {msg.pending ? (
                                   <span className="italic opacity-70">
-                                    envoi…
+                                    envoi�
                                   </span>
                                 ) : (
                                   <>
@@ -922,7 +922,7 @@ function MessagesContent() {
                     >
                       <input
                         type="text"
-                        placeholder="Votre message…"
+                        placeholder="Votre message�"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         onKeyDown={(e) => {
@@ -950,10 +950,10 @@ function MessagesContent() {
                       <MessageSquare className="w-8 h-8 stroke-[1] text-brand-gold" />
                     </div>
                     <h3 className="text-xl font-bold font-display text-white mb-2">
-                      Sélectionnez un contact
+                      S�lectionnez un contact
                     </h3>
                     <p className="font-light text-slate-400 max-w-xs mb-5">
-                      Choisissez une conversation ou démarrez-en une nouvelle.
+                      Choisissez une conversation ou d�marrez-en une nouvelle.
                     </p>
                     <button
                       onClick={() => setShowNewConv(true)}

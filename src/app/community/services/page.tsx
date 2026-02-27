@@ -6,24 +6,24 @@ import { Navbar } from "@/components/layout/Navbar";
 import { ChevronLeft, Search, Filter, MapPin, Star, Clock, ArrowRight, Plus, MessageSquare, Briefcase } from "lucide-react";
 
 const serviceCategories = [
-  { id: "all", label: "Tous", emoji: "üåê" },
-  { id: "mixage", label: "Mixage & Mastering", emoji: "üéõÔ∏è" },
-  { id: "ecriture", label: "√âcriture / Toplining", emoji: "‚úçÔ∏è" },
-  { id: "design", label: "Design & Artwork", emoji: "üé®" },
-  { id: "video", label: "Vid√©o & Clips", emoji: "üé¨" },
-  { id: "coaching", label: "Coaching", emoji: "üéì" },
-  { id: "promo", label: "Promotion", emoji: "üì¢" },
+  { id: "all", label: "Tous", emoji: "??" },
+  { id: "mixage", label: "Mixage & Mastering", emoji: "???" },
+  { id: "ecriture", label: "…criture / Toplining", emoji: "??" },
+  { id: "design", label: "Design & Artwork", emoji: "??" },
+  { id: "video", label: "VidÈo & Clips", emoji: "??" },
+  { id: "coaching", label: "Coaching", emoji: "??" },
+  { id: "promo", label: "Promotion", emoji: "??" },
 ];
 
 const services = [
-  { id: 1, title: "Mixage & Mastering professionnel", description: "Mixage et mastering haute qualit√© pour tous genres musicaux. 10 ans d'exp√©rience, mat√©riel professionnel.", author: "StudioPro", avatar: "üéõÔ∏è", price: "√Ä partir de 50‚Ç¨", category: "mixage", rating: 4.9, reviews: 127, location: "Paris", deliveryTime: "3-5 jours", featured: true },
-  { id: 2, title: "Toplining / √âcriture de textes", description: "√âcriture de paroles et m√©lodies pour vos productions. Sp√©cialis√© R&B, Pop et Hip-Hop.", author: "LyricQueen", avatar: "‚úçÔ∏è", price: "√Ä partir de 30‚Ç¨", category: "ecriture", rating: 4.8, reviews: 89, location: "Lyon", deliveryTime: "2-4 jours", featured: true },
-  { id: 3, title: "Artwork & Pochettes d'album", description: "Cr√©ation graphique pour pochettes de singles, albums et playlists. Style moderne et impactant.", author: "DesignBeats", avatar: "üé®", price: "√Ä partir de 25‚Ç¨", category: "design", rating: 4.7, reviews: 63, location: "Marseille", deliveryTime: "2-3 jours", featured: false },
-  { id: 4, title: "R√©alisation de clips musicaux", description: "Production de clips vid√©o professionnels. Tournage, montage, effets sp√©ciaux et color grading.", author: "ClipMaster", avatar: "üé¨", price: "√Ä partir de 200‚Ç¨", category: "video", rating: 4.9, reviews: 34, location: "Paris", deliveryTime: "7-14 jours", featured: false },
-  { id: 5, title: "Coaching production musicale", description: "Sessions de coaching personnalis√©es pour am√©liorer vos skills en production. FL Studio, Ableton, Logic.", author: "ProCoach", avatar: "üéì", price: "√Ä partir de 40‚Ç¨/h", category: "coaching", rating: 5.0, reviews: 45, location: "En ligne", deliveryTime: "Sur RDV", featured: true },
-  { id: 6, title: "Promotion sur r√©seaux sociaux", description: "Promotion de vos productions sur Instagram, TikTok, YouTube. Strat√©gie marketing personnalis√©e.", author: "PromoKing", avatar: "üì¢", price: "√Ä partir de 80‚Ç¨", category: "promo", rating: 4.6, reviews: 28, location: "En ligne", deliveryTime: "5-7 jours", featured: false },
-  { id: 7, title: "Mastering analogique", description: "Mastering sur cha√Æne analogique haut de gamme. Neve, SSL, Manley. Son chaleureux et puissant.", author: "AnalogPro", avatar: "üîä", price: "√Ä partir de 80‚Ç¨", category: "mixage", rating: 4.9, reviews: 56, location: "Bordeaux", deliveryTime: "3-5 jours", featured: false },
-  { id: 8, title: "Enregistrement vocal professionnel", description: "Studio d'enregistrement avec micro Neumann U87 et pr√©ampli Avalon. Ambiance cr√©ative garantie.", author: "VocalStudio", avatar: "üé§", price: "√Ä partir de 60‚Ç¨/h", category: "mixage", rating: 4.8, reviews: 41, location: "Paris", deliveryTime: "Sur RDV", featured: false },
+  { id: 1, title: "Mixage & Mastering professionnel", description: "Mixage et mastering haute qualitÈ pour tous genres musicaux. 10 ans d'expÈrience, matÈriel professionnel.", author: "StudioPro", avatar: "???", price: "¿ partir de 50Ä", category: "mixage", rating: 4.9, reviews: 127, location: "Paris", deliveryTime: "3-5 jours", featured: true },
+  { id: 2, title: "Toplining / …criture de textes", description: "…criture de paroles et mÈlodies pour vos productions. SpÈcialisÈ R&B, Pop et Hip-Hop.", author: "LyricQueen", avatar: "??", price: "¿ partir de 30Ä", category: "ecriture", rating: 4.8, reviews: 89, location: "Lyon", deliveryTime: "2-4 jours", featured: true },
+  { id: 3, title: "Artwork & Pochettes d'album", description: "CrÈation graphique pour pochettes de singles, albums et playlists. Style moderne et impactant.", author: "DesignBeats", avatar: "??", price: "¿ partir de 25Ä", category: "design", rating: 4.7, reviews: 63, location: "Marseille", deliveryTime: "2-3 jours", featured: false },
+  { id: 4, title: "RÈalisation de clips musicaux", description: "Production de clips vidÈo professionnels. Tournage, montage, effets spÈciaux et color grading.", author: "ClipMaster", avatar: "??", price: "¿ partir de 200Ä", category: "video", rating: 4.9, reviews: 34, location: "Paris", deliveryTime: "7-14 jours", featured: false },
+  { id: 5, title: "Coaching production musicale", description: "Sessions de coaching personnalisÈes pour amÈliorer vos skills en production. FL Studio, Ableton, Logic.", author: "ProCoach", avatar: "??", price: "¿ partir de 40Ä/h", category: "coaching", rating: 5.0, reviews: 45, location: "En ligne", deliveryTime: "Sur RDV", featured: true },
+  { id: 6, title: "Promotion sur rÈseaux sociaux", description: "Promotion de vos productions sur Instagram, TikTok, YouTube. StratÈgie marketing personnalisÈe.", author: "PromoKing", avatar: "??", price: "¿ partir de 80Ä", category: "promo", rating: 4.6, reviews: 28, location: "En ligne", deliveryTime: "5-7 jours", featured: false },
+  { id: 7, title: "Mastering analogique", description: "Mastering sur chaÓne analogique haut de gamme. Neve, SSL, Manley. Son chaleureux et puissant.", author: "AnalogPro", avatar: "??", price: "¿ partir de 80Ä", category: "mixage", rating: 4.9, reviews: 56, location: "Bordeaux", deliveryTime: "3-5 jours", featured: false },
+  { id: 8, title: "Enregistrement vocal professionnel", description: "Studio d'enregistrement avec micro Neumann U87 et prÈampli Avalon. Ambiance crÈative garantie.", author: "VocalStudio", avatar: "??", price: "¿ partir de 60Ä/h", category: "mixage", rating: 4.8, reviews: 41, location: "Paris", deliveryTime: "Sur RDV", featured: false },
 ];
 
 export default function ServicesPage() {
@@ -37,10 +37,10 @@ export default function ServicesPage() {
   });
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-24 pb-20 px-4 md:px-6">
+      <main className="flex-1 pt-24 pb-20 px-4 md:px-6">
         <div className="mx-auto max-w-7xl">
           <Link href="/community" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-8 transition-colors text-sm font-medium">
             <ChevronLeft className="w-5 h-5" /> Retour au Hub
@@ -57,7 +57,7 @@ export default function ServicesPage() {
                 <span className="text-gradient drop-shadow-lg">Services</span> Musicaux
               </h1>
               <p className="text-lg text-slate-300 font-light max-w-xl">
-                Trouvez des professionnels de l'industrie pour donner vie √† vos projets. Mixage, toplining, design...
+                Trouvez des professionnels de l'industrie pour donner vie ‡ vos projets. Mixage, toplining, design...
               </p>
             </div>
             <button className="btn-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-2 self-start shadow-[0_4px_20px_0_rgba(254,204,51,0.3)] hover:shadow-[0_6px_25px_rgba(254,204,51,0.25)] hover:scale-105 transition-all relative z-10">
@@ -81,7 +81,7 @@ export default function ServicesPage() {
                 />
               </div>
               <button className="glass px-6 py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 hover:border-brand-gold/30 transition-all font-semibold">
-                <Filter className="w-5 h-5" /> Filtres avanc√©s
+                <Filter className="w-5 h-5" /> Filtres avancÈs
               </button>
             </div>
 
@@ -123,7 +123,7 @@ export default function ServicesPage() {
           <div>
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-3xl font-bold font-display">
-                {searchQuery ? "R√©sultats de recherche" : activeCategory === "all" ? "D√©couvrir" : serviceCategories.find((c) => c.id === activeCategory)?.label}
+                {searchQuery ? "RÈsultats de recherche" : activeCategory === "all" ? "DÈcouvrir" : serviceCategories.find((c) => c.id === activeCategory)?.label}
               </h2>
               <span className="text-sm font-medium text-slate-400 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">{filtered.length} service{filtered.length > 1 ? 's' : ''}</span>
             </div>
@@ -137,17 +137,17 @@ export default function ServicesPage() {
             ) : (
               <div className="glass rounded-3xl p-16 text-center border border-white/10 bg-black/20">
                 <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10">
-                  <span className="text-5xl">üîç</span>
+                  <span className="text-5xl">??</span>
                 </div>
-                <h3 className="text-2xl font-bold font-display mb-3">Aucun service trouv√©</h3>
+                <h3 className="text-2xl font-bold font-display mb-3">Aucun service trouvÈ</h3>
                 <p className="text-slate-400 max-w-md mx-auto mb-8 font-light">
-                  Nous n'avons trouv√© aucun service correspondant √† vos crit√®res actuels. Essayez de modifier vos filtres.
+                  Nous n'avons trouvÈ aucun service correspondant ‡ vos critËres actuels. Essayez de modifier vos filtres.
                 </p>
                 <button 
                   onClick={() => { setSearchQuery(""); setActiveCategory("all"); }}
                   className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg"
                 >
-                  R√©initialiser la recherche
+                  RÈinitialiser la recherche
                 </button>
               </div>
             )}
@@ -157,7 +157,7 @@ export default function ServicesPage() {
 
       <footer className="border-t border-white/10 px-6 py-8 mt-12 bg-black/20">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm font-medium">
-          ¬© 2026 SUMVIBES by SAS BE GREAT. Tous droits r√©serv√©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits rÈservÈs.
         </div>
       </footer>
     </div>

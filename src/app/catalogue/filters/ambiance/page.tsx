@@ -8,13 +8,13 @@ import { useBeats } from "@/hooks/useBeats";
 import { useCart } from "@/hooks/useCart";
 
 const moodsBase = [
-  { id: "dark", label: "Dark", emoji: "🌑", color: "from-slate-800/40 to-slate-900/20" },
-  { id: "chill", label: "Chill", emoji: "🧊", color: "from-cyan-500/20 to-blue-500/10" },
-  { id: "uplifting", label: "Uplifting", emoji: "☀️", color: "from-yellow-500/20 to-orange-500/10" },
-  { id: "energetic", label: "Energetic", emoji: "⚡", color: "from-red-500/20 to-rose-500/10" },
-  { id: "romantic", label: "Romantic", emoji: "💖", color: "from-pink-500/20 to-rose-400/10" },
-  { id: "aggressive", label: "Aggressive", emoji: "💢", color: "from-red-600/20 to-orange-600/10" },
-  { id: "melancholic", label: "Melancholic", emoji: "🌧️", color: "from-indigo-500/20 to-blue-600/10" },
+  { id: "dark", label: "Dark", emoji: "??", color: "from-slate-800/40 to-slate-900/20" },
+  { id: "chill", label: "Chill", emoji: "??", color: "from-cyan-500/20 to-blue-500/10" },
+  { id: "uplifting", label: "Uplifting", emoji: "??", color: "from-yellow-500/20 to-orange-500/10" },
+  { id: "energetic", label: "Energetic", emoji: "?", color: "from-red-500/20 to-rose-500/10" },
+  { id: "romantic", label: "Romantic", emoji: "??", color: "from-pink-500/20 to-rose-400/10" },
+  { id: "aggressive", label: "Aggressive", emoji: "??", color: "from-red-600/20 to-orange-600/10" },
+  { id: "melancholic", label: "Melancholic", emoji: "???", color: "from-indigo-500/20 to-blue-600/10" },
 ];
 
 export default function AmbiancePage() {
@@ -33,10 +33,10 @@ export default function AmbiancePage() {
     : [];
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <Link href="/catalogue" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-6">
             <ChevronLeft className="w-5 h-5" /> Retour au catalogue
@@ -44,7 +44,7 @@ export default function AmbiancePage() {
 
           <div className="mb-10">
             <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient mb-4">Explorer par Ambiance</h1>
-            <p className="text-xl text-slate-300">Découvrez des beats classés par humeur (mood)</p>
+            <p className="text-xl text-slate-300">D�couvrez des beats class�s par humeur (mood)</p>
           </div>
 
           {/* Mood Grid */}
@@ -82,16 +82,16 @@ export default function AmbiancePage() {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link href={`/product/${beat.slug}`} className="font-bold text-sm hover:text-brand-gold">{beat.title}</Link>
-                        <p className="text-xs text-slate-400">{beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || beat.seller?.username || "—"}</p>
+                        <p className="text-xs text-slate-400">{beat.seller?.sellerProfile?.artistName || beat.seller?.displayName || beat.seller?.username || "�"}</p>
                       </div>
                       <div className="hidden md:flex items-center gap-6 text-xs text-slate-400">
                         <span className="text-brand-gold font-bold">{beat.bpm} BPM</span>
                         {beat.mood?.[0] && <span className="glass px-2 py-0.5 rounded-full">{beat.mood[0]}</span>}
                         {beat.key && <span>{beat.key}</span>}
-                        {beat.duration ? <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.floor(beat.duration / 60)}:{String(beat.duration % 60).padStart(2, "0")}</span> : <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> —</span>}
+                        {beat.duration ? <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {Math.floor(beat.duration / 60)}:{String(beat.duration % 60).padStart(2, "0")}</span> : <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> �</span>}
                       </div>
                       <button className="glass p-2 rounded-lg hover:bg-white/10"><Heart className="w-4 h-4" /></button>
-                      <div className="text-brand-gold font-bold text-sm">{Number(beat.basicPrice ?? beat.premiumPrice ?? 0).toFixed(2)}€</div>
+                      <div className="text-brand-gold font-bold text-sm">{Number(beat.basicPrice ?? beat.premiumPrice ?? 0).toFixed(2)}�</div>
                       <button onClick={() => addToCart(beat.id, "basic")} className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1">
                         <ShoppingCart className="w-4 h-4" /> Ajouter
                       </button>
@@ -111,9 +111,9 @@ export default function AmbiancePage() {
 
           {!selectedMood && (
             <div className="glass rounded-3xl p-12 text-center">
-              <div className="text-6xl mb-4">🎵</div>
-              <h3 className="text-xl font-bold mb-2">Sélectionnez une ambiance</h3>
-              <p className="text-slate-400">Cliquez sur une humeur musicale ci-dessus pour découvrir les beats disponibles.</p>
+              <div className="text-6xl mb-4">??</div>
+              <h3 className="text-xl font-bold mb-2">S�lectionnez une ambiance</h3>
+              <p className="text-slate-400">Cliquez sur une humeur musicale ci-dessus pour d�couvrir les beats disponibles.</p>
             </div>
           )}
         </div>
@@ -121,7 +121,7 @@ export default function AmbiancePage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
+          � 2026 SUMVIBES by SAS BE GREAT. Tous droits r�serv�s.
         </div>
       </footer>
     </div>

@@ -30,12 +30,12 @@ import {
 // (Dynamic tabs will be created inside the component based on user role)
 const baseTabs = [
   { id: "profile", label: "Profil Client", icon: User },
-  { id: "security", label: "S√©curit√©", icon: Lock },
+  { id: "security", label: "SÈcuritÈ", icon: Lock },
   { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "preferences", label: "Pr√©f√©rences", icon: Music },
+  { id: "preferences", label: "PrÈfÈrences", icon: Music },
 ];
 
-// Liste centralis√©e des genres musicaux
+// Liste centralisÈe des genres musicaux
 const GENRES = [
   "Trap",
   "Rnb",
@@ -280,7 +280,7 @@ export default function SettingsPage() {
   const handleAccountDeletion = async () => {
     if (
       confirm(
-        "√ätes-vous s√ªr de vouloir supprimer votre compte d√©finitivement ? Cette action est irr√©versible.",
+        " tes-vous s˚r de vouloir supprimer votre compte dÈfinitivement ? Cette action est irrÈversible.",
       )
     ) {
       try {
@@ -303,17 +303,17 @@ export default function SettingsPage() {
           setLoading(false);
         }
       } catch (err) {
-        setError("Erreur r√©seau ou serveur non joignable");
+        setError("Erreur rÈseau ou serveur non joignable");
         setLoading(false);
       }
     }
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-5xl px-6 py-12">
           <Link
             href="/account"
@@ -323,7 +323,7 @@ export default function SettingsPage() {
           </Link>
 
           <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient mb-8">
-            Param√®tres
+            ParamËtres
           </h1>
 
           {/* Tabs */}
@@ -346,13 +346,13 @@ export default function SettingsPage() {
           {/* Success */}
           {saved && (
             <div className="glass rounded-xl p-4 mb-6 border border-green-500/20 bg-green-500/5 text-green-400 text-sm font-semibold">
-              ‚úÖ Modifications enregistr√©es avec succ√®s !
+              ? Modifications enregistrÈes avec succËs !
             </div>
           )}
 
           {error && (
             <div className="glass rounded-xl p-4 mb-6 border border-red-500/20 bg-red-500/5 text-red-400 text-sm font-semibold">
-              ‚ùå {error}
+              ? {error}
             </div>
           )}
 
@@ -391,7 +391,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Pr√©nom
+                    PrÈnom
                   </label>
                   <input
                     name="firstName"
@@ -458,12 +458,12 @@ export default function SettingsPage() {
                 </div>
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-semibold font-display mb-4 mt-4 border-b border-white/10 pb-2">
-                    R√©seaux Sociaux & Contact
+                    RÈseaux Sociaux & Contact
                   </h3>
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Phone className="w-4 h-4" /> T√©l√©phone
+                    <Phone className="w-4 h-4" /> TÈlÈphone
                   </label>
                   <input
                     name="phone"
@@ -506,7 +506,7 @@ export default function SettingsPage() {
                     name="youtube"
                     type="url"
                     defaultValue={user.youtube ?? ""}
-                    placeholder="Lien vers la cha√Æne"
+                    placeholder="Lien vers la chaÓne"
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                   />
                 </div>
@@ -523,8 +523,8 @@ export default function SettingsPage() {
                     <option value="BE">Belgique</option>
                     <option value="CH">Suisse</option>
                     <option value="CA">Canada</option>
-                    <option value="SN">S√©n√©gal</option>
-                    <option value="CI">C√¥te d&apos;Ivoire</option>
+                    <option value="SN">SÈnÈgal</option>
+                    <option value="CI">CÙte d&apos;Ivoire</option>
                   </select>
                 </div>
               </div>
@@ -675,8 +675,8 @@ export default function SettingsPage() {
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
                     />
                     <p className="text-xs text-slate-400 mt-1">
-                      Minimum 8 caract√®res avec majuscules, chiffres et
-                      caract√®res sp√©ciaux
+                      Minimum 8 caractËres avec majuscules, chiffres et
+                      caractËres spÈciaux
                     </p>
                   </div>
                   <div>
@@ -709,10 +709,10 @@ export default function SettingsPage() {
               <div className="glass rounded-3xl p-8">
                 <h2 className="text-2xl font-bold font-display mb-4 flex items-center gap-2">
                   <Shield className="w-6 h-6 text-brand-gold" />{" "}
-                  Authentification √† deux facteurs
+                  Authentification ‡ deux facteurs
                 </h2>
                 <p className="text-slate-400 mb-4">
-                  Ajoutez une couche de s√©curit√© suppl√©mentaire √† votre compte.
+                  Ajoutez une couche de sÈcuritÈ supplÈmentaire ‡ votre compte.
                 </p>
                 <button className="glass px-6 py-3 rounded-full font-semibold hover:bg-white/10">
                   Activer la 2FA
@@ -724,8 +724,8 @@ export default function SettingsPage() {
                   <Trash2 className="w-6 h-6" /> Zone dangereuse
                 </h2>
                 <p className="text-slate-400 mb-4">
-                  La suppression de votre compte est irr√©versible. Toutes vos
-                  donn√©es seront perdues.
+                  La suppression de votre compte est irrÈversible. Toutes vos
+                  donnÈes seront perdues.
                 </p>
                 <button
                   onClick={handleAccountDeletion}
@@ -745,7 +745,7 @@ export default function SettingsPage() {
               className="glass rounded-3xl p-8"
             >
               <h2 className="text-2xl font-bold font-display mb-6 flex items-center gap-2">
-                <Bell className="w-6 h-6 text-brand-gold" /> Pr√©f√©rences de
+                <Bell className="w-6 h-6 text-brand-gold" /> PrÈfÈrences de
                 notification
               </h2>
               <div className="space-y-4">
@@ -759,31 +759,31 @@ export default function SettingsPage() {
                   {
                     name: "newBeats",
                     label: "Nouveaux beats",
-                    desc: "√ätre notifi√© des nouvelles publications de vos producteurs favoris",
+                    desc: " tre notifiÈ des nouvelles publications de vos producteurs favoris",
                     default: user.notificationPrefs?.newBeats ?? true,
                   },
                   {
                     name: "promotions",
                     label: "Promotions",
-                    desc: "Recevoir les offres sp√©ciales et codes promo",
+                    desc: "Recevoir les offres spÈciales et codes promo",
                     default: user.notificationPrefs?.promotions ?? false,
                   },
                   {
                     name: "newsletter",
                     label: "Newsletter",
-                    desc: "Newsletter hebdomadaire avec les tendances et nouveaut√©s",
+                    desc: "Newsletter hebdomadaire avec les tendances et nouveautÈs",
                     default: user.notificationPrefs?.newsletter ?? true,
                   },
                   {
                     name: "forumReplies",
-                    label: "R√©ponses forum",
-                    desc: "Notifications des r√©ponses √† vos discussions",
+                    label: "RÈponses forum",
+                    desc: "Notifications des rÈponses ‡ vos discussions",
                     default: user.notificationPrefs?.forumReplies ?? true,
                   },
                   {
                     name: "updates",
-                    label: "Mises √† jour",
-                    desc: "Informations sur les nouvelles fonctionnalit√©s de SUMVIBES",
+                    label: "Mises ‡ jour",
+                    desc: "Informations sur les nouvelles fonctionnalitÈs de SUMVIBES",
                     default: user.notificationPrefs?.updates ?? false,
                   },
                 ].map((notif, i) => (
@@ -829,13 +829,13 @@ export default function SettingsPage() {
               className="glass rounded-3xl p-8"
             >
               <h2 className="text-2xl font-bold font-display mb-6 flex items-center gap-2">
-                <Music className="w-6 h-6 text-brand-gold" /> Pr√©f√©rences
+                <Music className="w-6 h-6 text-brand-gold" /> PrÈfÈrences
                 musicales
               </h2>
               <div className="space-y-6">
                 <div>
                   <label className="text-sm font-semibold text-slate-300 mb-3 block">
-                    Genres pr√©f√©r√©s
+                    Genres prÈfÈrÈs
                   </label>
                   <div className="flex flex-wrap gap-3">
                     {GENRES.map((genre) => (
@@ -858,7 +858,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-slate-300 mb-3 block">
-                    Moods pr√©f√©r√©s
+                    Moods prÈfÈrÈs
                   </label>
                   <div className="flex flex-wrap gap-3">
                     {[
@@ -896,7 +896,7 @@ export default function SettingsPage() {
                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
                     defaultValue={user.musicPrefs?.language ?? "fr"}
                   >
-                    <option value="fr">Fran√ßais</option>
+                    <option value="fr">FranÁais</option>
                     <option value="en">English</option>
                   </select>
                 </div>
@@ -920,7 +920,7 @@ export default function SettingsPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          ¬© 2026 SUMVIBES by SAS BE GREAT. Tous droits r√©serv√©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits rÈservÈs.
         </div>
       </footer>
     </div>

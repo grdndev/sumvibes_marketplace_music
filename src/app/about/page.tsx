@@ -9,43 +9,43 @@ export default function AboutPage() {
     {
       icon: Shield,
       title: "Transparence",
-      description: "Commissions claires, licences dÃ©taillÃ©es et paiements sÃ©curisÃ©s. Pas de surprise.",
+      description: "Commissions claires, licences détaillées et paiements sécurisés. Pas de surprise.",
     },
     {
       icon: Heart,
       title: "Passion",
-      description: "CrÃ©Ã© par des musiciens pour des musiciens. Chaque fonctionnalitÃ© est pensÃ©e pour vous.",
+      description: "Créé par des musiciens pour des musiciens. Chaque fonctionnalité est pensée pour vous.",
     },
     {
       icon: Globe,
-      title: "AccessibilitÃ©",
-      description: "Une plateforme ouverte Ã  tous, mobile-first, accessible partout dans le monde.",
+      title: "Accessibilité",
+      description: "Une plateforme ouverte à tous, mobile-first, accessible partout dans le monde.",
     },
     {
       icon: Zap,
       title: "Innovation",
-      description: "Technologies de pointe pour une expÃ©rience fluide : streaming HD, analytics en temps rÃ©el.",
+      description: "Technologies de pointe pour une expérience fluide : streaming HD, analytics en temps réel.",
     },
   ];
 
   const timeline = [
-    { year: "2024", event: "Naissance de l'idÃ©e SUMVIBES", description: "Xavier Jarvis imagine une marketplace qui respecte les artistes." },
-    { year: "2025", event: "DÃ©veloppement & Beta", description: "Construction de la plateforme avec les retours de la communautÃ©." },
+    { year: "2024", event: "Naissance de l'idée SUMVIBES", description: "Xavier Jarvis imagine une marketplace qui respecte les artistes." },
+    { year: "2025", event: "Développement & Beta", description: "Construction de la plateforme avec les retours de la communauté." },
     { year: "2026", event: "Lancement officiel", description: "SUMVIBES ouvre ses portes aux compositeurs et artistes du monde entier." },
-    { year: "2027", event: "Expansion internationale", description: "Nouvelles fonctionnalitÃ©s, partenariats et communautÃ© grandissante." },
+    { year: "2027", event: "Expansion internationale", description: "Nouvelles fonctionnalités, partenariats et communauté grandissante." },
   ];
 
   const team = [
-    { name: "Xavier Jarvis", role: "Fondateur & CEO", emoji: "ğŸ‘¨ğŸ¿â€ğŸ’¼", description: "Visionnaire passionnÃ© de musique et d'entrepreneuriat." },
-    { name: "L'Ã©quipe Tech", role: "DÃ©veloppement", emoji: "ğŸ’»", description: "Des dÃ©veloppeurs passionnÃ©s qui construisent l'avenir de la musique." },
-    { name: "La CommunautÃ©", role: "Notre force", emoji: "ğŸµ", description: "Des milliers d'artistes et producteurs qui font vivre SUMVIBES." },
+    { name: "Xavier Jarvis", role: "Fondateur & CEO", emoji: "???????", description: "Visionnaire passionné de musique et d'entrepreneuriat." },
+    { name: "L'équipe Tech", role: "Développement", emoji: "??", description: "Des développeurs passionnés qui construisent l'avenir de la musique." },
+    { name: "La Communauté", role: "Notre force", emoji: "??", description: "Des milliers d'artistes et producteurs qui font vivre SUMVIBES." },
   ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         {/* Hero Section */}
         <section className="relative px-6 py-24 text-center md:py-32 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -56,16 +56,16 @@ export default function AboutPage() {
           <div className="relative z-10 max-w-4xl mx-auto">
             <div className="inline-block mb-6">
               <span className="glass px-4 py-2 rounded-full text-sm font-medium text-brand-gold">
-                ğŸµ Notre histoire
+                ?? Notre histoire
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold font-display mb-6">
               L&apos;excellence musicale,{" "}
-              <span className="text-gradient">accessible Ã  tous</span>
+              <span className="text-gradient">accessible à tous</span>
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              SUMVIBES est nÃ©e d&apos;une conviction simple : chaque artiste mÃ©rite une plateforme qui respecte
-              son travail, sÃ©curise ses transactions et valorise sa crÃ©ativitÃ©.
+              SUMVIBES est née d&apos;une conviction simple : chaque artiste mérite une plateforme qui respecte
+              son travail, sécurise ses transactions et valorise sa créativité.
             </p>
           </div>
         </section>
@@ -77,14 +77,14 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-4xl font-bold font-display mb-6">Notre Mission</h2>
                 <p className="text-slate-300 text-lg leading-relaxed mb-6">
-                  SUMVIBES n&apos;est pas qu&apos;une simple boutique de beats. C&apos;est un Ã©cosystÃ¨me complet
-                  qui facilite la mise en relation entre les <strong className="text-brand-gold">crÃ©ateurs</strong> et
+                  SUMVIBES n&apos;est pas qu&apos;une simple boutique de beats. C&apos;est un écosystème complet
+                  qui facilite la mise en relation entre les <strong className="text-brand-gold">créateurs</strong> et
                   les <strong className="text-brand-gold">producteurs de contenu</strong>.
                 </p>
                 <p className="text-slate-400 leading-relaxed">
-                  Nous croyons que la musique est un art qui mÃ©rite d&apos;Ãªtre protÃ©gÃ© et valorisÃ©.
+                  Nous croyons que la musique est un art qui mérite d&apos;être protégé et valorisé.
                   C&apos;est pourquoi nous avons construit une plateforme qui garantit la transparence
-                  des Ã©changes, la protection des droits d&apos;auteur et une expÃ©rience utilisateur
+                  des échanges, la protection des droits d&apos;auteur et une expérience utilisateur
                   sans compromis.
                 </p>
               </div>
@@ -102,7 +102,7 @@ export default function AboutPage() {
                 <div className="glass rounded-2xl p-6 text-center hover:scale-105">
                   <Headphones className="w-10 h-10 mx-auto mb-3 text-brand-gold" />
                   <div className="text-3xl font-bold text-gradient">50K+</div>
-                  <div className="text-sm text-slate-400 mt-1">Ã‰coutes</div>
+                  <div className="text-sm text-slate-400 mt-1">Écoutes</div>
                 </div>
                 <div className="glass rounded-2xl p-6 text-center hover:scale-105">
                   <TrendingUp className="w-10 h-10 mx-auto mb-3 text-brand-gold" />
@@ -117,7 +117,7 @@ export default function AboutPage() {
         {/* Values */}
         <section className="mx-auto max-w-7xl px-6 py-20">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold font-display mb-4">Nos Valeurs âœ¨</h2>
+            <h2 className="text-4xl font-bold font-display mb-4">Nos Valeurs ?</h2>
             <p className="text-xl text-slate-400">Ce qui nous guide au quotidien</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -136,7 +136,7 @@ export default function AboutPage() {
         {/* Timeline */}
         <section className="mx-auto max-w-4xl px-6 py-20">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold font-display mb-4">Notre Parcours ğŸš€</h2>
+            <h2 className="text-4xl font-bold font-display mb-4">Notre Parcours ??</h2>
           </div>
           <div className="space-y-8">
             {timeline.map((item, i) => (
@@ -156,7 +156,7 @@ export default function AboutPage() {
         {/* Team */}
         <section className="mx-auto max-w-7xl px-6 py-20">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold font-display mb-4">L&apos;Ã©quipe ğŸ’œ</h2>
+            <h2 className="text-4xl font-bold font-display mb-4">L&apos;équipe ??</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {team.map((member) => (
@@ -176,9 +176,9 @@ export default function AboutPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-brand-purple/20 to-brand-pink/20"></div>
             <div className="relative z-10">
               <Award className="w-16 h-16 mx-auto mb-6 text-brand-gold" />
-              <h2 className="text-4xl font-bold font-display mb-6">PrÃªt Ã  nous rejoindre ?</h2>
+              <h2 className="text-4xl font-bold font-display mb-6">Prêt à nous rejoindre ?</h2>
               <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-                Devenez membre de la communautÃ© SUMVIBES dÃ¨s aujourd&apos;hui
+                Devenez membre de la communauté SUMVIBES dès aujourd&apos;hui
               </p>
               <div className="flex flex-wrap justify-center gap-6">
                 <Link
@@ -186,7 +186,7 @@ export default function AboutPage() {
                   className="btn-primary rounded-full bg-white px-10 py-5 font-bold text-black text-lg hover:scale-105 flex items-center gap-3"
                 >
                   <Users className="w-5 h-5" />
-                  CrÃ©er mon compte
+                  Créer mon compte
                 </Link>
                 <Link
                   href="/contact"
@@ -203,7 +203,7 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>

@@ -10,14 +10,14 @@ import { useMemo } from "react";
 export default function Home() {
   const { stats: platformStats } = usePlatformStats();
   
-  // MÃ©moÃ¯ser les filtres pour Ã©viter les re-renders
+  // Mémoïser les filtres pour éviter les re-renders
   const beatFilters = useMemo(() => ({ sort: 'latest' as const, limit: 3 }), []);
   const { beats: featuredBeats, loading: beatsLoading } = useBeats(beatFilters);
   
   const stats = [
     { value: platformStats ? `${Math.floor(platformStats.totalBeats / 1000)}K+` : "10K+", label: "Productions disponibles" },
     { value: platformStats ? `${Math.floor(platformStats.activeProducers / 1000)}K+` : "5K+", label: "Producteurs actifs" },
-    { value: platformStats ? `${Math.floor(platformStats.totalSales / 1000)}K+` : "50K+", label: "TÃ©lÃ©chargements" },
+    { value: platformStats ? `${Math.floor(platformStats.totalSales / 1000)}K+` : "50K+", label: "Téléchargements" },
     { value: platformStats ? `${Math.round(platformStats.averageRating * 20)}%` : "98%", label: "Satisfaction client" },
   ];
 
@@ -25,22 +25,22 @@ export default function Home() {
     {
       icon: Music,
       title: "Catalogue Premium",
-      description: "Des milliers de beats HD triÃ©s par genre, BPM et ambiance",
+      description: "Des milliers de beats HD triés par genre, BPM et ambiance",
     },
     {
       icon: Shield,
-      title: "Transactions SÃ©curisÃ©es",
-      description: "Paiements protÃ©gÃ©s et licences claires pour tous vos projets",
+      title: "Transactions Sécurisées",
+      description: "Paiements protégés et licences claires pour tous vos projets",
     },
     {
       icon: Headphones,
-      title: "QualitÃ© Studio",
-      description: "Fichiers WAV/MP3 haute fidÃ©litÃ©, prÃªts pour le mastering",
+      title: "Qualité Studio",
+      description: "Fichiers WAV/MP3 haute fidélité, prêts pour le mastering",
     },
     {
       icon: TrendingUp,
       title: "Dashboard Analytique",
-      description: "Suivez vos ventes et performances en temps rÃ©el",
+      description: "Suivez vos ventes et performances en temps réel",
     },
   ];
 
@@ -48,31 +48,31 @@ export default function Home() {
     {
       name: "DJ Kenzo",
       role: "Producteur Hip-Hop",
-      avatar: "ğŸ‘¨ğŸ¿â€ğŸ¤",
-      text: "SUMVIBES a transformÃ© ma carriÃ¨re. J'ai vendu plus de 200 beats en 3 mois !",
+      avatar: "???????",
+      text: "SUMVIBES a transformé ma carrière. J'ai vendu plus de 200 beats en 3 mois !",
       rating: 5,
     },
     {
       name: "Lisa M.",
       role: "Artiste R&B",
-      avatar: "ğŸ‘©ğŸ½â€ğŸ¤",
-      text: "La qualitÃ© des prods et la simplicitÃ© d'achat sont inÃ©galÃ©es. Mon album entier vient d'ici.",
+      avatar: "???????",
+      text: "La qualité des prods et la simplicité d'achat sont inégalées. Mon album entier vient d'ici.",
       rating: 5,
     },
     {
       name: "MaxBeat Studio",
-      role: "Label IndÃ©pendant",
-      avatar: "ğŸ¹",
-      text: "Un Ã©cosystÃ¨me pro qui respecte les artistes. Interface fluide, catalogue variÃ©.",
+      role: "Label Indépendant",
+      avatar: "??",
+      text: "Un écosystème pro qui respecte les artistes. Interface fluide, catalogue varié.",
       rating: 5,
     },
   ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         {/* Hero Section */}
         <section className="relative px-6 py-24 text-center md:py-40 overflow-hidden">
           {/* Animated background elements */}
@@ -84,18 +84,18 @@ export default function Home() {
           <div className="relative z-10">
             <div className="inline-block mb-6">
               <span className="glass px-4 py-2 rounded-full text-sm font-medium text-brand-gold">
-                ğŸµ La marketplace #1 des producteurs
+                ?? La marketplace #1 des producteurs
               </span>
             </div>
 
             <h1 className="mx-auto max-w-5xl text-6xl font-light tracking-wide md:text-8xl font-display leading-tight">
-              Ã‰levez votre son avec des{" "}
-              <span className="text-gradient font-normal">Prods dâ€™Exception</span>
+              Élevez votre son avec des{" "}
+              <span className="text-gradient font-normal">Prods d’Exception</span>
             </h1>
 
             <p className="mx-auto mt-8 max-w-3xl text-base text-white/80 md:text-xl leading-relaxed font-light">
-              La marketplace premium pour les compositeurs visionnaires et les artistes en quÃªte dâ€™excellence.
-              Vendez, achetez et collaborez dans un Ã©cosystÃ¨me sÃ©curisÃ© et transparent.
+              La marketplace premium pour les compositeurs visionnaires et les artistes en quête d’excellence.
+              Vendez, achetez et collaborez dans un écosystème sécurisé et transparent.
             </p>
 
             <div className="mt-12 flex flex-wrap justify-center gap-6">
@@ -131,12 +131,12 @@ export default function Home() {
         <section className="mx-auto max-w-7xl px-6 py-20">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-4xl font-bold font-display mb-3">DerniÃ¨res PÃ©pites ğŸ’</h2>
+              <h2 className="text-4xl font-bold font-display mb-3">Dernières Pépites ??</h2>
               <p className="text-slate-400">Les productions les plus en vogue cette semaine</p>
             </div>
             <Link href="/catalogue" className="text-brand-gold hover:text-brand-gold-dark font-semibold flex items-center gap-2 group">
               Voir tout
-              <span className="group-hover:translate-x-1 transition-transform">â†’</span>
+              <span className="group-hover:translate-x-1 transition-transform">?</span>
             </Link>
           </div>
 
@@ -164,7 +164,7 @@ export default function Home() {
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
                       <Link
                         href={`/product/${beat.slug}`}
-                        aria-label={`Ã‰couter ${beat.title}`}
+                        aria-label={`Écouter ${beat.title}`}
                         className="rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark p-5 text-black shadow-2xl hover:scale-110 transition-transform glow-gold"
                       >
                         <Play className="h-8 w-8 fill-current" />
@@ -186,7 +186,7 @@ export default function Home() {
 
                     <div className="flex items-center justify-between pt-4 border-t border-white/10">
                       <div>
-                        <span className="text-2xl font-bold text-gradient">{Number(beat.basicPrice ?? 0).toFixed(2)} â‚¬</span>
+                        <span className="text-2xl font-bold text-gradient">{Number(beat.basicPrice ?? 0).toFixed(2)} €</span>
                         <span className="text-xs text-slate-500 ml-2">Licence Basic</span>
                       </div>
                       <Link
@@ -212,7 +212,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold font-display mb-4">Pourquoi SUMVIBES ?</h2>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Une plateforme pensÃ©e par des musiciens, pour des musiciens
+              Une plateforme pensée par des musiciens, pour des musiciens
             </p>
           </div>
 
@@ -232,8 +232,8 @@ export default function Home() {
         {/* Testimonials Section */}
         <section className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold font-display mb-4">Ils nous font confiance â­</h2>
-            <p className="text-xl text-slate-400">Des milliers dâ€™artistes satisfaits</p>
+            <h2 className="text-5xl font-bold font-display mb-4">Ils nous font confiance ?</h2>
+            <p className="text-xl text-slate-400">Des milliers d’artistes satisfaits</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -264,10 +264,10 @@ export default function Home() {
             <div className="relative z-10">
               <Award className="w-16 h-16 mx-auto mb-6 text-brand-gold" />
               <h2 className="text-4xl md:text-5xl font-bold font-display mb-6">
-                PrÃªt Ã  rÃ©volutionner votre son ?
+                Prêt à révolutionner votre son ?
               </h2>
               <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-                Rejoignez la communautÃ© SUMVIBES et accÃ©dez Ã  des milliers de productions premium
+                Rejoignez la communauté SUMVIBES et accédez à des milliers de productions premium
               </p>
               <div className="flex flex-wrap justify-center gap-6">
                 <Link
@@ -275,7 +275,7 @@ export default function Home() {
                   className="btn-primary rounded-full bg-white px-10 py-5 font-bold text-black text-lg hover:scale-105 flex items-center gap-3"
                 >
                   <Users className="w-5 h-5" />
-                  CrÃ©er mon compte gratuitement
+                  Créer mon compte gratuitement
                 </Link>
                 <Link
                   href="/about"
@@ -300,11 +300,11 @@ export default function Home() {
                 <span className="text-2xl font-bold text-gradient">SUMVIBES</span>
               </div>
               <p className="text-slate-400 mb-4 max-w-md">
-                La marketplace premium pour les compositeurs visionnaires et les artistes en quÃªte dâ€™excellence.
+                La marketplace premium pour les compositeurs visionnaires et les artistes en quête d’excellence.
               </p>
               <div className="flex gap-4">
                 <Link href="/community" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
-                  <span className="text-lg">ğ•</span>
+                  <span className="text-lg">??</span>
                 </Link>
                 <Link href="/community" className="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10">
                   <span className="text-lg">IG</span>
@@ -320,7 +320,7 @@ export default function Home() {
               <ul className="space-y-3 text-slate-400">
                 <li><Link href="/catalogue" className="hover:text-brand-gold">Catalogue</Link></li>
                 <li><Link href="/producers" className="hover:text-brand-gold">Producteurs</Link></li>
-                <li><Link href="/community" className="hover:text-brand-gold">CommunautÃ©</Link></li>
+                <li><Link href="/community" className="hover:text-brand-gold">Communauté</Link></li>
                 <li><Link href="/blog" className="hover:text-brand-gold">Blog</Link></li>
               </ul>
             </div>
@@ -330,14 +330,14 @@ export default function Home() {
               <ul className="space-y-3 text-slate-400">
                 <li><Link href="/help" className="hover:text-brand-gold">Aide</Link></li>
                 <li><Link href="/cgv" className="hover:text-brand-gold">CGV</Link></li>
-                <li><Link href="/privacy" className="hover:text-brand-gold">ConfidentialitÃ©</Link></li>
+                <li><Link href="/privacy" className="hover:text-brand-gold">Confidentialité</Link></li>
                 <li><Link href="/contact" className="hover:text-brand-gold">Contact</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-white/10 pt-8 text-center text-slate-500 text-sm">
-            Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s. | Fait avec ğŸ’œ pour les artistes
+            © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés. | Fait avec ?? pour les artistes
           </div>
         </div>
       </footer>

@@ -37,7 +37,7 @@ export default function CheckoutPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Erreur lors de la crÃ©ation de la session de paiement");
+        throw new Error(data.error || "Erreur lors de la création de la session de paiement");
       }
       const data = await res.json();
       if (data.url) window.location.href = data.url;
@@ -51,12 +51,12 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="relative min-h-screen bg-gradient-premium"><Navbar />
-        <main className="pt-20 flex items-center justify-center min-h-[60vh]">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium"><Navbar />
+        <main className="flex-1 pt-20 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <AlertCircle className="w-16 h-16 text-slate-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2">Votre panier est vide</h2>
-            <p className="text-slate-400 mb-6">Ajoutez des beats avant de procÃ©der au paiement.</p>
+            <p className="text-slate-400 mb-6">Ajoutez des beats avant de procéder au paiement.</p>
             <Link href="/catalogue" className="btn-primary px-6 py-3 rounded-full">Voir le catalogue</Link>
           </div>
         </main>
@@ -65,17 +65,17 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="mx-auto max-w-5xl px-6 py-12">
           <Link href="/cart" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-8">
             <ChevronLeft className="w-5 h-5" /> Retour au panier
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold font-display mb-2">
-            Paiement <span className="text-gradient">SÃ©curisÃ©</span> ðŸ”’
+            Paiement <span className="text-gradient">Sécurisé</span> ??
           </h1>
-          <p className="text-slate-400 mb-10">Finalisez votre commande en toute sÃ©curitÃ©</p>
+          <p className="text-slate-400 mb-10">Finalisez votre commande en toute sécurité</p>
 
           {error && (
             <div className="glass rounded-xl p-4 border border-red-500/30 text-red-400 flex items-center gap-3 mb-6">
@@ -92,12 +92,12 @@ export default function CheckoutPage() {
                     <CreditCard className="w-6 h-6 text-brand-gold" /> Mode de paiement
                   </h2>
                   <p className="text-slate-400 text-sm mb-6">
-                    Vous serez redirigÃ© vers Stripe, notre partenaire de paiement sÃ©curisÃ©, pour finaliser votre commande.
+                    Vous serez redirigé vers Stripe, notre partenaire de paiement sécurisé, pour finaliser votre commande.
                   </p>
                   <div className="flex items-center gap-3 glass rounded-xl p-4">
-                    <div className="text-3xl">ðŸ’³</div>
+                    <div className="text-3xl">??</div>
                     <div>
-                      <div className="font-bold">Stripe â€” Paiement sÃ©curisÃ©</div>
+                      <div className="font-bold">Stripe — Paiement sécurisé</div>
                       <div className="text-xs text-slate-400">Visa, Mastercard, Amex, iDEAL et plus</div>
                     </div>
                   </div>
@@ -109,7 +109,7 @@ export default function CheckoutPage() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2 text-slate-300">PrÃ©nom</label>
+                        <label className="block text-sm font-medium mb-2 text-slate-300">Prénom</label>
                         <input type="text" placeholder="John" className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50" />
                       </div>
                       <div>
@@ -126,7 +126,7 @@ export default function CheckoutPage() {
 
                 <button type="submit" disabled={loading}
                   className="w-full btn-primary rounded-xl bg-gradient-to-r from-brand-gold to-brand-gold-dark py-5 font-bold text-black text-lg hover:shadow-brand-gold/50 hover:scale-[1.02] flex items-center justify-center gap-3 disabled:opacity-50">
-                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Lock className="w-5 h-5" /> Payer {total.toFixed(2)} â‚¬</>}
+                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Lock className="w-5 h-5" /> Payer {total.toFixed(2)} €</>}
                 </button>
               </form>
             </div>
@@ -152,28 +152,28 @@ export default function CheckoutPage() {
                           <div className="font-bold text-sm truncate">{beat?.title ?? "Beat"}</div>
                           <div className="text-xs text-slate-400">Licence {license?.name ?? "Basic"}</div>
                         </div>
-                        <div className="font-bold">{price.toFixed(2)} â‚¬</div>
+                        <div className="font-bold">{price.toFixed(2)} €</div>
                       </div>
                     );
                   })}
                 </div>
                 <div className="border-t border-white/10 pt-4 space-y-3">
-                  <div className="flex justify-between text-slate-300 text-sm"><span>Sous-total</span><span>{subtotal.toFixed(2)} â‚¬</span></div>
-                  <div className="flex justify-between text-slate-300 text-sm"><span>TVA (20%)</span><span>{tax.toFixed(2)} â‚¬</span></div>
+                  <div className="flex justify-between text-slate-300 text-sm"><span>Sous-total</span><span>{subtotal.toFixed(2)} €</span></div>
+                  <div className="flex justify-between text-slate-300 text-sm"><span>TVA (20%)</span><span>{tax.toFixed(2)} €</span></div>
                   <div className="border-t border-white/10 pt-3 flex justify-between">
                     <span className="font-bold text-lg">Total</span>
-                    <span className="text-2xl font-bold text-gradient">{total.toFixed(2)} â‚¬</span>
+                    <span className="text-2xl font-bold text-gradient">{total.toFixed(2)} €</span>
                   </div>
                 </div>
                 <div className="mt-8 space-y-3">
-                  {["Paiement sÃ©curisÃ© SSL", "TÃ©lÃ©chargement immÃ©diat", "Licence PDF incluse"].map((f) => (
+                  {["Paiement sécurisé SSL", "Téléchargement immédiat", "Licence PDF incluse"].map((f) => (
                     <div key={f} className="flex items-center gap-2 text-sm text-slate-300">
                       <Check className="w-4 h-4 text-brand-gold flex-shrink-0" /> {f}
                     </div>
                   ))}
                 </div>
                 <div className="mt-6 flex items-center gap-2 text-xs text-slate-500">
-                  <Shield className="w-4 h-4" /> ProtÃ©gÃ© par Stripe â€” Chiffrement 256 bits
+                  <Shield className="w-4 h-4" /> Protégé par Stripe — Chiffrement 256 bits
                 </div>
               </div>
             </div>
@@ -181,7 +181,7 @@ export default function CheckoutPage() {
         </section>
       </main>
       <footer className="border-t border-white/10 px-6 py-8">
-        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.</div>
+        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">© 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.</div>
       </footer>
     </div>
   );

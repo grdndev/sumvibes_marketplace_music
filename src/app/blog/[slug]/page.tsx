@@ -24,10 +24,10 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <article className="mx-auto max-w-4xl px-6 py-12">
           <Link href="/blog" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-8">
             <ChevronLeft className="w-5 h-5" /> Retour au blog

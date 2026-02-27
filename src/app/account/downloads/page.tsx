@@ -36,11 +36,11 @@ export default function DownloadsPage() {
   }, [user]);
 
   if (!user) return (
-    <div className="relative min-h-screen bg-gradient-premium"><Navbar />
-      <main className="pt-20 flex items-center justify-center min-h-[60vh]">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium"><Navbar />
+      <main className="flex-1 pt-20 flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p className="text-slate-400 mb-4">Connectez-vous pour voir vos tÃ©lÃ©chargements</p>
+          <p className="text-slate-400 mb-4">Connectez-vous pour voir vos téléchargements</p>
           <Link href="/login" className="btn-primary px-6 py-3 rounded-full">Se connecter</Link>
         </div>
       </main>
@@ -57,13 +57,13 @@ export default function DownloadsPage() {
   const getFormat = (l: Purchase["license"]) => [l.includesMp3 && "MP3", l.includesWav && "WAV", l.includesStems && "Stems"].filter(Boolean).join(" + ") || "MP3";
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium"><Navbar />
-      <main className="pt-20">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium"><Navbar />
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <Link href="/account" className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-gold mb-6"><ChevronLeft className="w-5 h-5" /> Retour au compte</Link>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient">Mes TÃ©lÃ©chargements</h1>
+              <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient">Mes Téléchargements</h1>
               <p className="text-slate-400 mt-2">Retrouvez tous vos achats et fichiers</p>
             </div>
             <span className="glass px-4 py-2 rounded-full text-sm">{purchases.length} achat{purchases.length !== 1 ? "s" : ""}</span>
@@ -90,8 +90,8 @@ export default function DownloadsPage() {
             <div className="glass rounded-2xl p-12 text-center">
               <Download className="w-16 h-16 text-slate-500 mx-auto mb-4" />
               {purchases.length === 0
-                ? <><p className="text-slate-400 mb-4">Aucun achat pour l'instant</p><Link href="/catalogue" className="btn-primary px-6 py-3 rounded-full">DÃ©couvrir les beats</Link></>
-                : <p className="text-slate-400">Aucun rÃ©sultat</p>}
+                ? <><p className="text-slate-400 mb-4">Aucun achat pour l'instant</p><Link href="/catalogue" className="btn-primary px-6 py-3 rounded-full">Découvrir les beats</Link></>
+                : <p className="text-slate-400">Aucun résultat</p>}
             </div>
           ) : (
             <div className="space-y-4">
@@ -110,7 +110,7 @@ export default function DownloadsPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-lg">{item.beat.title}</h3>
-                          <p className="text-sm text-slate-400">{producerName} Â· {item.beat.genre[0]} Â· {item.beat.bpm} BPM{item.beat.key ? ` Â· ${item.beat.key}` : ""}</p>
+                          <p className="text-sm text-slate-400">{producerName} · {item.beat.genre[0]} · {item.beat.bpm} BPM{item.beat.key ? ` · ${item.beat.key}` : ""}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4 flex-wrap">
@@ -119,12 +119,12 @@ export default function DownloadsPage() {
                       </div>
                       <div className="text-sm text-right">
                         <div className="text-slate-300">{getFormat(item.license)}</div>
-                        <div className="text-xs text-slate-400">{Number(item.amount).toFixed(2)} â‚¬</div>
-                        {isExclusive && <div className="text-xs text-green-400 flex items-center gap-1 justify-end mt-1"><CheckCircle className="w-3 h-3" />IllimitÃ©</div>}
+                        <div className="text-xs text-slate-400">{Number(item.amount).toFixed(2)} €</div>
+                        {isExclusive && <div className="text-xs text-green-400 flex items-center gap-1 justify-end mt-1"><CheckCircle className="w-3 h-3" />Illimité</div>}
                       </div>
                       <div className="flex items-center gap-2">
                         <a href={`/api/purchases/${item.id}/download`} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
-                          <Download className="w-4 h-4" /> TÃ©lÃ©charger
+                          <Download className="w-4 h-4" /> Télécharger
                         </a>
                         <Link href={`/product/${item.beat.slug}`} className="glass p-2 rounded-xl hover:bg-white/10" title="Voir le produit"><ExternalLink className="w-4 h-4" /></Link>
                         <button className="glass p-2 rounded-xl hover:bg-white/10" title="Voir la licence"><FileText className="w-4 h-4" /></button>
@@ -140,13 +140,13 @@ export default function DownloadsPage() {
             <h3 className="font-bold font-display text-lg mb-4 flex items-center gap-2"><FileText className="w-5 h-5 text-brand-gold" />Rappel des licences</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { name: "Basic", color: "", items: ["Format MP3", "Usage non-commercial", "CrÃ©dit obligatoire"] },
-                { name: "Premium", color: "border border-brand-gold/20", items: ["WAV + MP3", "Usage commercial", "Distribution limitÃ©e"] },
-                { name: "Exclusive", color: "border border-purple-400/20", items: ["WAV + Stems", "Droits complets", "Beat retirÃ© du catalogue"] },
+                { name: "Basic", color: "", items: ["Format MP3", "Usage non-commercial", "Crédit obligatoire"] },
+                { name: "Premium", color: "border border-brand-gold/20", items: ["WAV + MP3", "Usage commercial", "Distribution limitée"] },
+                { name: "Exclusive", color: "border border-purple-400/20", items: ["WAV + Stems", "Droits complets", "Beat retiré du catalogue"] },
               ].map(l => (
                 <div key={l.name} className={`glass rounded-xl p-4 ${l.color}`}>
                   <h4 className="font-bold text-sm mb-2">{l.name}</h4>
-                  <ul className="text-xs text-slate-400 space-y-1">{l.items.map(i => <li key={i}>â€¢ {i}</li>)}</ul>
+                  <ul className="text-xs text-slate-400 space-y-1">{l.items.map(i => <li key={i}>• {i}</li>)}</ul>
                 </div>
               ))}
             </div>
@@ -154,7 +154,7 @@ export default function DownloadsPage() {
         </div>
       </main>
       <footer className="border-t border-white/10 px-6 py-8">
-        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">Â© 2026 SUMVIBES by SAS BE GREAT.</div>
+        <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">© 2026 SUMVIBES by SAS BE GREAT.</div>
       </footer>
     </div>
   );

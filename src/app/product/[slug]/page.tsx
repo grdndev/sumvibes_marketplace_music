@@ -148,7 +148,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   if (loading) {
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
         <main className="pt-20 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
@@ -159,7 +159,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   if (error || !beat) {
     return (
-      <div className="relative min-h-screen bg-gradient-premium">
+      <div className="relative flex-1 flex flex-col bg-gradient-premium">
         <Navbar />
         <main className="pt-20 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
@@ -180,14 +180,14 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     : 0;
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
       {beat.previewUrl && (
         <audio ref={audioRef} src={beat.previewUrl} onEnded={() => setIsPlaying(false)} />
       )}
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-6 py-6">
           <nav className="flex items-center gap-2 text-sm text-slate-400">
             <Link href="/catalogue" className="hover:text-brand-gold">Catalogue</Link>

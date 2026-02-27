@@ -19,17 +19,17 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-premium">
+    <div className="relative flex-1 flex flex-col bg-gradient-premium">
       <Navbar />
 
-      <main className="pt-20">
+      <main className="flex-1 pt-20">
         <section className="px-6 py-12 md:py-16">
           <div className="mx-auto max-w-7xl">
             <h1 className="text-4xl md:text-6xl font-bold font-display mb-4">
-              Contactez-<span className="text-gradient">nous</span> ðŸ’¬
+              Contactez-<span className="text-gradient">nous</span> ??
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl">
-              Une question, une suggestion ou un partenariat ? Notre Ã©quipe est Ã  votre Ã©coute.
+              Une question, une suggestion ou un partenariat ? Notre équipe est à votre écoute.
             </p>
           </div>
         </section>
@@ -40,9 +40,9 @@ export default function ContactPage() {
             <div className="lg:col-span-3">
               {sent ? (
                 <div className="glass rounded-3xl p-12 text-center">
-                  <div className="text-6xl mb-6">âœ…</div>
-                  <h2 className="text-2xl font-bold mb-4">Message envoyÃ© !</h2>
-                  <p className="text-slate-400 mb-6">Nous vous rÃ©pondrons dans les 24 Ã  48 heures.</p>
+                  <div className="text-6xl mb-6">?</div>
+                  <h2 className="text-2xl font-bold mb-4">Message envoyé !</h2>
+                  <p className="text-slate-400 mb-6">Nous vous répondrons dans les 24 à 48 heures.</p>
                   <button onClick={() => setSent(false)} className="glass rounded-xl px-6 py-3 font-semibold hover:bg-white/10">
                     Envoyer un autre message
                   </button>
@@ -79,7 +79,7 @@ export default function ContactPage() {
                     <label className="block text-sm font-medium mb-2 text-slate-300">Message</label>
                     <textarea
                       required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
-                      placeholder="DÃ©crivez votre demande en dÃ©tail..."
+                      placeholder="Décrivez votre demande en détail..."
                       rows={6}
                       className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50 resize-none"
                     />
@@ -115,7 +115,7 @@ export default function ContactPage() {
                   <Phone className="w-6 h-6 text-brand-gold" />
                 </div>
                 <div>
-                  <h3 className="font-bold mb-1">TÃ©lÃ©phone</h3>
+                  <h3 className="font-bold mb-1">Téléphone</h3>
                   <a href="tel:+590691272015" className="text-slate-400 hover:text-brand-gold text-sm">+590 691 27 20 15</a>
                 </div>
               </div>
@@ -136,7 +136,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold mb-1">Horaires</h3>
-                  <p className="text-slate-400 text-sm">Lun - Ven : 9h00 - 18h00<br />RÃ©ponse sous 24-48h</p>
+                  <p className="text-slate-400 text-sm">Lun - Ven : 9h00 - 18h00<br />Réponse sous 24-48h</p>
                 </div>
               </div>
 
@@ -146,7 +146,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold mb-1">Support en ligne</h3>
-                  <p className="text-slate-400 text-sm">Chat disponible pour les membres connectÃ©s</p>
+                  <p className="text-slate-400 text-sm">Chat disponible pour les membres connectés</p>
                 </div>
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function ContactPage() {
 
       <footer className="border-t border-white/10 px-6 py-8">
         <div className="mx-auto max-w-7xl text-center text-slate-500 text-sm">
-          Â© 2026 SUMVIBES by SAS BE GREAT. Tous droits rÃ©servÃ©s.
+          © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
     </div>
