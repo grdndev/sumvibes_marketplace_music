@@ -8,6 +8,7 @@ RUN npm install
 
 COPY . .
 
+# Rendre le script exécutable
 RUN chmod +x entrypoint.sh
 
 EXPOSE 3000
