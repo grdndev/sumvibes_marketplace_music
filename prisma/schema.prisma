@@ -69,6 +69,7 @@ model User {
   
   // Relations
   beats         Beat[]
+  services      Service[]
   purchases     Purchase[]
   sellerProfile SellerProfile?
   reviews       Review[]
@@ -230,6 +231,34 @@ model License {
   
   @@index([beatId])
   @@index([type])
+}
+
+// ============================================
+// SERVICES & GIGS
+// ============================================
+
+model Service {
+  id              String      @id @default(cuid())
+  sellerId        String
+  seller          User        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String      @db.Text
+  category        String      // "mixage", "ecriture", etc.
+  price           Decimal     @db.Decimal(10, 2)
+  deliveryTime    String?
+  location        String?
+  
+  rating          Decimal?    @db.Decimal(3, 2)
+  reviewsCount    Int         @default(0)
+  
+  featured        Boolean     @default(false)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@index([sellerId])
+  @@index([category])
 }
 
 // ============================================
