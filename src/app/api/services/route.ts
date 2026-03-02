@@ -9,9 +9,13 @@ export async function GET(request: NextRequest) {
         const searchQuery = searchParams.get("q");
         const page = parseInt(searchParams.get("page") || "1", 10);
         const limit = parseInt(searchParams.get("limit") || "9", 10);
+        const sellerId = searchParams.get("sellerId");
         const skip = (page - 1) * limit;
 
         const where: any = {};
+        if (sellerId) {
+            where.sellerId = sellerId;
+        }
         if (category && category !== "all") {
             where.category = category;
         }

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { ChevronLeft, Star, MapPin, Clock, MessageSquare, Briefcase, Calendar } from "lucide-react";
+import { ContactSellerButton } from "./ContactSellerButton";
 
 async function getService(id: string) {
     const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/services/${id}`, {
@@ -106,9 +107,7 @@ export default async function ServiceDetailsPage({ params }: { params: { id: str
                                 <button className="w-full btn-primary px-6 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-all text-black mb-3 text-lg">
                                     Commander
                                 </button>
-                                <Link href={`/community/messages?new=${service.sellerId}`} className="w-full bg-white/10 hover:bg-white/15 px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors border border-white/10 text-white group">
-                                    <MessageSquare className="w-5 h-5 group-hover:text-brand-gold transition-colors" /> Contacter le prestataire
-                                </Link>
+                                <ContactSellerButton sellerId={service.sellerId} />
                             </div>
 
                             {/* Author Card */}

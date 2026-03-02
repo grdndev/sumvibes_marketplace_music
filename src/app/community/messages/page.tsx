@@ -490,17 +490,17 @@ function MessagesContent() {
                   cur.map((c) =>
                     c.userId === message.senderId
                       ? {
-                          ...c,
-                          username: u.username || c.username,
-                          displayName: u.displayName ?? null,
-                          avatar: u.avatar ?? null,
-                          artistName: u.sellerProfile?.artistName ?? null,
-                        }
+                        ...c,
+                        username: u.username || c.username,
+                        displayName: u.displayName ?? null,
+                        avatar: u.avatar ?? null,
+                        artistName: u.sellerProfile?.artistName ?? null,
+                      }
                       : c,
                   ),
                 );
               })
-              .catch(() => {/* silencieux */});
+              .catch(() => {/* silencieux */ });
           }
           return [newConv, ...prev];
         }
@@ -605,10 +605,10 @@ function MessagesContent() {
         prev.map((c) =>
           c.userId === activeConvId
             ? {
-                ...c,
-                lastMessage: content,
-                lastMessageAt: optimistic.createdAt,
-              }
+              ...c,
+              lastMessage: content,
+              lastMessageAt: optimistic.createdAt,
+            }
             : c,
         ),
       );
@@ -627,9 +627,15 @@ function MessagesContent() {
           body: JSON.stringify({ receiverId: activeConvId, content }),
         });
         if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
+          const textData = await res.text().catch(() => "");
+          let errData: any = {};
+          try {
+            errData = JSON.parse(textData);
+          } catch (e) {
+            errData = { error: textData || "Invalid server response" };
+          }
           console.error("[Send] API error:", res.status, errData);
-          throw new Error(errData.detail || errData.error || "Send failed");
+          throw new Error(errData.detail || errData.error || textData || "Send failed");
         }
 
         const saved: Message = await res.json();
@@ -880,11 +886,10 @@ function MessagesContent() {
                             className={`flex ${isMine ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-2 fade-in duration-300`}
                           >
                             <div
-                              className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm transition-opacity duration-200 ${
-                                isMine
+                              className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm transition-opacity duration-200 ${isMine
                                   ? "bg-brand-gold text-brand-purple font-medium rounded-br-sm shadow-[0_4px_15px_rgba(254,204,51,0.2)]"
                                   : "glass rounded-bl-sm"
-                              } ${msg.pending ? "opacity-55" : "opacity-100"}`}
+                                } ${msg.pending ? "opacity-55" : "opacity-100"}`}
                             >
                               <p className="break-words">{msg.content}</p>
                               <div

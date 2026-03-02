@@ -179,6 +179,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("[POST /api/messages] Request started.");
     const decoded = authenticate(req);
     if (!decoded) return unauthorized();
 

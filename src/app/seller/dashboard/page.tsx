@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   TrendingUp, DollarSign, Music, Eye, ShoppingCart, Users,
   ArrowUp, ArrowDown, BarChart3, Upload, CreditCard, FileText,
-  ArrowRight, Clock, Star, Loader2
+  ArrowRight, Clock, Star, Loader2, Briefcase
 } from "lucide-react";
 
 interface SellerStats {
@@ -210,6 +210,14 @@ export default function SellerDashboardPage() {
                       </div>
                       <ArrowRight className="w-4 h-4 text-slate-400" />
                     </Link>
+                    <Link href="/seller/services/display" className="flex items-center gap-3 glass rounded-xl p-4 hover:bg-white/5">
+                      <Briefcase className="w-5 h-5 text-purple-400" />
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">Services</div>
+                        <div className="text-xs text-slate-400">Gérer vos propositions</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-slate-400" />
+                    </Link>
                     <Link href="/seller/withdrawals" className="flex items-center gap-3 glass rounded-xl p-4 hover:bg-white/5">
                       <CreditCard className="w-5 h-5 text-green-400" />
                       <div className="flex-1">
@@ -256,11 +264,10 @@ export default function SellerDashboardPage() {
                             <td className="py-4 font-semibold">{sale.beat.title}</td>
                             <td className="py-4 text-slate-400">{sale.buyer.displayName || sale.buyer.artistName || "Acheteur"}</td>
                             <td className="py-4">
-                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                                sale.license.name.toLowerCase().includes("exclusive") ? "bg-purple-500/20 text-purple-400" :
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sale.license.name.toLowerCase().includes("exclusive") ? "bg-purple-500/20 text-purple-400" :
                                 sale.license.name.toLowerCase().includes("premium") ? "bg-brand-gold/20 text-brand-gold" :
-                                "bg-white/10 text-white"
-                              }`}>
+                                  "bg-white/10 text-white"
+                                }`}>
                                 {sale.license.name}
                               </span>
                             </td>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, ShoppingCart, User, LogOut, Settings } from "lucide-react";
+import { Menu, X, ShoppingCart, User, LogOut, Settings, Briefcase } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function Navbar() {
@@ -57,7 +57,7 @@ export function Navbar() {
                                 <ShoppingCart className="w-5 h-5" />
                                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-pink rounded-full text-xs flex items-center justify-center font-bold">0</span>
                             </Link>
-                            
+
                             {user ? (
                                 <div className="relative">
                                     <button
@@ -93,10 +93,16 @@ export function Navbar() {
                                                     <span className="text-sm">Paramètres</span>
                                                 </Link>
                                                 {user.role === "SELLER" && (
-                                                    <Link href="/seller/dashboard" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
-                                                        <ShoppingCart className="w-4 h-4" />
-                                                        <span className="text-sm">Dashboard vendeur</span>
-                                                    </Link>
+                                                    <>
+                                                        <Link href="/seller/dashboard" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
+                                                            <ShoppingCart className="w-4 h-4" />
+                                                            <span className="text-sm">Dashboard vendeur</span>
+                                                        </Link>
+                                                        <Link href="/seller/services/display" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
+                                                            <Briefcase className="w-4 h-4" />
+                                                            <span className="text-sm">Mes services</span>
+                                                        </Link>
+                                                    </>
                                                 )}
                                                 <button
                                                     onClick={handleLogout}
