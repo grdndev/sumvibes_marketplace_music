@@ -176,14 +176,16 @@ export default function CreateServicePage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full md:w-auto btn-primary px-10 py-4 rounded-xl font-bold flex items-center justify-center hover:scale-105 transition-all shadow-[0_4px_20px_rgba(254,204,51,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full md:w-auto group relative inline-flex items-center justify-center gap-2 px-10 py-4 bg-gradient-to-r from-brand-gold via-yellow-400 to-brand-gold bg-[length:200%_auto] hover:bg-[position:right_center] rounded-xl font-extrabold text-black overflow-hidden shadow-[0_4px_20px_rgba(254,204,51,0.4)] hover:shadow-[0_8px_30px_rgba(254,204,51,0.6)] hover:-translate-y-1 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_20px_rgba(254,204,51,0.4)]"
                             >
+                                <div className="absolute inset-0 bg-white/30 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                                 {loading ? (
                                     <>
-                                        <Loader2 className="w-5 h-5 mr-2 animate-spin text-black" /> Publication...
+                                        <Loader2 className="w-5 h-5 mr-2 animate-spin text-black relative z-10" />
+                                        <span className="relative z-10 drop-shadow-sm">Publication...</span>
                                     </>
                                 ) : (
-                                    "Publier le service"
+                                    <span className="relative z-10 drop-shadow-sm">Publier le service</span>
                                 )}
                             </button>
                         </div>

@@ -271,8 +271,10 @@ export default function SellerServicesPage() {
                                 Gérez vos propositions de services ou ajoutez-en de nouvelles.
                             </p>
                         </div>
-                        <Link href="/seller/services/create" className="btn-primary px-8 py-3.5 rounded-full font-bold flex items-center gap-2 self-start shadow-[0_4px_20px_0_rgba(254,204,51,0.3)] hover:shadow-[0_6px_25px_rgba(254,204,51,0.25)] hover:scale-105 transition-all relative z-10">
-                            <Plus className="w-5 h-5" /> Nouveau Service
+                        <Link href="/seller/services/create" className="group relative inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-brand-gold via-yellow-400 to-brand-gold bg-[length:200%_auto] hover:bg-[position:right_center] rounded-full font-extrabold text-black overflow-hidden shadow-[0_4px_20px_rgba(254,204,51,0.4)] hover:shadow-[0_8px_30px_rgba(254,204,51,0.6)] hover:-translate-y-1 transition-all duration-500 z-10">
+                            <div className="absolute inset-0 bg-white/30 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out rounded-full" />
+                            <Plus className="w-5 h-5 relative z-10 drop-shadow-sm" />
+                            <span className="relative z-10 drop-shadow-sm">Nouveau Service</span>
                         </Link>
                     </div>
 
@@ -337,9 +339,10 @@ export default function SellerServicesPage() {
                                 </p>
                                 <Link
                                     href="/seller/services/create"
-                                    className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg inline-block"
+                                    className="group relative inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-brand-gold via-yellow-400 to-brand-gold bg-[length:200%_auto] hover:bg-[position:right_center] rounded-full font-extrabold text-black overflow-hidden shadow-[0_4px_20px_rgba(254,204,51,0.3)] hover:shadow-[0_8px_30px_rgba(254,204,51,0.5)] hover:-translate-y-1 transition-all duration-500"
                                 >
-                                    Créer votre premier service
+                                    <div className="absolute inset-0 bg-white/30 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out rounded-full" />
+                                    <span className="relative z-10 drop-shadow-sm">Créer votre premier service</span>
                                 </Link>
                             </div>
                         )}

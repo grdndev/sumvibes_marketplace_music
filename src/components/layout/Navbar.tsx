@@ -98,10 +98,6 @@ export function Navbar() {
                                                             <ShoppingCart className="w-4 h-4" />
                                                             <span className="text-sm">Dashboard vendeur</span>
                                                         </Link>
-                                                        <Link href="/seller/services/display" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
-                                                            <Briefcase className="w-4 h-4" />
-                                                            <span className="text-sm">Mes services</span>
-                                                        </Link>
                                                     </>
                                                 )}
                                                 <button
