@@ -3,9 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
-import { useCart } from "@/hooks/useCart";
+import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Music, Trash2, ShoppingCart, ArrowRight, Tag, Shield, Loader2 } from "lucide-react";
+
+
+function coverSrc(raw: string) {
+  if (raw.startsWith("http") || raw.startsWith("/")) return raw;
+  return `/uploads/covers/${raw}`;
+}
 
 export default function CartPage() {
   const router = useRouter();
@@ -16,7 +22,9 @@ export default function CartPage() {
     await removeFromCart(itemId);
   };
 
-  const subtotal = cart.total;
+  console.log(cart);
+
+  const subtotal = cart.total
   const tax = subtotal * 0.2;
   const total = subtotal + tax;
 
@@ -60,7 +68,7 @@ export default function CartPage() {
                   <div key={item.id} className="glass rounded-2xl p-6 flex items-center gap-6 group hover:scale-[1.01]">
                     <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 flex items-center justify-center overflow-hidden">
                       {item.beat.coverImage ? (
-                        <img src={item.beat.coverImage} alt={item.beat.title} className="w-full h-full object-cover" />
+                        <img src={coverSrc(item.beat.coverImage)} alt={item.beat.title} className="w-full h-full object-cover" />
                       ) : (
                         <Music className="w-8 h-8 text-white/30" />
                       )}
@@ -73,7 +81,7 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xl font-bold text-gradient">{item.price} €</div>
+                      <div className="text-xl font-bold text-gradient">{item.beat.basicPrice} €</div>
                       <button
                         onClick={() => handleRemove(item.id)}
                         className="mt-2 text-slate-500 hover:text-red-400 flex items-center gap-1 text-sm ml-auto"
@@ -99,15 +107,15 @@ export default function CartPage() {
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between text-slate-300">
                       <span>Sous-total</span>
-                      <span>{subtotal.toFixed(2)} €</span>
+                      <span>{subtotal} €</span>
                     </div>
                     <div className="flex justify-between text-slate-300">
                       <span>TVA (20%)</span>
-                      <span>{tax.toFixed(2)} €</span>
+                      <span>{tax} €</span>
                     </div>
                     <div className="border-t border-white/10 pt-4 flex justify-between">
                       <span className="font-bold text-lg">Total</span>
-                      <span className="text-2xl font-bold text-gradient">{total.toFixed(2)} €</span>
+                      <span className="text-2xl font-bold text-gradient">{total} €</span>
                     </div>
                   </div>
 

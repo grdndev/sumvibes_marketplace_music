@@ -3,6 +3,7 @@ import { Poppins, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SocketProvider } from "@/contexts/SocketContext";
+import { CartProvider } from "@/contexts/CartContext";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -36,7 +37,11 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.variable} ${cormorant.variable} antialiased`}>
         <AuthProvider>
-          <SocketProvider>{children}</SocketProvider>
+          <CartProvider>
+            <SocketProvider>
+              {children}
+            </SocketProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

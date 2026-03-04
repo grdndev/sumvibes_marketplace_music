@@ -10,6 +10,7 @@ const INSTRUMENTS = [
 ];
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useCart } from '@/contexts/CartContext';
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
@@ -108,21 +109,15 @@ function coverSrc(raw: string) {
   return `/uploads/covers/${raw}`;
 }
 
-const addShop = (beatId: string) => {
-  const existing = localStorage.getItem('shop');
-  if (existing) {
-    const items = JSON.parse(existing);
-    items.push(beatId);
-    localStorage.setItem('shop', JSON.stringify(items));
-  } else {
-    localStorage.setItem('shop', JSON.stringify([beatId]));
-  }
-};
+ 
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CataloguePage() {
+
+
   // Filtres
+  const { addToCart } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("Tous");
   const [selectedMood, setSelectedMood] = useState("Tous");
@@ -869,8 +864,11 @@ export default function CataloguePage() {
                               <Play className="w-3.5 h-3.5 text-brand-gold fill-current ml-0.5" />
                             )}
                           </button>
-                          <button   onClick={() => addShop(beat.id)} className="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" >
-                            <ShoppingCart className="w-3.5 h-3.5" /> Ajouter
+                          <button 
+                              onClick={() => addToCart(beat.id, 'basic')} 
+                              className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 flex-shrink-0"
+                            >
+                              <ShoppingCart className="w-4 h-4" /> Ajouter
                           </button>
                         </div>
                       </div>
@@ -959,9 +957,12 @@ export default function CataloguePage() {
                         {Number(beat.basicPrice ?? 0).toFixed(2)}€
                       </div>
 
-                      <button className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 flex-shrink-0">
-                        <ShoppingCart className="w-4 h-4" /> Ajouter
-                      </button>
+                    <button 
+                    onClick={() => addToCart(beat.id, 'basic')}
+                    className="btn-primary p-2 rounded-lg text-xs font-semibold flex items-center justify-center hover:scale-105 transition-transform"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                  </button>
                     </div>
                   );
                 })}

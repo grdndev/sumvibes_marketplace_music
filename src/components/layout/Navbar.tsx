@@ -5,16 +5,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, ShoppingCart, User, LogOut, Settings, Briefcase } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { set } from "mongoose";
+import { useEffect } from "react";
+
+ 
+
 
 export function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+ 
     const { user, loading, logout } = useAuth();
+    const { cart } = useCart();
+    
 
     const handleLogout = () => {
         logout();
         window.location.href = "/";
     };
+
+    
+
+ 
+     
 
     return (
         <nav className="fixed top-0 z-50 w-full glass border-b border-white/5">
@@ -55,7 +69,7 @@ export function Navbar() {
                         <>
                             <Link href="/cart" className="glass p-2 rounded-xl hover:bg-white/10 transition-all relative">
                                 <ShoppingCart className="w-5 h-5" />
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-pink rounded-full text-xs flex items-center justify-center font-bold">0</span>
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-pink rounded-full text-xs flex items-center justify-center font-bold">{cart.count}</span>
                             </Link>
 
                             {user ? (

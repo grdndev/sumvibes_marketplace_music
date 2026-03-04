@@ -3,15 +3,15 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { CheckCircle, Download, FileText, Music, ArrowRight, Mail } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
 
 export default function CheckoutConfirmationPage() {
+  const cart = useCart();
   const orderNumber = "INV-2026-0042";
-  const purchases = [
-    { title: "Midnight Dreams", producer: "Xavier Jarvis", license: "Premium", price: 79.99 },
-    { title: "Urban Vibes", producer: "DJ Kenzo", license: "Basic", price: 39.99 },
-  ];
-  const total = purchases.reduce((sum, p) => sum + p.price, 0) * 1.2;
-
+  const purchases = cart?.cart.items ?? [];
+  const total = cart?.cart?.total* 1.2;
+ 
   return (
     <div className="relative min-h-screen bg-gradient-premium">
       <Navbar />
@@ -45,14 +45,15 @@ export default function CheckoutConfirmationPage() {
             </div>
 
             <div className="border-t border-white/10 pt-6 space-y-4">
-              {purchases.map((item, i) => (
-                <div key={i} className="flex items-center gap-4 glass rounded-2xl p-4">
+              {purchases.map((item) => (
+                <div key={item.beat.id} className="flex items-center gap-4 glass rounded-2xl p-4">
                   <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 flex items-center justify-center">
                     <Music className="w-6 h-6 text-white/30" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold truncate">{item.title}</div>
-                    <div className="text-sm text-slate-400">Prod. by {item.producer} — Licence {item.license}</div>
+                    <div className="font-bold truncate">{item.beat.title}</div>
+                    <div className="text-sm text-slate-400">Prod. by {item.beat.seller.sellerProfile?.artistName || "Inconnu"} — Licence {item?.license?.name || "Basic"}</div>
+                   
                   </div>
                   <div className="flex items-center gap-2">
                     <button className="glass rounded-xl px-4 py-2 text-sm font-semibold hover:bg-brand-gold/20 hover:text-brand-gold flex items-center gap-2">
