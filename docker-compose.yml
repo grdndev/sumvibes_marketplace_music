@@ -65,6 +65,8 @@ services:
     environment:
       DATABASE_URL: postgresql://sumvibes_user:sumvibes_password@postgres:5432/sumvibes_db
       MONGODB_URI: mongodb://root:rootpassword@mongodb:27017/sumvibes_mongo_db?authSource=admin
+      CHOKIDAR_USEPOLLING: "true"      
+      WATCHPACK_POLLING: "true"         
     volumes:
       - .:/app
       - /app/node_modules

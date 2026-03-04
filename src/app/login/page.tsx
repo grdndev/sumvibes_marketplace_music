@@ -39,7 +39,15 @@ export default function LoginPage() {
       login(data.token, data.user);
       
       // Redirect to account page
-      router.push("/account");
+      if(data.user.role === "ADMIN") {
+        router.push("/admin");
+        return;
+      }else if (data.user.role === "SELLER"){
+        router.push("/seller/dashboard");
+      }else if (data.user.role === "BUYER"){
+        router.push("/account");
+      }
+  
     } catch {
       setError("Erreur réseau. Réessayez.");
     } finally {

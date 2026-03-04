@@ -34,6 +34,7 @@ import {
   SkipForward,
 } from "lucide-react";
 import { useBeats } from "@/hooks/useBeats";
+import { json } from "stream/consumers";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -107,6 +108,17 @@ function coverSrc(raw: string) {
   return `/uploads/covers/${raw}`;
 }
 
+const addShop = (beatId: string) => {
+  const existing = localStorage.getItem('shop');
+  if (existing) {
+    const items = JSON.parse(existing);
+    items.push(beatId);
+    localStorage.setItem('shop', JSON.stringify(items));
+  } else {
+    localStorage.setItem('shop', JSON.stringify([beatId]));
+  }
+};
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CataloguePage() {
@@ -162,8 +174,6 @@ export default function CataloguePage() {
       }
     }
   };
-
-
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -859,7 +869,7 @@ export default function CataloguePage() {
                               <Play className="w-3.5 h-3.5 text-brand-gold fill-current ml-0.5" />
                             )}
                           </button>
-                          <button className="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+                          <button   onClick={() => addShop(beat.id)} className="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1" >
                             <ShoppingCart className="w-3.5 h-3.5" /> Ajouter
                           </button>
                         </div>
