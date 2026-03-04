@@ -70,7 +70,7 @@ export function useCart() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ beatId, license })
+        body: JSON.stringify({ beatId, licenseType: license })
       });
 
       if (res.ok) {

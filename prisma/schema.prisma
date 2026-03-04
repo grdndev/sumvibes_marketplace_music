@@ -383,15 +383,18 @@ model Favorite {
 }
 
 model CartItem {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  beatId    String
-  beat      Beat     @relation(fields: [beatId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  
-  @@unique([userId, beatId])
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  beatId      String
+  beat        Beat        @relation(fields: [beatId], references: [id], onDelete: Cascade)
+
+  licenseType LicenseType @default(BASIC)
+  price       Decimal     @db.Decimal(10, 2) @default(0)
+
+  createdAt   DateTime    @default(now())
+
+  @@unique([userId, beatId, licenseType])
   @@index([userId])
 }
 

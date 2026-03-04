@@ -115,13 +115,19 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     const license = beat.licenses[selectedLicense];
     if (!license) return;
 
+    const normalizedLicense = license.name.toUpperCase();
+    const licenseType =
+      normalizedLicense.includes('EXCLUSIVE') ? 'EXCLUSIVE' :
+      normalizedLicense.includes('PREMIUM') ? 'PREMIUM' :
+      'BASIC';
+
     setAddingToCart(true);
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ beatId: beat.id, licenseId: license.id }),
+        body: JSON.stringify({ beatId: beat.id, licenseType }),
       });
       if (res.ok) {
         setCartSuccess(true);

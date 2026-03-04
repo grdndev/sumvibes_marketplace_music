@@ -46,13 +46,13 @@ export default function CheckoutConfirmationPage() {
 
             <div className="border-t border-white/10 pt-6 space-y-4">
               {purchases.map((item) => (
-                <div key={item.beat.id} className="flex items-center gap-4 glass rounded-2xl p-4">
+                <div key={item.id} className="flex items-center gap-4 glass rounded-2xl p-4">
                   <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 flex items-center justify-center">
                     <Music className="w-6 h-6 text-white/30" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-bold truncate">{item.beat.title}</div>
-                    <div className="text-sm text-slate-400">Prod. by {item.beat.seller.sellerProfile?.artistName || "Inconnu"} — Licence {item?.license?.name || "Basic"}</div>
+                    <div className="text-sm text-slate-400">Prod. by {item.beat.seller.sellerProfile?.artistName || "Inconnu"} — Licence {item?.licenseType || null || "Basic"}</div>
                    
                   </div>
                   <div className="flex items-center gap-2">

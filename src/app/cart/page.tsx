@@ -25,8 +25,8 @@ export default function CartPage() {
   console.log(cart);
 
   const subtotal = cart.total
-  const tax = subtotal * 0.2;
-  const total = subtotal + tax;
+  const tax = (subtotal * 0.2).toFixed(2);
+  const total = (subtotal + parseFloat(tax)).toFixed(2);
 
   if (!user) {
     return (
@@ -77,11 +77,11 @@ export default function CartPage() {
                       <h3 className="font-bold text-lg truncate">{item.beat.title}</h3>
                       <p className="text-sm text-slate-400">Prod. by {item.beat.seller.sellerProfile?.artistName || "Producteur"}</p>
                       <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
-                        <span className="glass px-2 py-1 rounded">Licence {item.license?.name || "Basic"}</span>
+                        <span className="glass px-2 py-1 rounded">Licence {item?.licenseType || null}</span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xl font-bold text-gradient">{item.beat.basicPrice} €</div>
+                      <div className="text-xl font-bold text-gradient">{item.price} €</div>
                       <button
                         onClick={() => handleRemove(item.id)}
                         className="mt-2 text-slate-500 hover:text-red-400 flex items-center gap-1 text-sm ml-auto"

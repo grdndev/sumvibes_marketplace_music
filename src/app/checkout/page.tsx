@@ -19,7 +19,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
 
   const items = cart?.items ?? [];
-  const subtotal = items.reduce((sum: number, item: any) => sum + Number(item.license?.price ?? item.beat?.basicPrice ?? 0), 0);
+  const subtotal = cart?.total ?? 0;
   const tax = subtotal * 0.2;
   const total = subtotal + tax;
 
@@ -143,8 +143,8 @@ export default function CheckoutPage() {
                 <div className="space-y-4 mb-6">
                   {items.map((item: any) => {
                     const beat = item.beat;
-                    const license = item.license;
-                    const price = Number(license?.price ?? beat?.basicPrice ?? 0);
+                    const license = item.licenseType;
+                    const price =  item.price;
                     return (
                       <div key={item.id} className="flex items-center gap-4">
                         <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 overflow-hidden">
@@ -155,9 +155,9 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-bold text-sm truncate">{beat?.title ?? "Beat"}</div>
-                          <div className="text-xs text-slate-400">Licence {license?.name ?? "Basic"}</div>
+                          <div className="text-xs text-slate-400">Licence {item?.licenseType || null}</div>
                         </div>
-                        <div className="font-bold">{price.toFixed(2)} €</div>
+                        <div className="font-bold">{price} €</div>
                       </div>
                     );
                   })}
