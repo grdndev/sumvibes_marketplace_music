@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 import { generateInvoiceNumber } from "@/lib/auth";
+import { LicenseType, PaymentMethod } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,119 +17,110 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { beatId, licenseId, paymentMethod, stripePaymentIntentId } = body;
+    const { data } = body;
 
     // Validation
-    if (!beatId || !licenseId || !paymentMethod) {
+    const cartItems = data?.cart?.items;
+    if (!data?.paymentMethod || !Array.isArray(cartItems) || cartItems.length === 0) {
       return NextResponse.json(
-        { error: "Champs requis : beatId, licenseId, paymentMethod" },
+        { error: "Champs requis : paymentMethod, cart.items" },
         { status: 400 }
       );
     }
 
-    // Récupérer le beat et la licence
-    const beat = await prisma.beat.findUnique({
-      where: { id: beatId },
-      include: {
-        seller: true,
-        licenses: {
-          where: { id: licenseId },
-        },
-      },
-    });
+    // Transaction atomique pour créer licences + achats + stats
+    const purchases = await prisma.$transaction(async (tx) => {
+      const results = [];
 
-    if (!beat) {
-      return NextResponse.json({ error: "Beat introuvable" }, { status: 404 });
-    }
+      for (const item of cartItems) {
+        if (!item.beatId) continue;
 
-    if (beat.status !== "PUBLISHED") {
-      return NextResponse.json(
-        { error: "Ce beat n'est pas disponible à l'achat" },
-        { status: 400 }
-      );
-    }
+        // Récupérer le beat depuis la DB (ne pas faire confiance au client)
+        const beat = await tx.beat.findUnique({
+          where: { id: item.beatId },
+        });
 
-    const license = beat.licenses[0];
-    if (!license) {
-      return NextResponse.json({ error: "Licence introuvable" }, { status: 404 });
-    }
+        if (!beat) {
+          throw new Error(`Beat introuvable : ${item.beatId}`);
+        }
 
-    // Vérifier qu'on n'achète pas son propre beat
-    if (beat.sellerId === decoded.userId) {
-      return NextResponse.json(
-        { error: "Vous ne pouvez pas acheter votre propre beat" },
-        { status: 400 }
-      );
-    }
+        if (beat.status !== "PUBLISHED") {
+          throw new Error(`Beat indisponible : ${beat.title}`);
+        }
 
-    // Calculer les montants
-    const price = license.price;
-    const platformFee = price.mul ? price.mul(0.15) : Number(price) * 0.15;
-    const sellerEarnings = Number(price) - Number(platformFee);
+        if (beat.sellerId === decoded.userId) {
+          throw new Error("Vous ne pouvez pas acheter votre propre beat");
+        }
 
-    // Créer l'achat
-    const purchase = await prisma.purchase.create({
-      data: {
-        buyerId: decoded.userId,
-        beatId,
-        licenseId,
-        amount: price,
-        platformFee,
-        sellerEarnings,
-        paymentMethod,
-        paymentStatus: "COMPLETED",
-        invoiceNumber: generateInvoiceNumber(),
-        stripePaymentId: stripePaymentIntentId || null,
-      },
-      include: {
-        beat: {
-          select: {
-            id: true,
-            title: true,
-            coverImage: true,
+        // Créer la licence liée à cet achat
+        const license = await tx.license.create({
+          data: {
+            beatId: beat.id,
+            type: (item.licenseType as LicenseType) || "BASIC",
+            name: beat.title,
+            price: item.price,
+            description: beat.description,
           },
-        },
-        license: {
-          select: {
-            id: true,
-            name: true,
+        });
+
+        // Calculer les montants
+        const priceHT = Number(item.price);
+        const taxAmount = Number((priceHT * 0.20).toFixed(2));       // TVA 20%
+        const amount = Number((priceHT + taxAmount).toFixed(2));     // Total TTC
+        const platformFee = Number((priceHT * 0.15).toFixed(2));     // Commission 15% (sur HT)
+        const sellerEarnings = Number((priceHT - platformFee).toFixed(2));
+
+        // Créer l'achat
+        const purchase = await tx.purchase.create({
+          data: {
+            buyerId: decoded.userId,
+            beatId: beat.id,
+            licenseId: license.id,
+            amount,
+            taxAmount,
+            platformFee,
+            sellerEarnings,
+            paymentMethod: data.paymentMethod as PaymentMethod,
+            paymentStatus: "COMPLETED",
+            invoiceNumber: generateInvoiceNumber(),
+            stripePaymentId: data.stripePaymentIntentId || null,
+            paypalTransactionId: data.paypalTransactionId || null,
           },
-        },
-      },
+          include: {
+            beat: { select: { id: true, title: true, coverImage: true } },
+            license: { select: { id: true, name: true } },
+          },
+        });
+
+        // Mettre à jour les stats du vendeur
+        await tx.sellerProfile.updateMany({
+          where: { userId: beat.sellerId },
+          data: {
+            totalSales: { increment: 1 },
+            totalRevenue: { increment: sellerEarnings },
+          },
+        });
+
+        // Mettre à jour les stats du beat + archiver si licence exclusive
+        await tx.beat.update({
+          where: { id: beat.id },
+          data: {
+            sales: { increment: 1 },
+            ...(license.type === "EXCLUSIVE" ? { status: "ARCHIVED" as const } : {}),
+          },
+        });
+
+        results.push(purchase);
+      }
+
+      return results;
     });
 
-    // Mettre à jour les stats du vendeur
-    await prisma.sellerProfile.update({
-      where: { userId: beat.sellerId },
-      data: {
-        totalSales: { increment: 1 },
-        totalRevenue: { increment: sellerEarnings },
-      },
-    });
-
-    // Mettre à jour les stats du beat
-    await prisma.beat.update({
-      where: { id: beatId },
-      data: {
-        sales: { increment: 1 },
-      },
-    });
-
-    // Si licence exclusive (type EXCLUSIVE), archiver le beat
-    if (license.type === "EXCLUSIVE") {
-      await prisma.beat.update({
-        where: { id: beatId },
-        data: { status: "ARCHIVED" },
-      });
-    }
-
-    // TODO: Envoyer email de confirmation
-    // TODO: Générer PDF de facture
-
-    return NextResponse.json({ purchase }, { status: 201 });
+    return NextResponse.json({ purchases }, { status: 201 });
   } catch (error) {
     console.error("Error in POST /api/purchases:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Erreur serveur";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

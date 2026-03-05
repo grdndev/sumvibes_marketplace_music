@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { CreditCard, Lock, Shield, ChevronLeft, Music, Check, Loader2, AlertCircle } from "lucide-react";
-import { useCart } from "@/hooks/useCart";
+import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 
 function coverSrc(raw: string) {
@@ -15,7 +15,7 @@ function coverSrc(raw: string) {
 export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const { user } = useAuth();
 
   const items = cart?.items ?? [];
@@ -30,7 +30,7 @@ export default function CheckoutPage() {
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/stripe/checkout", {
+   /*    const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -44,9 +44,27 @@ export default function CheckoutPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Erreur lors de la création de la session de paiement");
       }
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else window.location.href = "/checkout/confirmation";
+      const data = await res.json(); */
+      
+      const resPurchase = await fetch("/api/purchases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          data: {
+            paymentMethod: "STRIPE",
+            stripePaymentIntentId: "temp_" + Date.now(), // temporaire, remplacé par le vrai ID après paiement
+            cart: cart
+          },
+        }),
+      });
+
+      if (!resPurchase.ok) {
+        const errData = await resPurchase.json().catch(() => ({}));
+        throw new Error(errData.error || "Erreur lors de la création de l'achat");
+      }
+
+      await clearCart();
+      window.location.href = "/checkout/confirmation";
     } catch (err: any) {
       setError(err.message);
     } finally {
