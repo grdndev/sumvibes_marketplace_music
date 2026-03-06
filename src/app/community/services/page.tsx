@@ -4,17 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
-import { ChevronLeft, ChevronRight, Search, Filter, MapPin, Star, Clock, ArrowRight, Plus, MessageSquare, Briefcase, Loader2 } from "lucide-react";
-
-const serviceCategories = [
-  { id: "all", label: "Tous", emoji: "🌐" },
-  { id: "mixage", label: "Mixage & Mastering", emoji: "🎛️" },
-  { id: "ecriture", label: "Écriture / Toplining", emoji: "✍️" },
-  { id: "design", label: "Design & Artwork", emoji: "🎨" },
-  { id: "video", label: "Vidéo & Clips", emoji: "🎬" },
-  { id: "coaching", label: "Coaching", emoji: "🎓" },
-  { id: "promo", label: "Promotion", emoji: "📢" },
-];
+import { ChevronLeft, ChevronRight, Search, Filter, Star, Briefcase, Loader2 } from "lucide-react";
+import { ServiceCard, SERVICE_CATEGORIES } from "@/components/community/ServiceCard";
 
 export default function ServicesPage() {
   const { user } = useAuth();
@@ -107,7 +98,7 @@ export default function ServicesPage() {
             </div>
 
             <div className="flex flex-wrap gap-3 relative z-10">
-              {serviceCategories.map((cat) => {
+              {SERVICE_CATEGORIES.map((cat) => {
                 const isActive = activeCategory === cat.id;
                 return (
                   <button
@@ -143,7 +134,7 @@ export default function ServicesPage() {
           <div>
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-3xl font-bold font-display">
-                {searchQuery ? "Résultats de recherche" : activeCategory === "all" ? "Découvrir" : serviceCategories.find((c) => c.id === activeCategory)?.label}
+                {searchQuery ? "Résultats de recherche" : activeCategory === "all" ? "Découvrir" : SERVICE_CATEGORIES.find((c) => c.id === activeCategory)?.label}
               </h2>
               <span className="text-sm font-medium text-slate-400 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
                 {pagination.total || services.length} service{(pagination.total || services.length) > 1 ? 's' : ''}
@@ -209,74 +200,6 @@ export default function ServicesPage() {
           © 2026 SUMVIBES by SAS BE GREAT. Tous droits réservés.
         </div>
       </footer>
-    </div>
-  );
-}
-
-function ServiceCard({ service, featured }: { service: any; featured?: boolean }) {
-  const { user } = useAuth();
-  const authorName = service.seller?.sellerProfile?.artistName || service.seller?.username || "Unknown";
-  const catParam = serviceCategories.find(c => c.id === service.category);
-
-  return (
-    <div className={`glass rounded-3xl p-6 lg:p-8 hover:-translate-y-1 transition-all group relative overflow-hidden flex flex-col h-full ${featured
-      ? "border border-brand-gold/30 shadow-[0_10px_40px_rgba(254,204,51,0.08)] bg-gradient-to-br from-white/[0.07] to-white/[0.02]"
-      : "border border-white/10 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] bg-black/20"
-      }`}>
-      {featured && (
-        <div className="absolute top-0 right-0 w-48 h-48 bg-brand-gold/10 blur-[50px] rounded-full pointer-events-none transition-opacity group-hover:opacity-100 opacity-50" />
-      )}
-
-      <div className="flex justify-between items-start mb-6 relative z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl glass bg-black/40 flex items-center justify-center text-3xl shadow-inner border border-white/10 group-hover:scale-110 transition-transform">
-            {catParam?.emoji || "✨"}
-          </div>
-          <div>
-            <div className="text-[11px] font-bold tracking-widest text-brand-gold uppercase mb-1 bg-brand-gold/10 inline-block px-2 py-0.5 rounded-md border border-brand-gold/20">
-              {catParam?.label || service.category}
-            </div>
-            <p className="text-sm font-medium text-slate-300">
-              Par <Link href={`/producers/${service.seller?.id || service.sellerId}`} onClick={(e) => e.stopPropagation()} className="text-white hover:text-brand-gold transition-colors font-semibold">{authorName}</Link>
-            </p>
-          </div>
-        </div>
-
-        {featured && (
-          <div className="bg-brand-gold text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_10px_rgba(254,204,51,0.4)] flex items-center gap-1">
-            <Star className="w-3 h-3 fill-black" /> PRO
-          </div>
-        )}
-      </div>
-
-      <h3 className="font-bold text-xl mb-3 text-white leading-snug relative z-10 group-hover:text-brand-gold transition-colors line-clamp-2">
-        {service.title}
-      </h3>
-
-      <p className="text-sm text-slate-400 mb-6 font-light line-clamp-3 relative z-10 flex-grow">
-        {service.description}
-      </p>
-
-      <div className="flex flex-wrap gap-2 text-[11px] font-medium text-slate-300 mb-6 relative z-10">
-        <span className="flex items-center gap-1.5 glass bg-black/40 px-3 py-1.5 rounded-lg border border-white/5"><Star className="w-3.5 h-3.5 text-brand-gold fill-brand-gold" /> <span className="text-white">{service.rating?.toString() || "0"}</span> ({service.reviewsCount})</span>
-        <span className="flex items-center gap-1.5 glass bg-black/40 px-3 py-1.5 rounded-lg border border-white/5"><MapPin className="w-3.5 h-3.5 text-brand-purple-light" /> {service.location || "En ligne"}</span>
-        <span className="flex items-center gap-1.5 glass bg-black/40 px-3 py-1.5 rounded-lg border border-white/5"><Clock className="w-3.5 h-3.5 text-green-400" /> {service.deliveryTime || "À définir"}</span>
-      </div>
-
-      <div className="pt-5 border-t border-white/10 flex items-center justify-between relative z-10 mt-auto">
-        <div>
-          <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold block mb-0.5">Tarif de base</span>
-          <div className="text-brand-gold font-bold text-xl drop-shadow-md">€{service.price?.toString()}</div>
-        </div>
-        <div className="flex gap-2">
-          {user?.id !== service.sellerId && (
-            <Link href={`/community/messages?new=${service.sellerId}`} className="w-10 h-10 rounded-xl glass bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-white hover:text-brand-gold border border-white/10 hover:border-brand-gold/30">
-              <MessageSquare className="w-4 h-4" />
-            </Link>
-          )}
-           
-        </div>
-      </div>
     </div>
   );
 }

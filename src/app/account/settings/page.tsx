@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Avatar } from "@/components/ui/Avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -60,6 +61,37 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatar ?? null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarUploading(true);
+    setError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/auth/avatar", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAvatarPreview(data.url);
+        await refreshUser();
+      } else {
+        setError(data.error || "Erreur lors de l'upload");
+      }
+    } catch {
+      setError("Erreur réseau lors de l'upload");
+    } finally {
+      setAvatarUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const tabs =
     user?.role === "SELLER"
@@ -374,20 +406,35 @@ export default function SettingsPage() {
               {/* Avatar */}
               <div className="flex items-center gap-6 mb-8">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-brand-gold to-yellow-500 flex items-center justify-center text-4xl font-bold text-brand-purple">
-                    {(user.displayName ?? user.username ?? "").slice(0, 2)}
-                  </div>
+                  <Avatar
+                    src={avatarPreview}
+                    name={user.displayName ?? user.username}
+                    size={96}
+                  />
                   <button
                     type="button"
-                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-gold text-brand-purple flex items-center justify-center hover:scale-110 transition-transform"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={avatarUploading}
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-gold text-brand-purple flex items-center justify-center hover:scale-110 transition-transform disabled:opacity-50"
                   >
-                    <Camera className="w-4 h-4" />
+                    {avatarUploading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Camera className="w-4 h-4" />
+                    )}
                   </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handleAvatarChange}
+                  />
                 </div>
                 <div>
                   <h3 className="font-bold">Photo de profil</h3>
                   <p className="text-sm text-slate-400">
-                    JPG, PNG ou GIF. Max 2 Mo.
+                    JPG, PNG ou WEBP. Max 5 Mo.
                   </p>
                 </div>
               </div>

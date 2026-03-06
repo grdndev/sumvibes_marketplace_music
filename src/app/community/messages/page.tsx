@@ -18,8 +18,8 @@ import {
   X,
   UserPlus,
 } from "lucide-react";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { Avatar } from "@/components/ui/Avatar";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -86,38 +86,6 @@ function timeAgo(d: string): string {
 
 function getToken(): string | null {
   return typeof window !== "undefined" ? localStorage.getItem("token") : null;
-}
-
-function UserAvatar({
-  avatar,
-  name,
-  size = 44,
-}: {
-  avatar?: string | null;
-  name?: string | null;
-  size?: number;
-}) {
-  return (
-    <div
-      className="rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-brand-purple/30 to-brand-gold/30 flex items-center justify-center"
-      style={{ width: size, height: size }}
-    >
-      {avatar ? (
-        <Image
-          src={avatar}
-          alt={name || "user"}
-          width={size}
-          height={size}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <User
-          className="text-brand-gold"
-          style={{ width: size * 0.45, height: size * 0.45 }}
-        />
-      )}
-    </div>
-  );
 }
 
 // ─── New Conversation Modal ───────────────────────────────────────────────────
@@ -271,7 +239,7 @@ function NewConversationModal({
                   onClick={() => onSelectUser(u)}
                   className="w-full px-5 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-none group"
                 >
-                  <UserAvatar avatar={u.avatar} name={name} size={40} />
+                  <Avatar src={u.avatar} name={name} size={40} />
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-semibold text-white truncate group-hover:text-brand-gold transition-colors">
                       {name}
@@ -730,12 +698,7 @@ function MessagesContent() {
                 Gérez vos collaborations et contrats en direct.
               </p>
             </div>
-            <button
-              onClick={() => setShowNewConv(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-gold text-brand-purple font-semibold text-sm hover:scale-105 active:scale-95 transition-transform shadow-[0_0_20px_rgba(254,204,51,0.35)]"
-            >
-              <Plus className="w-4 h-4" /> Nouvelle conversation
-            </button>
+          
           </div>
 
           <div
@@ -794,8 +757,8 @@ function MessagesContent() {
                           onClick={() => selectConv(conv)}
                           className={`w-full p-4 flex items-center gap-3 hover:bg-white/5 text-left border-b border-white/5 transition-colors ${active ? "bg-brand-gold/5 border-l-2 border-brand-gold" : ""}`}
                         >
-                          <UserAvatar
-                            avatar={conv.avatar}
+                          <Avatar
+                            src={conv.avatar}
                             name={name}
                             size={44}
                           />
@@ -841,8 +804,8 @@ function MessagesContent() {
                       >
                         <ChevronLeft className="w-5 h-5" />
                       </button>
-                      <UserAvatar
-                        avatar={activeConv.avatar}
+                      <Avatar
+                        src={activeConv.avatar}
                         name={
                           activeConv.artistName ||
                           activeConv.displayName ||

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +10,7 @@ import {
   Eye, Loader2, AlertCircle, Send, Trash2, Edit2, X, Check,
   Share2, BookmarkPlus,
 } from "lucide-react";
+import { Avatar } from "@/components/ui/Avatar";
 
 const COMMENTS_PER_PAGE = 10;
 
@@ -50,23 +50,6 @@ function tAgo(d: string) {
 }
 function getName(a: Author) {
   return a.sellerProfile?.artistName || a.displayName || a.username;
-}
-
-/* ─── Avatar (outside component, stable reference) ── */
-function Avatar({ author, size = 36 }: { author: Author; size?: number }) {
-  const name = getName(author);
-  const sz = { width: size, height: size };
-  if (author.avatar) {
-    return <Image src={author.avatar} alt={name} {...sz}
-      className="rounded-full object-cover flex-shrink-0 ring-2 ring-white/10" />;
-  }
-  const letters = name.slice(0, 2).toUpperCase();
-  return (
-    <div style={{ ...sz, fontSize: Math.round(size * 0.38) }}
-      className="rounded-full bg-gradient-to-br from-brand-gold/40 to-purple-600/30 flex items-center justify-center text-brand-gold font-bold flex-shrink-0 ring-2 ring-brand-gold/20">
-      {letters}
-    </div>
-  );
 }
 
 /* ══════════════════════════ PAGE ══════════════════════════ */
@@ -275,7 +258,7 @@ export default function ForumPostPage() {
 
                 {/* Author row */}
                 <div className="flex items-center gap-3 pb-5 border-b border-white/8">
-                  <Avatar author={post.author} size={42} />
+                  <Avatar src={post.author.avatar} name={getName(post.author)} size={42} ring />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-white leading-none mb-1">
                       {getName(post.author)}
@@ -394,7 +377,7 @@ export default function ForumPostPage() {
                           <div key={c.id} className={`flex gap-4 py-5 ${i < pageComments.length - 1 ? "border-b border-white/5" : ""}`}>
                             {/* Left: avatar + thread line */}
                             <div className="flex flex-col items-center gap-1 flex-shrink-0 pt-0.5">
-                              <Avatar author={c.author} size={34} />
+                              <Avatar src={c.author.avatar} name={getName(c.author)} size={34} ring />
                               {i < pageComments.length - 1 && (
                                 <div className="w-px flex-1 bg-white/5 min-h-[16px] rounded-full mt-1" />
                               )}
@@ -474,11 +457,8 @@ export default function ForumPostPage() {
                       {/* Form header */}
                       <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-white/8 bg-white/[0.02]">
                         <Avatar
-                          author={{
-                            id: user.id, displayName: user.displayName || null,
-                            username: user.username || "", avatar: user.avatar || null,
-                            role: user.role || "", sellerProfile: null,
-                          }}
+                          src={user.avatar || null}
+                          name={user.displayName || user.username}
                           size={30}
                         />
                         <span className="text-sm font-semibold text-slate-300">{user.displayName || user.username}</span>

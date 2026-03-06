@@ -21,9 +21,15 @@ export async function sendInvoiceEmail(
     to: to_email,
     subject: subject_email,
     html: content_email,
-    attachments: pdfBuffer && pdfBuffer.length > 0
-      ? [{ filename: `${invoiceNumber || "facture"}.pdf`, content: pdfBuffer }]
-      : [],
+    attachments:
+      pdfBuffer && pdfBuffer.length > 0
+        ? [
+            {
+              filename: `${invoiceNumber || "facture"}.pdf`,
+              content: pdfBuffer.toString("base64"),
+            },
+          ]
+        : [],
   });
 
   if (error) {

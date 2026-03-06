@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   ChevronLeft, ChevronRight, Search, MessageSquare, Flame, Pin,
   Clock, ThumbsUp, Eye, Plus, Loader2, AlertCircle, X,
 } from "lucide-react";
+import { Avatar } from "@/components/ui/Avatar";
 
 const POSTS_PER_PAGE = 10;
 
@@ -60,21 +60,13 @@ function PostRow({ post, onLike, likingId, isLoggedIn }: {
   isLoggedIn: boolean;
 }) {
   const name = authorName(post);
-  const initials = name.slice(0, 2).toUpperCase();
   const cat = CATEGORIES.find((c) => c.id === post.category);
 
   return (
     <div className="glass rounded-2xl p-5 hover:bg-white/5 transition-colors group">
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          {post.author.avatar ? (
-            <Image src={post.author.avatar} alt={name} width={40} height={40}
-              className="rounded-full object-cover ring-2 ring-white/10" />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold text-sm ring-2 ring-brand-gold/10">
-              {initials}
-            </div>
-          )}
+          <Avatar src={post.author.avatar} name={name} size={40} ring />
         </div>
 
         <div className="flex-1 min-w-0">

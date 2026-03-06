@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { ShoppingBag, Download, Heart, Settings, Music, TrendingUp, Clock, ArrowRight, CreditCard, Star } from "lucide-react";
+import { Avatar } from "@/components/ui/Avatar";
 
 interface Purchase {
   id: string;
@@ -127,13 +128,7 @@ export default function AccountPage() {
           {/* Profile Header */}
           <div className="glass rounded-3xl p-8 mb-8">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              {user.avatar ? (
-                <img src={user.avatar} alt={user.displayName || user.username} className="w-24 h-24 rounded-full object-cover" />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-r from-brand-gold to-yellow-500 flex items-center justify-center text-4xl font-bold text-brand-purple">
-                  {(user.displayName || user.username)[0].toUpperCase()}
-                </div>
-              )}
+              <Avatar src={user.avatar} name={user.displayName || user.username} size={96} />
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl font-bold font-display">{user.displayName || user.username}</h1>
                 <p className="text-slate-400">{user.email}</p>

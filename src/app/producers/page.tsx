@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Search, Music, TrendingUp } from "lucide-react";
+import { Avatar } from "@/components/ui/Avatar";
 import { useProducers } from "@/hooks/useProducers";
 
 export default function ProducersPage() {
@@ -122,21 +123,11 @@ export default function ProducersPage() {
                   >
                     {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
-                      {producer.user?.avatar ? (
-                        <img
-                          src={producer.user.avatar}
-                          alt={
-                            producer.user.displayName || producer.user.username
-                          }
-                          className="w-16 h-16 rounded-full object-cover"
+                      <Avatar
+                          src={producer.user?.avatar}
+                          name={producer.user?.displayName || producer.user?.username}
+                          size={64}
                         />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink flex items-center justify-center text-2xl font-bold">
-                          {(producer.user?.displayName ||
-                            producer.user?.username ||
-                            "?")[0]?.toUpperCase()}
-                        </div>
-                      )}
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-bold text-xl group-hover:text-brand-gold">

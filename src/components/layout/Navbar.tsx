@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Menu, X, ShoppingCart, User, LogOut, Settings, Briefcase, Bell } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
-import { set } from "mongoose";
+import { Avatar } from "@/components/ui/Avatar";
 import { useEffect } from "react";
 
  
@@ -105,13 +105,7 @@ export function Navbar() {
                                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                                         className="flex items-center gap-2 glass px-4 py-2 rounded-xl hover:bg-white/10 transition-all"
                                     >
-                                        {user.avatar ? (
-                                            <Image src={user.avatar} alt={user.displayName || user.username} width={32} height={32} className="rounded-full" />
-                                        ) : (
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-pink flex items-center justify-center font-bold">
-                                                {(user.displayName || user.username || "?")[0].toUpperCase()}
-                                            </div>
-                                        )}
+                                        <Avatar src={user.avatar} name={user.displayName || user.username} size={32} />
                                         <span className="text-sm font-medium">{user.displayName || user.username}</span>
                                     </button>
 

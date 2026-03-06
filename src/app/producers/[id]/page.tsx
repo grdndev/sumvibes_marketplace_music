@@ -11,8 +11,9 @@ import {
   Music, Play, Pause, Star, TrendingUp, Award, CheckCircle,
   Heart, ShoppingCart, Globe, MessageCircle, ChevronLeft,
   User, Loader2, AlertCircle, Search, Instagram, Twitter,
-  Youtube, Clock, BarChart2,
+  Youtube, Clock, BarChart2, Briefcase, MessageSquare, ArrowRight,
 } from "lucide-react";
+import { Avatar } from "@/components/ui/Avatar";
 
 interface Beat {
   id: string;
@@ -55,6 +56,20 @@ interface Producer {
   } | null;
 }
 
+interface ProducerService {
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  description: string | null;
+}
+
+const SERVICE_EMOJIS: Record<string, string> = {
+  MIXING: "🎛️", MASTERING: "🔊", WRITING: "✍️", DESIGN: "🎨",
+  RECORDING: "🎤", PROMOTION: "📣", COACHING: "🎓",
+  mixage: "🎛️", ecriture: "✍️", design: "🎨", video: "🎬", coaching: "🎓", promo: "📢",
+};
+
 function coverSrc(raw: string) {
   if (raw.startsWith("http") || raw.startsWith("/")) return raw;
   return `/uploads/covers/${raw}`;
@@ -93,18 +108,22 @@ export default function ProducerProfilePage({
   // Cart modal
   const [licenseTarget, setLicenseTarget] = useState<Beat | null>(null);
 
+  // Services
+  const [services, setServices] = useState<ProducerService[]>([]);
+
   // Pagination
   const BEATS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Load producer + beats
+  // Load producer + beats + services
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
-        const [producerRes, beatsRes] = await Promise.all([
+        const [producerRes, beatsRes, servicesRes] = await Promise.all([
           fetch(`/api/producers/${id}`),
           fetch(`/api/beats?sellerId=${id}&limit=100`),
+          fetch(`/api/services?sellerId=${id}&limit=10`),
         ]);
         if (producerRes.ok) {
           const d = await producerRes.json();
@@ -115,6 +134,10 @@ export default function ProducerProfilePage({
         if (beatsRes.ok) {
           const d = await beatsRes.json();
           setBeats(d.beats || []);
+        }
+        if (servicesRes.ok) {
+          const d = await servicesRes.json();
+          setServices(d.services || []);
         }
       } catch {
         setError("Erreur de chargement");
@@ -259,14 +282,12 @@ export default function ProducerProfilePage({
               <div className="px-6 md:px-10 pb-8 -mt-14 relative">
                 <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
                   {/* Avatar */}
-                  <div className="w-28 h-28 rounded-2xl bg-brand-dark border-4 border-[#0c0c14] overflow-hidden flex-shrink-0 shadow-xl">
-                    {producer.avatar ? (
-                      <img src={coverSrc(producer.avatar)} alt={displayName} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-brand-purple/40 to-brand-gold/30 flex items-center justify-center">
-                        <User className="w-12 h-12 text-brand-gold" />
-                      </div>
-                    )}
+                  <div className="w-28 h-28 rounded-full bg-brand-dark border-4 border-[#0c0c14] overflow-hidden flex-shrink-0 shadow-xl">
+                    <Avatar
+                      src={producer.avatar}
+                      name={displayName}
+                      size={112}
+                    />
                   </div>
 
                   {/* Info */}
@@ -581,6 +602,54 @@ export default function ProducerProfilePage({
             </div>
           </div>
         </section>
+
+        {/* Services proposés */}
+        {services.length > 0 && (
+          <section className="px-6 pb-16">
+            <div className="mx-auto max-w-7xl">
+              <h2 className="text-2xl font-bold font-display flex items-center gap-3 mb-6">
+                <Briefcase className="w-6 h-6 text-brand-gold" /> Services proposés
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.map((s) => {
+                  const emoji = SERVICE_EMOJIS[s.category] ?? "🎵";
+                  return (
+                    <div key={s.id} className="glass rounded-2xl p-6 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(254,204,51,0.08)] transition-all group relative overflow-hidden flex flex-col">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-brand-gold/5 blur-2xl rounded-full group-hover:bg-brand-gold/10 transition-colors pointer-events-none" />
+                      <div className="flex items-center gap-4 mb-4 relative z-10">
+                        <div className="w-12 h-12 rounded-xl glass bg-black/40 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">{emoji}</div>
+                        <span className="bg-brand-gold/10 border border-brand-gold/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-brand-gold">{s.category}</span>
+                      </div>
+                      <Link href={`/community/services/${s.id}`}>
+                        <h3 className="font-bold text-lg mb-2 text-white leading-snug relative z-10 hover:text-brand-gold transition-colors">{s.title}</h3>
+                      </Link>
+                      {s.description && (
+                        <p className="text-sm text-slate-400 mb-4 font-light line-clamp-2 relative z-10 flex-grow">{s.description}</p>
+                      )}
+                      <div className="pt-4 border-t border-white/10 flex items-center justify-between relative z-10 mt-auto">
+                        <div className="text-brand-gold font-bold text-lg">À partir de {s.price}€</div>
+                        <div className="flex gap-2">
+                          <Link href={`/community/services/${s.id}`}
+                            className="w-9 h-9 rounded-xl glass bg-white/5 hover:bg-brand-gold/20 border border-white/10 hover:border-brand-gold/30 flex items-center justify-center transition-colors text-slate-300 hover:text-brand-gold"
+                            title="Voir le service">
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                          {user?.id !== id && (
+                            <Link href={`/community/messages?new=${id}`}
+                              className="w-9 h-9 rounded-xl glass bg-white/5 hover:bg-white/10 border border-white/10 hover:border-brand-gold/30 flex items-center justify-center transition-colors text-white hover:text-brand-gold"
+                              title="Contacter le prestataire">
+                              <MessageSquare className="w-4 h-4" />
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       <footer className="border-t border-white/10 px-6 py-8">

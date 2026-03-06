@@ -9,6 +9,7 @@ import {
   Music, Play, Pause, ShoppingCart, Heart, Share2, Download, Clock, Disc,
   Tag, Star, ChevronRight, Check, User, Loader2, AlertCircle
 } from "lucide-react";
+import { Avatar } from "@/components/ui/Avatar";
 
 interface License {
   id: string;
@@ -251,13 +252,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
               <div className="glass rounded-2xl p-6 mt-6">
                 <Link href={`/producers/${beat.seller.id}`} className="flex items-center gap-4 group">
-                  {beat.seller.avatar ? (
-                    <img src={beat.seller.avatar} alt={producerName} className="w-14 h-14 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-purple/30 to-brand-gold/30 flex items-center justify-center">
-                      <User className="w-7 h-7 text-brand-gold" />
-                    </div>
-                  )}
+                  <Avatar src={beat.seller.avatar} name={producerName} size={56} />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-lg group-hover:text-brand-gold">{producerName}</span>
@@ -402,13 +397,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <div className="space-y-4">
                     {beat.reviews.map((review) => (
                       <div key={review.id} className="flex gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-purple/30 to-brand-gold/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                          {review.user.avatar ? (
-                            <img src={review.user.avatar} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <User className="w-5 h-5 text-brand-gold" />
-                          )}
-                        </div>
+                        <Avatar src={review.user.avatar} name={review.user.displayName || review.user.username} size={40} />
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-bold text-sm">{review.user.displayName || review.user.username}</span>

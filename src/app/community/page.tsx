@@ -5,26 +5,45 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { useForum } from "@/hooks/useForum";
 import { useAuth } from "@/contexts/AuthContext";
+import { Avatar } from "@/components/ui/Avatar";
 import { MessageSquare, Users, Briefcase, TrendingUp, Star, ArrowRight, Music, Flame, Loader2, Plus } from "lucide-react";
+import { ServiceCard, ServiceData } from "@/components/community/ServiceCard";
 
-const stats = [
-  { label: "Membres actifs", value: "12 500+", icon: Users },
-  { label: "Discussions", value: "3 200+", icon: MessageSquare },
-  { label: "Services proposés", value: "850+", icon: Briefcase },
-  { label: "Collaborations", value: "1 400+", icon: TrendingUp },
+interface SellerProfile {
+  totalSales: number;
+  artistName: string | null;
+  user: { id: string; displayName: string | null; username: string; avatar: string | null };
+}
+
+interface CommunityData {
+  stats: { totalUsers: number; totalPosts: number; totalServices: number };
+  topSellers: SellerProfile[];
+  featuredServices: ServiceData[];
+}
+
+const RANK_STYLES = [
+  "from-brand-gold to-yellow-500 text-black shadow-[0_0_15px_rgba(254,204,51,0.5)]",
+  "from-slate-300 to-slate-400 text-black shadow-[0_0_15px_rgba(203,213,225,0.3)]",
+  "from-amber-600 to-amber-500 text-black shadow-[0_0_15px_rgba(217,119,6,0.4)]",
 ];
 
-const services = [
-  { title: "Mixage & Mastering professionnel", author: "StudioPro", price: "À partir de 50€", category: "Mixage", emoji: "🎛️" },
-  { title: "Toplining / Écriture de textes", author: "LyricQueen", price: "À partir de 30€", category: "Écriture", emoji: "✍️" },
-  { title: "Artwork & Pochettes d'album", author: "DesignBeats", price: "À partir de 25€", category: "Design", emoji: "🎨" },
-];
+
 
 export default function CommunityPage() {
   const { user } = useAuth();
   const { posts, loading } = useForum();
   const [showNewPostModal, setShowNewPostModal] = useState(false);
-  
+  const [communityData, setCommunityData] = useState<CommunityData | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/community/stats")
+      .then((r) => r.json())
+      .then((d) => setCommunityData(d))
+      .catch(() => {})
+      .finally(() => setDataLoading(false));
+  }, []);
+
   // Get hot posts (posts with most replies)
   const hotPosts = [...posts]
     .sort((a, b) => (b._count?.replies || 0) - (a._count?.replies || 0))
@@ -60,12 +79,19 @@ export default function CommunityPage() {
 
         {/* Stats */}
         <section className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-          {stats.map((s) => (
+          {[
+            { label: "Membres", value: communityData?.stats.totalUsers, icon: Users },
+            { label: "Discussions", value: communityData?.stats.totalPosts, icon: MessageSquare },
+            { label: "Services", value: communityData?.stats.totalServices, icon: Briefcase },
+            { label: "Vendeurs actifs", value: communityData?.topSellers.length ?? 0, icon: TrendingUp },
+          ].map((s) => (
             <div key={s.label} className="glass rounded-3xl p-6 text-center hover:bg-white/5 transition-colors group">
               <div className="w-14 h-14 rounded-full bg-brand-gold/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <s.icon className="w-7 h-7 text-brand-gold" />
               </div>
-              <div className="text-3xl font-bold text-gradient mb-1">{s.value}</div>
+              <div className="text-3xl font-bold text-gradient mb-1">
+                {dataLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto text-brand-gold" /> : (s.value ?? 0).toLocaleString()}
+              </div>
               <div className="text-sm text-slate-400 font-medium uppercase tracking-wider">{s.label}</div>
             </div>
           ))}
@@ -136,21 +162,27 @@ export default function CommunityPage() {
               <Star className="w-7 h-7 text-brand-gold fill-brand-gold/20" /> Top Membres
             </h2>
             <div className="space-y-5 relative z-10">
-              {[
-                { name: "BeatMaker92", rank: "Diamant 💎", beats: 145, ventes: 890, colors: "from-brand-gold to-yellow-500 text-black shadow-[0_0_15px_rgba(254,204,51,0.5)]" },
-                { name: "MelodyQueen", rank: "Platine 🏆", beats: 98, ventes: 1200, colors: "from-slate-300 to-slate-400 text-black shadow-[0_0_15px_rgba(203,213,225,0.3)]" },
-                { name: "TrapKing_FR", rank: "Or 🥇", beats: 210, ventes: 650, colors: "from-amber-600 to-amber-500 text-black shadow-[0_0_15px_rgba(217,119,6,0.4)]" }
-              ].map((m, i) => (
-                <div key={i} className="glass bg-black/20 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${m.colors} flex flex-col items-center justify-center font-black text-lg`}>
-                     #{i + 1}
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-bold text-white text-[15px]">{m.name}</div>
-                    <div className="text-[11px] font-bold tracking-wider text-brand-gold uppercase">{m.rank}</div>
-                  </div>
-                </div>
-              ))}
+              {dataLoading ? (
+                <div className="text-center py-8"><Loader2 className="w-8 h-8 animate-spin mx-auto text-brand-gold" /></div>
+              ) : communityData?.topSellers.length ? (
+                communityData.topSellers.map((seller, i) => {
+                  const name = seller.artistName || seller.user.displayName || seller.user.username;
+                  return (
+                    <Link key={seller.user.id} href={`/producers/${seller.user.id}`} className="glass bg-black/20 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${RANK_STYLES[i]} flex flex-col items-center justify-center font-black text-lg flex-shrink-0`}>
+                        #{i + 1}
+                      </div>
+                      <Avatar src={seller.user.avatar} name={name} size={40} />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-white text-[15px] truncate">{name}</div>
+                        <div className="text-[11px] font-bold tracking-wider text-brand-gold uppercase">{seller.totalSales} vente{seller.totalSales !== 1 ? "s" : ""}</div>
+                      </div>
+                    </Link>
+                  );
+                })
+              ) : (
+                <p className="text-slate-400 text-sm text-center py-4">Aucun vendeur pour le moment.</p>
+              )}
             </div>
           </div>
         </section>
@@ -166,19 +198,19 @@ export default function CommunityPage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {services.map((s, i) => (
-              <Link key={i} href="/community/services" className="glass rounded-3xl p-8 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(254,204,51,0.1)] transition-all group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 blur-2xl rounded-full group-hover:bg-brand-gold/15 transition-colors pointer-events-none" />
-                <div className="w-16 h-16 rounded-2xl glass bg-black/40 flex flex-col items-center justify-center text-3xl mb-6 shadow-inner relative z-10 group-hover:scale-110 transition-transform">{s.emoji}</div>
-                <div className="bg-brand-gold/10 border border-brand-gold/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-brand-gold inline-block mb-4 relative z-10">{s.category}</div>
-                <h3 className="font-bold text-xl mb-2 text-white leading-snug relative z-10">{s.title}</h3>
-                <p className="text-sm text-slate-400 mb-6 font-light flex items-center gap-2 relative z-10">Par <span className="font-medium text-white">{s.author}</span></p>
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between relative z-10">
-                   <div className="text-brand-gold font-bold text-lg">{s.price}</div>
-                   <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-brand-gold group-hover:text-black transition-colors"><ArrowRight className="w-4 h-4" /></div>
-                </div>
-              </Link>
-            ))}
+            {dataLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="glass rounded-3xl p-8 animate-pulse h-64" />
+              ))
+            ) : communityData?.featuredServices.length ? (
+              communityData.featuredServices.map((s) => (
+                <ServiceCard key={s.id} service={s} featured={s.featured} />
+              ))
+            ) : (
+              <div className="md:col-span-3 text-center py-12 text-slate-400">
+                <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-30" />Aucun service disponible pour le moment.
+              </div>
+            )}
           </div>
         </section>
 
