@@ -21,6 +21,8 @@ export async function POST(
     const body = await req.json();
     const { content } = body;
 
+    console.log("Adding comment to post:", { postId, userId: decoded.userId });
+
     // Validation
     if (!content || content.trim().length < 3) {
       return NextResponse.json(
@@ -35,6 +37,7 @@ export async function POST(
     });
 
     if (!post) {
+      console.warn("Post not found for ID:", postId);
       return NextResponse.json({ error: "Post non trouvé" }, { status: 404 });
     }
 
