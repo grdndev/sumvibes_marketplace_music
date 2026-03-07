@@ -52,31 +52,31 @@ services:
     networks:
       - sumvibes_network
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: sumvibes_app
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgresql://sumvibes_user:sumvibes_password@postgres:5432/sumvibes_db
-      MONGODB_URI: mongodb://root:rootpassword@mongodb:27017/sumvibes_mongo_db?authSource=admin
-      CHOKIDAR_USEPOLLING: "true"      
-      WATCHPACK_POLLING: "true"         
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      postgres:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-    networks:
-      - sumvibes_network
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: sumvibes_app
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     DATABASE_URL: postgresql://sumvibes_user:sumvibes_password@postgres:5432/sumvibes_db
+  #     MONGODB_URI: mongodb://root:rootpassword@mongodb:27017/sumvibes_mongo_db?authSource=admin
+  #     CHOKIDAR_USEPOLLING: "true"      
+  #     WATCHPACK_POLLING: "true"         
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     mongodb:
+  #       condition: service_healthy
+  #   networks:
+  #     - sumvibes_network
 
 volumes:
   postgres_data:

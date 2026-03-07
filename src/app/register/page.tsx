@@ -116,7 +116,7 @@ export default function RegisterPage() {
               <ShoppingBag
                 className={`w-10 h-10 mx-auto mb-3 ${formData.role === "BUYER" ? "text-brand-gold" : "text-slate-400"}`}
               />
-              <h3 className="font-bold text-lg mb-1">Acheteur</h3>
+              <h3 className="font-bold text-lg mb-1">Artiste</h3>
               <p className="text-xs text-slate-400">
                 Achetez des beats pour vos projets musicaux
               </p>
@@ -135,7 +135,7 @@ export default function RegisterPage() {
               <Music
                 className={`w-10 h-10 mx-auto mb-3 ${formData.role === "SELLER" ? "text-brand-gold" : "text-slate-400"}`}
               />
-              <h3 className="font-bold text-lg mb-1">Vendeur</h3>
+              <h3 className="font-bold text-lg mb-1">Beatmaker</h3>
               <p className="text-xs text-slate-400">
                 Vendez vos productions musicales
               </p>
@@ -187,7 +187,7 @@ export default function RegisterPage() {
             {formData.role === "SELLER" && (
               <div className="mb-4">
                 <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                  Nom d&apos;artiste
+                  Nom du beatmaker
                 </label>
                 <input
                   type="text"
@@ -195,7 +195,7 @@ export default function RegisterPage() {
                   value={formData.artistName}
                   onChange={handleChange}
                   required={formData.role === "SELLER"}
-                  placeholder="Votre nom d'artiste / pseudo"
+                  placeholder="Votre nom beatmaker"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                 />
               </div>
@@ -205,7 +205,7 @@ export default function RegisterPage() {
             {formData.role === "BUYER" && (
               <div className="mb-4">
                 <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                  Nom d&apos;utilisateur
+                  Nom d&apos;artiste
                 </label>
                 <input
                   type="text"
@@ -213,7 +213,7 @@ export default function RegisterPage() {
                   value={formData.username}
                   onChange={handleChange}
                   required={formData.role === "BUYER"}
-                  placeholder="Votre nom d'utilisateur / pseudo"
+                  placeholder="Votre nom d'artiste"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
                 />
               </div>

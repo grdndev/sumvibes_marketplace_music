@@ -8,8 +8,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   TrendingUp, DollarSign, Music, Eye, ShoppingCart, Users,
   ArrowUp, ArrowDown, BarChart3, Upload, CreditCard, FileText,
-  ArrowRight, Clock, Star, Loader2, Briefcase
+  ArrowRight, Clock, Star, Loader2, Briefcase, Settings
 } from "lucide-react";
+
+import { Avatar } from "@/components/ui/Avatar";
 
 interface SellerStats {
   overview: {
@@ -107,20 +109,35 @@ export default function SellerDashboardPage() {
       <main className="pt-20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-display text-gradient">Dashboard Vendeur</h1>
-              <p className="text-slate-400 mt-2">Bonjour, {user.displayName || user.username} 👋</p>
-            </div>
-            <div className="flex gap-3">
-              <Link href="/seller/beats" className="btn-primary px-6 py-3 rounded-full font-semibold flex items-center gap-2">
-                <Upload className="w-5 h-5" /> Upload Beat
-              </Link>
-              <Link href="/seller/withdrawals" className="glass px-6 py-3 rounded-full font-semibold hover:bg-white/10 flex items-center gap-2">
-                <CreditCard className="w-5 h-5" /> Retirer
+
+          <div className="glass rounded-3xl p-8 mb-8">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <Avatar src={user.avatar} name={user.username} size={96} />
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold font-display">{user.username}</h1>
+                <p className="text-slate-400">{user.email}</p>
+                <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
+                  <span className="glass px-3 py-1 rounded-full text-xs text-brand-gold font-bold">
+                    Beatmaker
+                  </span>
+                  {user.createdAt && (
+                    <span className="text-xs text-slate-400">
+                      Membre depuis {new Date(user.createdAt).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <Link href="/account/settings" className="glass px-6 py-3 rounded-full font-semibold hover:bg-white/10 flex items-center gap-2">
+                <Settings className="w-5 h-5" /> Paramètres
               </Link>
             </div>
           </div>
+
+
+
+
+
+
 
           {loading ? (
             <div className="text-center py-20">

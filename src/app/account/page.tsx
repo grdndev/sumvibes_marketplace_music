@@ -134,7 +134,7 @@ export default function AccountPage() {
                 <p className="text-slate-400">{user.email}</p>
                 <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
                   <span className="glass px-3 py-1 rounded-full text-xs text-brand-gold font-bold">
-                    {user.role === 'SELLER' ? 'Vendeur' : user.role === 'ADMIN' ? 'Admin' : 'Acheteur'}
+                  Artiste
                   </span>
                   {user.createdAt && (
                     <span className="text-xs text-slate-400">

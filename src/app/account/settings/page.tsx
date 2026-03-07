@@ -31,7 +31,7 @@ import {
 
 // (Dynamic tabs will be created inside the component based on user role)
 const baseTabs = [
-  { id: "profile", label: "Profil Client", icon: User },
+  { id: "profile", label: "Profil", icon: User },
   { id: "security", label: "Sécurité", icon: Lock },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "preferences", label: "Préférences", icon: Music },
@@ -93,14 +93,7 @@ export default function SettingsPage() {
     }
   };
 
-  const tabs =
-    user?.role === "SELLER"
-      ? [
-          { id: "profile", label: "Profil Client", icon: User },
-          { id: "seller", label: "Profil Vendeur", icon: Music },
-          ...baseTabs.slice(1),
-        ]
-      : baseTabs;
+  const tabs = baseTabs;
 
   const handleSave = () => {
     setSaved(true);
@@ -113,7 +106,7 @@ export default function SettingsPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const data = {
+    const data: any = {
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       displayName: formData.get("displayName") as string,
@@ -129,6 +122,13 @@ export default function SettingsPage() {
       city: formData.get("city") as string,
       postalCode: formData.get("postalCode") as string,
     };
+
+    if (user?.role === "SELLER") {
+      data.artistName = formData.get("displayName") as string;
+      data.description = formData.get("bio") as string;
+      data.genres = formData.getAll("genres") as string[];
+      data.paypalEmail = formData.get("paypalEmail") as string;
+    }
 
     try {
       const res = await fetch("/api/auth/me", {
@@ -196,43 +196,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSellerSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      artistName: formData.get("artistName") as string,
-      description: formData.get("description") as string,
-      genres: formData.getAll("genres") as string[],
-      paypalEmail: formData.get("paypalEmail") as string,
-    };
-
-    try {
-      const res = await fetch("/api/auth/me", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        await refreshUser();
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
-      } else {
-        const errorData = await res.json();
-        setError(errorData.error || "Une erreur est survenue");
-      }
-    } catch (err) {
-      setError("Une erreur est survenue");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePreferencesSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -368,11 +332,10 @@ export default function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 transition-all ${
-                  activeTab === tab.id
-                    ? "bg-brand-gold text-brand-purple"
-                    : "glass hover:bg-white/10"
-                }`}
+                className={`px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 transition-all ${activeTab === tab.id
+                  ? "bg-brand-gold text-brand-purple"
+                  : "glass hover:bg-white/10"
+                  }`}
               >
                 <tab.icon className="w-4 h-4" /> {tab.label}
               </button>
@@ -398,13 +361,15 @@ export default function SettingsPage() {
               onSubmit={handleProfileSave}
               className="glass rounded-3xl p-8"
             >
-              <h2 className="text-2xl font-bold font-display mb-6 flex items-center gap-2">
-                <User className="w-6 h-6 text-brand-gold" /> Informations
-                personnelles (Client)
-              </h2>
+              {/* EN-TÊTE DU FORMULAIRE */}
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-bold font-display flex items-center gap-2">
+                  <User className="w-6 h-6 text-brand-gold" /> Informations personnelles
+                </h2>
+              </div>
 
-              {/* Avatar */}
-              <div className="flex items-center gap-6 mb-8">
+              {/* AVATAR */}
+              <div className="flex items-center gap-6 mb-8 p-6 glass rounded-2xl">
                 <div className="relative">
                   <Avatar
                     src={avatarPreview}
@@ -432,287 +397,285 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-bold">Photo de profil</h3>
-                  <p className="text-sm text-slate-400">
-                    JPG, PNG ou WEBP. Max 5 Mo.
-                  </p>
+                  <h3 className="font-bold text-lg">Photo de profil</h3>
+                  <p className="text-sm text-slate-400">JPG, PNG ou WEBP. Max 5 Mo.</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Prénom
-                  </label>
-                  <input
-                    name="firstName"
-                    type="text"
-                    defaultValue={user.firstName ?? ""}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Nom
-                  </label>
-                  <input
-                    name="lastName"
-                    type="text"
-                    defaultValue={user.lastName ?? ""}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Pseudo (Display Name)
-                  </label>
-                  <input
-                    name="displayName"
-                    type="text"
-                    defaultValue={user.displayName ?? user.username ?? ""}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Mail className="w-4 h-4" /> Email
-                  </label>
-                  <input
-                    name="email"
-                    type="email"
-                    defaultValue={user.email ?? ""}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Bio
-                  </label>
-                  <textarea
-                    name="bio"
-                    rows={3}
-                    defaultValue={user.bio ?? ""}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50 resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Globe className="w-4 h-4" /> Site web personnel
-                  </label>
-                  <input
-                    name="website"
-                    type="url"
-                    defaultValue={user.website ?? ""}
-                    placeholder="https://votre-site.com"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <h3 className="text-lg font-semibold font-display mb-4 mt-4 border-b border-white/10 pb-2">
-                    Réseaux Sociaux & Contact
-                  </h3>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Phone className="w-4 h-4" /> Téléphone
-                  </label>
-                  <input
-                    name="phone"
-                    type="tel"
-                    defaultValue={user.phone ?? ""}
-                    placeholder="+33 6 12 34 56 78"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Home className="w-4 h-4" /> Adresse
-                  </label>
-                  <input
-                    name="address"
-                    type="text"
-                    defaultValue={user.address ?? ""}
-                    placeholder="12 rue Exemple, 75000 Paris"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <MapPin className="w-4 h-4" /> Ville
-                  </label>
-                  <input
-                    name="city"
-                    type="text"
-                    defaultValue={user.city ?? ""}
-                    placeholder="Paris"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <MapPin className="w-4 h-4" /> Code postal
-                  </label>
-                  <input
-                    name="postalCode"
-                    type="text"
-                    defaultValue={user.postalCode ?? ""}
-                    placeholder="75000"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Instagram className="w-4 h-4" /> Instagram (Nom
-                    d&apos;utilisateur)
-                  </label>
-                  <input
-                    name="instagram"
-                    type="text"
-                    defaultValue={user.instagram ?? ""}
-                    placeholder="@votre_pseudo"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Twitter className="w-4 h-4" /> Twitter / X
-                  </label>
-                  <input
-                    name="twitter"
-                    type="text"
-                    defaultValue={user.twitter ?? ""}
-                    placeholder="@votre_pseudo"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <Youtube className="w-4 h-4" /> YouTube
-                  </label>
-                  <input
-                    name="youtube"
-                    type="url"
-                    defaultValue={user.youtube ?? ""}
-                    placeholder="Lien vers la chaîne"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
-                    <MapPin className="w-4 h-4" /> Pays
-                  </label>
-                  <select
-                    name="country"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                    defaultValue={(user as any).country ?? "FR"}
-                  >
-                    <option value="FR">France</option>
-                    <option value="BE">Belgique</option>
-                    <option value="CH">Suisse</option>
-                    <option value="CA">Canada</option>
-                    <option value="SN">Sénégal</option>
-                    <option value="CI">Côte d&apos;Ivoire</option>
-                  </select>
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary px-8 py-3 rounded-full font-semibold mt-8 flex items-center gap-2 disabled:opacity-50"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Save className="w-5 h-5" />
-                )}
-                {loading ? "Enregistrement..." : "Enregistrer"}
-              </button>
-            </form>
-          )}
-
-          {/* Seller Tab */}
-          {activeTab === "seller" && user?.role === "SELLER" && (
-            <form onSubmit={handleSellerSave} className="glass rounded-3xl p-8">
-              <h2 className="text-2xl font-bold font-display mb-6 flex items-center gap-2">
-                <Music className="w-6 h-6 text-brand-gold" /> Informations
-                Vendeur
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Nom d&apos;artiste / Beatmaker
-                  </label>
-                  <input
-                    name="artistName"
-                    type="text"
-                    defaultValue={user.sellerProfile?.artistName ?? ""}
-                    required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Email PayPal pour les paiements
-                  </label>
-                  <input
-                    name="paypalEmail"
-                    type="email"
-                    defaultValue={
-                      (user.sellerProfile as any)?.paypalEmail ?? ""
-                    }
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Description de la boutique
-                  </label>
-                  <textarea
-                    name="description"
-                    rows={4}
-                    defaultValue={user.sellerProfile?.description ?? ""}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50 resize-none"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Genres musicaux principaux
-                  </label>
-                  <div className="flex flex-wrap gap-3">
-                    {GENRES.map((genre) => (
-                      <label key={genre} className="cursor-pointer">
-                        <input
-                          name="genres"
-                          type="checkbox"
-                          value={genre}
-                          defaultChecked={user.sellerProfile?.genres?.includes(
-                            genre,
-                          )}
-                          className="peer sr-only"
-                        />
-                        <span className="inline-block px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10 text-slate-300 peer-checked:bg-brand-gold peer-checked:text-brand-purple peer-checked:border-brand-gold peer-checked:font-semibold hover:bg-white/10 transition-all">
-                          {genre.charAt(0).toUpperCase() + genre.slice(1)}
-                        </span>
-                      </label>
-                    ))}
+              {/* SECTION: INFORMATIONS DE BASE */}
+              <div className="glass rounded-2xl p-6 mb-8">
+                <h3 className="text-lg font-bold font-display block mb-6 text-brand-gold">
+                  Informations de base
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                      Prénom
+                    </label>
+                    <input
+                      name="firstName"
+                      type="text"
+                      defaultValue={user.firstName ?? ""}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                      Nom
+                    </label>
+                    <input
+                      name="lastName"
+                      type="text"
+                      defaultValue={user.lastName ?? ""}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-slate-300 mb-2 block">
+                      {user?.role === "SELLER" ? "Pseudo / Nom d'artiste" : "Pseudo"}
+                    </label>
+                    <input
+                      name="displayName"
+                      type="text"
+                      defaultValue={user.displayName ?? user.username}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                      <Mail className="w-4 h-4" /> Email
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      defaultValue={user.email ?? ""}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
+                    />
                   </div>
                 </div>
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary px-8 py-3 rounded-full font-semibold mt-8 flex items-center gap-2 disabled:opacity-50"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Save className="w-5 h-5" />
-                )}
-                {loading ? "Enregistrement..." : "Enregistrer"}
-              </button>
+
+              {/* SECTION: BOUTIQUE & LIENS */}
+              <div className="glass rounded-2xl p-6 mb-8 border border-brand-gold/10">
+                <h3 className="text-lg font-bold font-display block mb-6 text-brand-gold">
+                  {user?.role === "SELLER" ? "Boutique & Liens" : "Liens Web"}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                      <Globe className="w-4 h-4" /> Site web personnel
+                    </label>
+                    <input
+                      name="website"
+                      type="url"
+                      defaultValue={user.website ?? ""}
+                      placeholder="https://votre-site.com"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                    />
+                  </div>
+
+                  {user?.role === "SELLER" && (
+                    <div>
+                      <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-green-400" /> Email PayPal (Paiements)
+                      </label>
+                      <input
+                        name="paypalEmail"
+                        type="email"
+                        defaultValue={(user.sellerProfile as any)?.paypalEmail ?? ""}
+                        placeholder="paypal@votre-email.com"
+                        className="w-full px-4 py-3 bg-green-500/5 border border-green-500/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-green-400/50"
+                      />
+                    </div>
+                  )}
+
+                  {user?.role === "SELLER" && (
+                    <div className="md:col-span-2 mt-2">
+                      <label className="text-sm font-semibold text-slate-300 mb-3 block">
+                        Genres musicaux principaux
+                      </label>
+                      <div className="flex flex-wrap gap-3">
+                        {GENRES.map((genre) => (
+                          <label key={genre} className="cursor-pointer">
+                            <input
+                              name="genres"
+                              type="checkbox"
+                              value={genre}
+                              defaultChecked={user.sellerProfile?.genres?.includes(genre)}
+                              className="peer sr-only"
+                            />
+                            <span className="inline-block px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10 text-slate-300 peer-checked:bg-brand-gold peer-checked:text-brand-purple peer-checked:border-brand-gold peer-checked:font-semibold hover:bg-white/10 transition-all">
+                              {genre.charAt(0).toUpperCase() + genre.slice(1)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* SECTION: BIO / DESCRIPTION */}
+              <div className="glass rounded-2xl p-6 mb-8">
+                <h3 className="text-lg font-bold font-display block mb-6 text-brand-gold">
+                  {user?.role === "SELLER" ? "Bio / Description de la boutique" : "Bio"}
+                </h3>
+                <textarea
+                  name="bio"
+                  rows={5}
+                  defaultValue={user.bio ?? ""}
+                  placeholder={user?.role === "SELLER" ? "Présentez-vous et décrivez votre univers musical à vos clients..." : "Un petit mot sur vous..."}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50 resize-y"
+                />
+              </div>
+
+              {/* SECTION: CONTACT & ADRESSE */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* ADRESSE ENTIÈRE */}
+                <div className="glass rounded-2xl p-6">
+                  <h3 className="text-lg font-bold font-display block mb-6 text-brand-gold">
+                    Coordonnées
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                        <Phone className="w-4 h-4" /> Téléphone
+                      </label>
+                      <input
+                        name="phone"
+                        type="tel"
+                        defaultValue={user.phone ?? ""}
+                        placeholder="+33 6 12 34 56 78"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                        <Home className="w-4 h-4" /> Adresse
+                      </label>
+                      <input
+                        name="address"
+                        type="text"
+                        defaultValue={user.address ?? ""}
+                        placeholder="12 rue Exemple"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                          <MapPin className="w-4 h-4" /> Ville
+                        </label>
+                        <input
+                          name="city"
+                          type="text"
+                          defaultValue={user.city ?? ""}
+                          placeholder="Paris"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                          <MapPin className="w-4 h-4" /> Code Postal
+                        </label>
+                        <input
+                          name="postalCode"
+                          type="text"
+                          defaultValue={user.postalCode ?? ""}
+                          placeholder="75000"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-slate-300 mb-2 block flex items-center gap-2">
+                        <MapPin className="w-4 h-4" /> Pays
+                      </label>
+                      <select
+                        name="country"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
+                        defaultValue={(user as any).country ?? "FR"}
+                      >
+                        <option value="FR">France</option>
+                        <option value="BE">Belgique</option>
+                        <option value="CH">Suisse</option>
+                        <option value="CA">Canada</option>
+                        <option value="SN">Sénégal</option>
+                        <option value="CI">Côte d&apos;Ivoire</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RÉSEAUX SOCIAUX */}
+                <div className="glass rounded-2xl p-6">
+                  <h3 className="text-lg font-bold font-display block mb-6 text-brand-gold">
+                    Réseaux Sociaux
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Instagram className="w-5 h-5 text-pink-500" />
+                      </div>
+                      <input
+                        name="instagram"
+                        type="text"
+                        defaultValue={user.instagram ?? ""}
+                        placeholder="Pseudo Instagram"
+                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                      />
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Twitter className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <input
+                        name="twitter"
+                        type="text"
+                        defaultValue={user.twitter ?? ""}
+                        placeholder="Pseudo Twitter / X"
+                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                      />
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Youtube className="w-5 h-5 text-red-500" />
+                      </div>
+                      <input
+                        name="youtube"
+                        type="url"
+                        defaultValue={user.youtube ?? ""}
+                        placeholder="Lien chaîne YouTube"
+                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-gold/50"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-center mt-10">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="relative group px-12 py-4 rounded-full font-bold text-lg text-brand-purple overflow-hidden flex items-center gap-3 disabled:opacity-50 transition-all hover:scale-105"
+                >
+                  <div className="absolute inset-0 bg-brand-gold bg-opacity-100 group-hover:bg-amber-400 transition-colors"></div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white via-white/50 to-transparent blur-md transition-opacity"></div>
+
+                  <span className="relative z-10 flex items-center gap-2">
+                    {loading ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      <Save className="w-6 h-6" />
+                    )}
+                    {loading ? "Enregistrement en cours..." : "Enregistrer les modifications"}
+                  </span>
+                </button>
+              </div>
             </form>
           )}
+
+
 
           {/* Security Tab */}
           {activeTab === "security" && (
@@ -778,33 +741,27 @@ export default function SettingsPage() {
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
                     />
                   </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-primary px-8 py-3 rounded-full font-semibold flex items-center gap-2 disabled:opacity-50 mt-4"
-                  >
-                    {loading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Save className="w-5 h-5" />
-                    )}
-                    {loading ? "Modification..." : "Modifier le mot de passe"}
-                  </button>
+                  <div className="flex justify-center mt-8">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="relative group px-10 py-3 rounded-full font-bold text-brand-purple overflow-hidden flex items-center gap-3 disabled:opacity-50 transition-all hover:scale-105"
+                    >
+                      <div className="absolute inset-0 bg-brand-gold bg-opacity-100 group-hover:bg-amber-400 transition-colors"></div>
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white via-white/50 to-transparent blur-md transition-opacity"></div>
+
+                      <span className="relative z-10 flex items-center gap-2">
+                        {loading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Save className="w-5 h-5" />
+                        )}
+                        {loading ? "Modification..." : "Modifier le mot de passe"}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </form>
-
-              <div className="glass rounded-3xl p-8">
-                <h2 className="text-2xl font-bold font-display mb-4 flex items-center gap-2">
-                  <Shield className="w-6 h-6 text-brand-gold" />{" "}
-                  Authentification à deux facteurs
-                </h2>
-                <p className="text-slate-400 mb-4">
-                  Ajoutez une couche de sécurité supplémentaire à votre compte.
-                </p>
-                <button className="glass px-6 py-3 rounded-full font-semibold hover:bg-white/10">
-                  Activer la 2FA
-                </button>
-              </div>
 
               <div className="glass rounded-3xl p-8 border border-red-500/20">
                 <h2 className="text-2xl font-bold font-display mb-4 flex items-center gap-2 text-red-400">
@@ -894,18 +851,25 @@ export default function SettingsPage() {
                   </div>
                 ))}
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary px-8 py-3 rounded-full font-semibold mt-6 flex items-center gap-2 disabled:opacity-50"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Save className="w-5 h-5" />
-                )}
-                {loading ? "Enregistrement..." : "Enregistrer"}
-              </button>
+              <div className="flex justify-center mt-8">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="relative group px-10 py-3 rounded-full font-bold text-brand-purple overflow-hidden flex items-center gap-3 disabled:opacity-50 transition-all hover:scale-105"
+                >
+                  <div className="absolute inset-0 bg-brand-gold bg-opacity-100 group-hover:bg-amber-400 transition-colors"></div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white via-white/50 to-transparent blur-md transition-opacity"></div>
+
+                  <span className="relative z-10 flex items-center gap-2">
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Save className="w-5 h-5" />
+                    )}
+                    {loading ? "Enregistrement..." : "Enregistrer les préférences"}
+                  </span>
+                </button>
+              </div>
             </form>
           )}
 
@@ -974,32 +938,27 @@ export default function SettingsPage() {
                     ))}
                   </div>
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block">
-                    Langue de l&apos;interface
-                  </label>
-                  <select
-                    name="language"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-brand-gold/50"
-                    defaultValue={user.musicPrefs?.language ?? "fr"}
-                  >
-                    <option value="fr">Français</option>
-                    <option value="en">English</option>
-                  </select>
-                </div>
+
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary px-8 py-3 rounded-full font-semibold mt-8 flex items-center gap-2 disabled:opacity-50"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Save className="w-5 h-5" />
-                )}
-                {loading ? "Enregistrement..." : "Enregistrer"}
-              </button>
+              <div className="flex justify-center mt-8">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="relative group px-10 py-3 rounded-full font-bold text-brand-purple overflow-hidden flex items-center gap-3 disabled:opacity-50 transition-all hover:scale-105"
+                >
+                  <div className="absolute inset-0 bg-brand-gold bg-opacity-100 group-hover:bg-amber-400 transition-colors"></div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white via-white/50 to-transparent blur-md transition-opacity"></div>
+
+                  <span className="relative z-10 flex items-center gap-2">
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Save className="w-5 h-5" />
+                    )}
+                    {loading ? "Enregistrement..." : "Enregistrer les préférences"}
+                  </span>
+                </button>
+              </div>
             </form>
           )}
         </div>

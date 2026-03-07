@@ -9,13 +9,13 @@ import { useCart } from "@/contexts/CartContext";
 import { Avatar } from "@/components/ui/Avatar";
 import { useEffect } from "react";
 
- 
+
 
 
 export function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
- 
+
     const { user, loading, logout } = useAuth();
     const { cart } = useCart();
     const [unreadCount, setUnreadCount] = useState(0);
@@ -30,7 +30,7 @@ export function Navbar() {
             })
                 .then((r) => r.json())
                 .then((data) => setUnreadCount(data.count ?? 0))
-                .catch(() => {});
+                .catch(() => { });
         };
         fetchUnread();
         const interval = setInterval(fetchUnread, 30000);
@@ -42,10 +42,10 @@ export function Navbar() {
         window.location.href = "/";
     };
 
-    
 
- 
-     
+
+
+
 
     return (
         <nav className="fixed top-0 z-50 w-full glass border-b border-white/5">
@@ -112,14 +112,14 @@ export function Navbar() {
                                     {userMenuOpen && (
                                         <div className="absolute right-0 mt-2 w-56 glass rounded-xl border border-white/10 overflow-hidden animate-fade-in">
                                             <div className="p-4 border-b border-white/10">
-                                                <p className="font-semibold text-sm">{user.displayName || user.username}</p>
-                                                <p className="text-xs text-slate-400">{user.email}</p>
-                                                <span className="inline-block mt-2 px-2 py-1 bg-brand-gold/10 text-brand-gold text-xs rounded-full">
-                                                    {user.role === "SELLER" ? "Vendeur" : user.role === "ADMIN" ? "Admin" : "Acheteur"}
-                                                </span>
+                                                <p className="font-semibold text-sm">{user.displayName || user.username}
+                                                    <span className="ml-2 inline-block mt-2 px-2 py-1 bg-brand-gold/10 text-brand-gold text-xs rounded-full">
+                                                        {user.role === "SELLER" ? "Beatmaker" : user.role === "ADMIN" ? "Admin" : "Artiste"}
+                                                    </span>
+                                                </p>
                                             </div>
                                             <div className="p-2">
-                                                <Link href="/account" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
+                                                <Link href="/seller/dashboard" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
                                                     <User className="w-4 h-4" />
                                                     <span className="text-sm">Mon compte</span>
                                                 </Link>
@@ -127,15 +127,9 @@ export function Navbar() {
                                                     <Settings className="w-4 h-4" />
                                                     <span className="text-sm">Paramètres</span>
                                                 </Link>
-                                                {user.role === "SELLER" && (
-                                                    <>
-                                                        <Link href="/seller/dashboard" className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-colors">
-                                                            <ShoppingCart className="w-4 h-4" />
-                                                            <span className="text-sm">Dashboard vendeur</span>
-                                                        </Link>
-                                                    </>
-                                                )}
+
                                                 <button
+                                                    type="button"
                                                     onClick={handleLogout}
                                                     className="w-full flex items-center gap-2 px-3 py-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"
                                                 >
@@ -166,6 +160,7 @@ export function Navbar() {
 
                 {/* Mobile Menu Button */}
                 <button
+                    type="button"
                     className="md:hidden glass p-2 rounded-xl hover:bg-white/10 transition-all"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 >
