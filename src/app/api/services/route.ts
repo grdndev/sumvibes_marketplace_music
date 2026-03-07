@@ -76,8 +76,18 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Token invalide" }, { status: 401 });
         }
 
-        if (decoded.role !== "SELLER" && decoded.role !== "ADMIN") {
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+            select: { role: true, subscription: { select: { plan: true } } }
+        });
+
+        if (!user || (user.role !== "SELLER" && user.role !== "ADMIN")) {
             return NextResponse.json({ error: "Seuls les vendeurs peuvent proposer un service" }, { status: 403 });
+        }
+
+        const plan = user.subscription?.plan || "FREEMIUM";
+        if (user.role === "SELLER" && plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY") {
+            return NextResponse.json({ error: "La publication de services est réservée aux producteurs Premium." }, { status: 403 });
         }
 
         const data = await request.json();

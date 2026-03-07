@@ -17,7 +17,9 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { plan } = body;
 
-        if (!plan || (plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY")) {
+        const allowedPlans = ["PREMIUM_MONTHLY", "PREMIUM_YEARLY", "STANDARD_MONTHLY", "STANDARD_YEARLY"];
+
+        if (!plan || !allowedPlans.includes(plan)) {
             return NextResponse.json({ error: "Choix de plan invalide" }, { status: 400 });
         }
 
@@ -26,19 +28,14 @@ export async function POST(req: NextRequest) {
             include: { subscription: true },
         });
 
-        if (!user || user.role !== "BUYER") {
-            return NextResponse.json({ error: "Seuls les Acheteurs (Artistes) peuvent souscrire à un abonnement" }, { status: 403 });
+        if (!user || (user.role !== "BUYER" && user.role !== "SELLER")) {
+            return NextResponse.json({ error: "Action non autorisée" }, { status: 403 });
         }
-
-        // Calculer le montant (Simulation pour le moment)
-        // Dans une implémentation Stripe réelle, on créerait une Checkout Session ici
-        // et on retournerait session.url à l'utilisateur
-        const price = plan === "PREMIUM_MONTHLY" ? 4.99 : 49.99; // 4.99/mo or 49.99/yr
 
         // Mode développement : Simulation du paiement immédiat
         const now = new Date();
         const nextPeriod = new Date();
-        if (plan === "PREMIUM_MONTHLY") {
+        if (plan.includes("MONTHLY")) {
             nextPeriod.setMonth(now.getMonth() + 1);
         } else {
             nextPeriod.setFullYear(now.getFullYear() + 1);

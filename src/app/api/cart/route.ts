@@ -47,6 +47,19 @@ export async function GET(req: NextRequest) {
             },
           },
         },
+        service: {
+          include: {
+            seller: {
+              select: {
+                id: true,
+                displayName: true,
+                username: true,
+                avatar: true,
+                sellerProfile: { select: { artistName: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -74,93 +87,124 @@ export async function POST(req: NextRequest) {
     if (!decoded) return NextResponse.json({ error: "Token invalide" }, { status: 401 });
 
     const body = await req.json();
-    const { beatId, licenseType, license } = body;
+    const { beatId, serviceId, licenseType, license } = body;
     const requestedLicense = licenseType ?? license ?? "BASIC";
 
-    if (!beatId) {
-      return NextResponse.json({ error: "ID du beat requis" }, { status: 400 });
+    if (!beatId && !serviceId) {
+      return NextResponse.json({ error: "ID du beat ou du service requis" }, { status: 400 });
     }
 
-    // Validation du type de licence (doit correspondre à l'enum Prisma)
-    const validLicenses: LicenseType[] = ["BASIC", "PREMIUM", "EXCLUSIVE"];
-    const normalizedLicense = String(requestedLicense).toUpperCase() as LicenseType;
-    if (!validLicenses.includes(normalizedLicense)) {
-      return NextResponse.json(
-        { error: `Type de licence invalide. Valeurs acceptées : ${validLicenses.join(", ")}` },
-        { status: 400 }
-      );
-    }
+    if (beatId) {
+      // ----------------------------------------------------
+      // Logique existante pour ajouter un BEAT
+      // ----------------------------------------------------
+      const validLicenses: LicenseType[] = ["BASIC", "PREMIUM", "EXCLUSIVE"];
+      const normalizedLicense = String(requestedLicense).toUpperCase() as LicenseType;
 
-    // Récupère le beat avec ses prix
-    const beat = await prisma.beat.findUnique({
-      where: { id: beatId },
-      select: {
-        id: true,
-        status: true,
-        sellerId: true,
-        basicPrice: true,
-        premiumPrice: true,
-        exclusivePrice: true,
-      },
-    });
+      if (!validLicenses.includes(normalizedLicense)) {
+        return NextResponse.json(
+          { error: `Type de licence invalide. Valeurs acceptées : ${validLicenses.join(", ")}` },
+          { status: 400 }
+        );
+      }
 
-    if (!beat || beat.status !== "PUBLISHED") {
-      return NextResponse.json({ error: "Beat non disponible" }, { status: 404 });
-    }
-    if (beat.sellerId === decoded.userId) {
-      return NextResponse.json({ error: "Vous ne pouvez pas acheter vos propres beats" }, { status: 400 });
-    }
-
-    // Vérifie que la licence demandée a bien un prix renseigné
-    const finalPrice = getPriceForLicense(beat, normalizedLicense);
-    if (finalPrice <= 0) {
-      return NextResponse.json(
-        { error: `La licence "${normalizedLicense}" n'est pas disponible pour ce beat` },
-        { status: 400 }
-      );
-    }
-
-    // Vérifie si ce beat + cette licence est déjà dans le panier
-    const existingCartItem = await prisma.cartItem.findFirst({
-      where: {
-        userId: decoded.userId,
-        beatId,
-        licenseType: normalizedLicense,
-      },
-    });
-    if (existingCartItem) {
-      return NextResponse.json(
-        { error: `Ce beat est déjà dans le panier avec la licence "${normalizedLicense}"` },
-        { status: 400 }
-      );
-    }
-
-    // Crée l'item panier avec le prix snapshot
-    const cartItem = await prisma.cartItem.create({
-      data: {
-        userId: decoded.userId,
-        beatId,
-        licenseType: normalizedLicense,
-        price: finalPrice,
-      },
-      include: {
-        beat: {
-          include: {
-            seller: {
-              select: {
-                id: true,
-                displayName: true,
-                username: true,
-                avatar: true,
-                sellerProfile: { select: { artistName: true } },
-              },
-            },
-          },
+      // Récupère le beat avec ses prix
+      const beat = await prisma.beat.findUnique({
+        where: { id: beatId },
+        select: {
+          id: true,
+          status: true,
+          sellerId: true,
+          basicPrice: true,
+          premiumPrice: true,
+          exclusivePrice: true,
         },
-      },
-    });
+      });
 
-    return NextResponse.json(cartItem, { status: 201 });
+      if (!beat || beat.status !== "PUBLISHED") {
+        return NextResponse.json({ error: "Beat non disponible" }, { status: 404 });
+      }
+      if (beat.sellerId === decoded.userId) {
+        return NextResponse.json({ error: "Vous ne pouvez pas acheter vos propres beats" }, { status: 400 });
+      }
+
+      // Vérifie que la licence demandée a bien un prix renseigné
+      const finalPrice = getPriceForLicense(beat, normalizedLicense);
+      if (finalPrice <= 0) {
+        return NextResponse.json(
+          { error: `La licence "${normalizedLicense}" n'est pas disponible pour ce beat` },
+          { status: 400 }
+        );
+      }
+
+      // Vérifie si ce beat + cette licence est déjà dans le panier
+      const existingCartItem = await prisma.cartItem.findFirst({
+        where: {
+          userId: decoded.userId,
+          beatId,
+          licenseType: normalizedLicense,
+        },
+      });
+      if (existingCartItem) {
+        return NextResponse.json(
+          { error: `Ce beat est déjà dans le panier avec la licence "${normalizedLicense}"` },
+          { status: 400 }
+        );
+      }
+
+      // Crée l'item panier avec le prix snapshot
+      const cartItem = await prisma.cartItem.create({
+        data: {
+          userId: decoded.userId,
+          beatId,
+          licenseType: normalizedLicense,
+          price: finalPrice,
+        },
+        include: { beat: { include: { seller: { select: { id: true, displayName: true, username: true, avatar: true, sellerProfile: { select: { artistName: true } } } } } } },
+      });
+
+      return NextResponse.json(cartItem, { status: 201 });
+
+    } else if (serviceId) {
+      // ----------------------------------------------------
+      // Logique pour ajouter un SERVICE
+      // ----------------------------------------------------
+      const service = await prisma.service.findUnique({
+        where: { id: serviceId }
+      });
+
+      if (!service) {
+        return NextResponse.json({ error: "Service non trouvé" }, { status: 404 });
+      }
+      if (service.sellerId === decoded.userId) {
+        return NextResponse.json({ error: "Vous ne pouvez pas acheter vos propres services" }, { status: 400 });
+      }
+
+      // Check if service already exists in cart? 
+      // Unlike beats, we might allow multiple of the same service or prevent duplicates. Let's prevent duplicates for now.
+      const existingCartItem = await prisma.cartItem.findFirst({
+        where: {
+          userId: decoded.userId,
+          serviceId,
+        },
+      });
+      if (existingCartItem) {
+        return NextResponse.json({ error: `Ce service est déjà dans votre panier` }, { status: 400 });
+      }
+
+      const cartItem = await prisma.cartItem.create({
+        data: {
+          userId: decoded.userId,
+          serviceId,
+          price: service.price, // the service price
+          // License doesn't technically apply, but we default to BASIC
+          licenseType: "BASIC",
+        },
+        include: { service: { include: { seller: { select: { id: true, displayName: true, username: true, avatar: true, sellerProfile: { select: { artistName: true } } } } } } },
+      });
+
+      return NextResponse.json(cartItem, { status: 201 });
+    }
   } catch (error) {
     console.error("Error in POST /api/cart:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

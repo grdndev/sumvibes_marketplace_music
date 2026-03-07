@@ -11,7 +11,9 @@ interface Beat {
   key: string;
   tags: string[];
   previewUrl?: string;
-  mainFileUrl?: string;
+  mp3FileUrl?: string;
+  wavFileUrl?: string;
+  trackoutFileUrl?: string;
   coverImage?: string;
   // Legacy fields (kept for backward compat in UI)
   audioUrl?: string;

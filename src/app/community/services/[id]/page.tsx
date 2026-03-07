@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { ChevronLeft, Star, MapPin, Clock, MessageSquare, Briefcase, Calendar } from "lucide-react";
 import { ContactSellerButton } from "./ContactSellerButton";
+import { AddToCartButton } from "./AddToCartButton";
 
 async function getService(id: string) {
     const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/services/${id}`, {
@@ -104,9 +105,7 @@ export default async function ServiceDetailsPage({ params }: { params: { id: str
                                     </div>
                                 </div>
 
-                                <button className="w-full btn-primary px-6 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-all text-black mb-3 text-lg">
-                                    Commander
-                                </button>
+                                <AddToCartButton serviceId={service.id} sellerId={service.sellerId} />
                                 <ContactSellerButton sellerId={service.sellerId} />
                             </div>
 

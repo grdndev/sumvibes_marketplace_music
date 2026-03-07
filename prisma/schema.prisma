@@ -27,6 +27,8 @@ enum UserStatus {
 
 enum SubscriptionPlan {
   FREEMIUM
+  STANDARD_MONTHLY
+  STANDARD_YEARLY
   PREMIUM_MONTHLY
   PREMIUM_YEARLY
 }
@@ -200,9 +202,11 @@ model Beat {
   slug        String  @unique
 
   // Audio Files
-  previewUrl  String // Watermarked preview (MP3)
-  mainFileUrl String // Full quality file (WAV)
-  coverImage  String?
+  previewUrl      String // Watermarked preview (MP3)
+  mp3FileUrl      String? // MP3 (Basic)
+  wavFileUrl      String? // WAV (Non-Exclusive)
+  trackoutFileUrl String? // ZIP Trackout (Exclusive)
+  coverImage      String?
 
   // Metadata
   bpm         Int?
@@ -300,6 +304,8 @@ model Service {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  cartItems CartItem[]
 
   @@index([sellerId])
   @@index([category])
@@ -431,16 +437,22 @@ model CartItem {
   id     String @id @default(cuid())
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  beatId String
-  beat   Beat   @relation(fields: [beatId], references: [id], onDelete: Cascade)
+  
+  // Can be a Beat or a Service
+  beatId String?
+  beat   Beat?   @relation(fields: [beatId], references: [id], onDelete: Cascade)
+  
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   licenseType LicenseType @default(BASIC)
   price       Decimal     @default(0) @db.Decimal(10, 2)
 
   createdAt DateTime @default(now())
 
-  @@unique([userId, beatId, licenseType])
   @@index([userId])
+  @@index([beatId])
+  @@index([serviceId])
 }
 
 // ============================================

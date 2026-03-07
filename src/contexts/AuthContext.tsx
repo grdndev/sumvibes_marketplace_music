@@ -22,11 +22,12 @@ interface User {
   postalCode?: string | null;
   avatar?: string | null;
   createdAt?: string;
+  currentMonthUploads?: number;
   twoFactorEnabled?: boolean;
   notificationPrefs?: any;
   musicPrefs?: any;
   subscription?: {
-    plan: "FREEMIUM" | "PREMIUM_MONTHLY" | "PREMIUM_YEARLY";
+    plan: "FREEMIUM" | "STANDARD_MONTHLY" | "STANDARD_YEARLY" | "PREMIUM_MONTHLY" | "PREMIUM_YEARLY";
     status: "ACTIVE" | "CANCELED" | "PAST_DUE" | "EXPIRED";
     currentPeriodEnd?: string | null;
   } | null;

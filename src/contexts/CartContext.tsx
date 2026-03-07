@@ -5,9 +5,9 @@ import { compare } from 'bcryptjs';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 interface CartItem {
-  licenseType: null;
+  licenseType: string | null;
   id: string;
-  beat: {
+  beat?: {
     id: string;
     title: string;
     slug: string;
@@ -17,7 +17,16 @@ interface CartItem {
       sellerProfile: { artistName: string } | null;
     };
   };
-  license: {
+  service?: {
+    id: string;
+    title: string;
+    category: string;
+    price: number;
+    seller: {
+      sellerProfile: { artistName: string } | null;
+    };
+  };
+  license?: {
     id: string;
     name: string;
     price: number;
@@ -35,13 +44,14 @@ interface CartContextType {
   cart: CartData;
   loading: boolean;
   addToCart: (beatId: string, license: string) => Promise<boolean>;
+  addServiceToCart: (serviceId: string) => Promise<boolean>;
   removeFromCart: (cartItemId: string) => Promise<boolean>;
   clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
- 
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartData>({ items: [], total: 0, count: 0 });
   const [loading, setLoading] = useState(true);
@@ -90,13 +100,39 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (res.ok) {
-        await fetchCart(); // ← met à jour TOUS les composants
+        await fetchCart();
         return true;
       }
       return false;
     } catch (error) {
       console.error('Error adding to cart:', error);
       return false;
+    }
+  };
+
+  const addServiceToCart = async (serviceId: string): Promise<boolean> => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Non authentifié');
+
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ serviceId })
+      });
+
+      if (res.ok) {
+        await fetchCart();
+        return true;
+      }
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "Erreur lors de l'ajout au panier");
+    } catch (error) {
+      console.error('Error adding service to cart:', error);
+      throw error;
     }
   };
 
@@ -150,7 +186,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ cart, loading, addToCart, removeFromCart, clearCart, refreshCart: fetchCart }}>
+    <CartContext.Provider value={{ cart, loading, addToCart, addServiceToCart, removeFromCart, clearCart, refreshCart: fetchCart }}>
       {children}
     </CartContext.Provider>
   );

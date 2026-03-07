@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { Music, Trash2, ShoppingCart, ArrowRight, Tag, Shield, Loader2 } from "lucide-react";
+import { Music, Trash2, ShoppingCart, ArrowRight, Tag, Shield, Loader2, Briefcase } from "lucide-react";
 
 
 function coverSrc(raw: string) {
@@ -74,34 +74,47 @@ export default function CartPage() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
-                {cart.items.map((item) => (
-                  <div key={item.id} className="glass rounded-2xl p-6 flex items-center gap-6 group hover:scale-[1.01]">
-                    <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 flex items-center justify-center overflow-hidden">
-                      {item.beat.coverImage ? (
-                        <img src={coverSrc(item.beat.coverImage)} alt={item.beat.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <Music className="w-8 h-8 text-white/30" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg truncate">{item.beat.title}</h3>
-                      <p className="text-sm text-slate-400">Prod. by {item.beat.seller.sellerProfile?.artistName || "Producteur"}</p>
-                      <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
-                        <span className="glass px-2 py-1 rounded">Licence {item?.licenseType || null}</span>
+                {cart.items.map((item) => {
+                  const isService = !!item.service;
+                  const target = item.service || item.beat;
+                  if (!target) return null;
+
+                  return (
+                    <div key={item.id} className="glass rounded-2xl p-6 flex items-center gap-6 group hover:scale-[1.01]">
+                      <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 flex items-center justify-center overflow-hidden">
+                        {isService ? (
+                          <Briefcase className="w-8 h-8 text-white/30" />
+                        ) : (target as any).coverImage ? (
+                          <img src={coverSrc((target as any).coverImage)} alt={target.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <Music className="w-8 h-8 text-white/30" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-lg truncate">{target.title}</h3>
+                        <p className="text-sm text-slate-400">
+                          {isService ? "Service by " : "Prod. by "}
+                          {target.seller?.sellerProfile?.artistName || "Prestataire"}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
+                          <span className="glass px-2 py-1 rounded">
+                            {isService ? `Service ${(target as any).category}` : `Licence ${item.licenseType || "Standard"}`}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-gradient">{item.price} €</div>
+                        <button
+                          onClick={() => handleRemove(item.id)}
+                          className="mt-2 text-slate-500 hover:text-red-400 flex items-center gap-1 text-sm ml-auto"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Retirer
+                        </button>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-gradient">{item.price} €</div>
-                      <button
-                        onClick={() => handleRemove(item.id)}
-                        className="mt-2 text-slate-500 hover:text-red-400 flex items-center gap-1 text-sm ml-auto"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Retirer
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
 
                 <Link href="/catalogue" className="glass rounded-2xl p-4 flex items-center justify-center gap-2 text-slate-400 hover:text-brand-gold hover:bg-white/5">
                   <Music className="w-5 h-5" />

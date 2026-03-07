@@ -125,7 +125,7 @@ export default function CataloguePage() {
       else { audioRef.current?.play(); setIsPlayingAudio(true); }
     } else {
       const beat = allBeats.find((b) => b.id === id);
-      const url = beat?.previewUrl || beat?.audioUrl || beat?.mainFileUrl;
+      const url = beat?.previewUrl || beat?.audioUrl || beat?.mp3FileUrl;
       if (!url) { alert("Aperçu audio non disponible."); return; }
       if (audioRef.current) {
         setIsBuffering(true);

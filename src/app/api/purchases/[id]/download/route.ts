@@ -33,7 +33,9 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            mainFileUrl: true,
+            mp3FileUrl: true,
+            wavFileUrl: true,
+            trackoutFileUrl: true,
           },
         },
         license: {
@@ -54,7 +56,20 @@ export async function GET(
       return NextResponse.json({ error: "Paiement non complété" }, { status: 400 });
     }
 
-    const fileUrl = purchase.beat.mainFileUrl;
+    const pInfo = purchase as any;
+    let fileUrl: string | null = null;
+    const lType = pInfo.license?.type;
+
+    if (lType === "BASIC") {
+      fileUrl = pInfo.beat?.mp3FileUrl;
+    } else if (lType === "PREMIUM") {
+      fileUrl = pInfo.beat?.wavFileUrl || pInfo.beat?.mp3FileUrl;
+    } else if (lType === "EXCLUSIVE") {
+      fileUrl = pInfo.beat?.trackoutFileUrl || pInfo.beat?.wavFileUrl || pInfo.beat?.mp3FileUrl;
+    } else {
+      fileUrl = pInfo.beat?.mp3FileUrl;
+    }
+
     if (!fileUrl) {
       return NextResponse.json({ error: "Fichier non disponible" }, { status: 404 });
     }
@@ -81,9 +96,9 @@ export async function GET(
     const ext = path.extname(fileUrl).toLowerCase();
     const contentType =
       ext === ".mp3" ? "audio/mpeg" :
-      ext === ".wav" ? "audio/wav" :
-      "application/octet-stream";
-    const safeName = `${purchase.beat.title.replace(/[^a-zA-Z0-9._-]/g, "_")}_${purchase.license?.type ?? "LICENSE"}${ext}`;
+        ext === ".wav" ? "audio/wav" :
+          "application/octet-stream";
+    const safeName = `${pInfo.beat?.title?.replace(/[^a-zA-Z0-9._-]/g, "_") || "Beat"}_${pInfo.license?.type ?? "LICENSE"}${ext}`;
 
     return new NextResponse(fileBuffer, {
       headers: {

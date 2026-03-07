@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   UploadCloud,
   Music,
@@ -67,15 +68,14 @@ const STEPS = [
     icon: DollarSign,
     color: "from-emerald-500 to-teal-600",
   },
-  { id: 5, label: "SEO", icon: Search, color: "from-brand-gold to-yellow-500" },
 ];
 
 const INITIAL_FORM = {
   title: "",
   description: "",
-  slug: "",
-  previewUrl: "",
-  mainFileUrl: "",
+  mp3File: null as File | null,
+  wavFile: null as File | null,
+  trackoutFile: null as File | null,
   cover: null as File | null,
   coverPreview: "",
   bpm: "",
@@ -84,14 +84,10 @@ const INITIAL_FORM = {
   genres: [] as string[],
   moods: [] as string[],
   instruments: [] as string[],
-  tags: "",
   basicPrice: "",
   premiumPrice: "",
   exclusivePrice: "",
   status: "PENDING",
-  seoTitle: "",
-  seoDescription: "",
-  seoKeywords: "",
 };
 
 type FormState = typeof INITIAL_FORM;
@@ -144,19 +140,26 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all duration-150 border ${
-        active
-          ? "bg-brand-gold border-brand-gold text-slate-900 shadow-[0_2px_12px_rgba(212,175,55,0.5)] scale-105"
-          : "bg-white/5 border-white/15 text-slate-400 hover:bg-white/10 hover:border-white/30 hover:text-white"
-      }`}
+      className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all duration-150 border ${active
+        ? "bg-brand-gold border-brand-gold text-slate-900 shadow-[0_2px_12px_rgba(212,175,55,0.5)] scale-105"
+        : "bg-white/5 border-white/15 text-slate-400 hover:bg-white/10 hover:border-white/30 hover:text-white"
+        }`}
     >
       {children}
     </button>
   );
 }
 
+import { useAuth } from "@/contexts/AuthContext";
+
 export default function SellerBeatsPage() {
+  const { user } = useAuth();
   const router = useRouter();
+
+  const isFreemium = !user?.subscription?.plan || user.subscription.plan === "FREEMIUM";
+  const uploadsCount = user?.currentMonthUploads || 0;
+  const isLimitReached = isFreemium && uploadsCount >= 3;
+
   const [step, setStep] = useState(1);
   // ✅ stepRef miroir de step — évite la closure stale dans handleSubmit
   const stepRef = useRef(1);
@@ -195,7 +198,10 @@ export default function SellerBeatsPage() {
     }));
 
   const applyFile = useCallback((file: File) => {
-    if (!file.type.startsWith("image/")) return;
+    if (file.type !== "image/jpeg" && file.type !== "image/jpg" && file.type !== "image/png") {
+      setError("Seuls les formats JPG et PNG sont autorisés pour la cover.");
+      return;
+    }
     setForm((p: FormState) => {
       if (p.coverPreview) URL.revokeObjectURL(p.coverPreview);
       return { ...p, cover: file, coverPreview: URL.createObjectURL(file) };
@@ -213,24 +219,20 @@ export default function SellerBeatsPage() {
     const fd = new FormData();
     fd.append("title", f.title);
     fd.append("description", f.description);
-    fd.append("slug", f.slug);
-    fd.append("previewUrl", f.previewUrl);
-    fd.append("mainFileUrl", f.mainFileUrl);
     fd.append("bpm", f.bpm);
     fd.append("duration", f.duration);
     fd.append("key", f.key);
-    fd.append("tags", f.tags);
     fd.append("basicPrice", f.basicPrice);
     fd.append("premiumPrice", f.premiumPrice);
     fd.append("exclusivePrice", f.exclusivePrice);
     fd.append("status", f.status);
-    fd.append("seoTitle", f.seoTitle);
-    fd.append("seoDescription", f.seoDescription);
-    fd.append("seoKeywords", f.seoKeywords);
-    f.genres.forEach((g) => fd.append("genre", g));
-    f.moods.forEach((m) => fd.append("moods", m));
-    f.instruments.forEach((i) => fd.append("instruments", i));
+    f.genres.forEach((g: string) => fd.append("genre", g));
+    f.moods.forEach((m: string) => fd.append("moods", m));
+    f.instruments.forEach((i: string) => fd.append("instruments", i));
     if (f.cover instanceof File) fd.append("cover", f.cover);
+    if (f.mp3File instanceof File) fd.append("mp3File", f.mp3File);
+    if (f.wavFile instanceof File) fd.append("wavFile", f.wavFile);
+    if (f.trackoutFile instanceof File) fd.append("trackoutFile", f.trackoutFile);
     return fd;
   };
 
@@ -277,7 +279,145 @@ export default function SellerBeatsPage() {
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
   const currentStep = STEPS[step - 1];
 
+  const handleNextStep = () => {
+    setError("");
+
+    if (step === 1) {
+      if (!form.title.trim()) {
+        setError("Le titre du beat est obligatoire.");
+        return;
+      }
+      if (!form.description.trim()) {
+        setError("La description de votre beat est obligatoire.");
+        return;
+      }
+      const parsedBpm = parseInt(form.bpm);
+      if (!form.bpm || isNaN(parsedBpm) || parsedBpm <= 0) {
+        setError("Veuillez entrer un BPM valide (nombre entier positif).");
+        return;
+      }
+      const parsedDuration = parseInt(form.duration);
+      if (!form.duration || isNaN(parsedDuration) || parsedDuration <= 0) {
+        setError("Veuillez entrer une durée valide (en secondes).");
+        return;
+      }
+      if (!form.key) {
+        setError("Veuillez sélectionner la tonalité (Key) de votre beat.");
+        return;
+      }
+    }
+
+    if (step === 2) {
+      if (!form.cover) {
+        setError("L'image de cover est obligatoire.");
+        return;
+      }
+      if (form.cover.type !== "image/jpeg" && form.cover.type !== "image/jpg" && form.cover.type !== "image/png") {
+        setError("Seuls les formats JPG et PNG sont autorisés pour la cover.");
+        return;
+      }
+      if (!form.mp3File) {
+        setError("Veuillez uploader le fichier MP3 de votre prod.");
+        return;
+      }
+      if (form.trackoutFile && !form.wavFile) {
+        setError("Si vous uploadez un Trackout, vous devez obligatoirement uploader également le fichier WAV.");
+        return;
+      }
+      if (isFreemium && (form.wavFile || form.trackoutFile)) {
+        setError("La formule Freemium n'autorise pas l'upload de WAV ou de Trackouts (ZIP/RAR). Seul le MP3 est pris.");
+        return;
+      }
+      const plan = user?.subscription?.plan;
+      if (plan && (plan === "STANDARD_MONTHLY" || plan === "STANDARD_YEARLY") && form.trackoutFile) {
+        setError("La formule Standard n'autorise pas l'upload de Trackouts (ZIP/RAR).");
+        return;
+      }
+    }
+
+    if (step === 3) {
+      if (form.genres.length === 0) {
+        setError("Veuillez sélectionner au moins un genre musical.");
+        return;
+      }
+      if (form.moods.length === 0) {
+        setError("Veuillez sélectionner au moins une ambiance (mood).");
+        return;
+      }
+      if (form.instruments.length === 0) {
+        setError("Veuillez sélectionner au moins un instrument.");
+        return;
+      }
+    }
+
+    if (step === 4) {
+      if (!form.basicPrice) {
+        setError("Le prix de la licence Basic (MP3) est obligatoire.");
+        return;
+      }
+      const basic = parseFloat(form.basicPrice);
+      if (isNaN(basic) || basic <= 0) {
+        setError("Le prix Basic doit être un nombre positif supérieur à 0.");
+        return;
+      }
+
+      if (!isFreemium && form.wavFile) {
+        if (!form.premiumPrice) {
+          setError("Le prix de la licence Non-Exclusive (WAV) est obligatoire car vous avez uploadé un fichier WAV.");
+          return;
+        }
+        const premium = parseFloat(form.premiumPrice);
+        if (isNaN(premium) || premium <= 0) {
+          setError("Le prix Non-Exclusif doit être supérieur à 0.");
+          return;
+        }
+      } else if (form.premiumPrice && !form.wavFile) {
+        setError("Vous ne pouvez pas définir de prix Non-Exclusif sans uploader de fichier WAV.");
+        return;
+      }
+
+      const plan = user?.subscription?.plan;
+      const isPremium = plan === "PREMIUM_MONTHLY" || plan === "PREMIUM_YEARLY";
+      if (isPremium && form.trackoutFile) {
+        if (!form.exclusivePrice) {
+          setError("Le prix de la licence Exclusive (Trackout) est obligatoire car vous avez uploadé un fichier Trackout.");
+          return;
+        }
+        const exclusive = parseFloat(form.exclusivePrice);
+        if (isNaN(exclusive) || exclusive <= 0) {
+          setError("Le prix Exclusif doit être supérieur à 0.");
+          return;
+        }
+      } else if (form.exclusivePrice && !form.trackoutFile) {
+        setError("Vous ne pouvez pas définir de prix Exclusif sans uploader de fichier Trackout (ZIP/RAR).");
+        return;
+      }
+    }
+
+    goToStep(step + 1);
+  };
+
   const renderStep = (): React.ReactNode => {
+    if (isLimitReached) {
+      return (
+        <div className="flex flex-col items-center justify-center p-12 text-center glass rounded-2xl border border-brand-gold/30 my-8">
+          <div className="w-20 h-20 rounded-full bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center mb-6">
+            <Music className="w-10 h-10 text-brand-gold" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3">Limite atteinte</h2>
+          <p className="text-slate-300 max-w-md mx-auto mb-8 text-sm leading-relaxed">
+            Vous avez atteint votre limite de 3 uploads pour ce mois avec la formule <strong className="text-white">Freemium</strong>. Pour continuer à publier en illimité et proposer du WAV/ZIP, passez au niveau supérieur !
+          </p>
+          <Link
+            href="/seller/subscriptions"
+            className="px-8 py-3.5 bg-brand-gold text-slate-900 rounded-xl font-bold hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]"
+          >
+            Découvrir les offres Premium
+          </Link>
+        </div>
+      );
+    }
+
     switch (step) {
       case 1:
         return (
@@ -291,21 +431,6 @@ export default function SellerBeatsPage() {
                 required
                 placeholder="Ex : Midnight Vibes"
               />
-            </div>
-            <div>
-              <FieldLabel>Slug (URL publique)</FieldLabel>
-              <Input
-                name="slug"
-                value={form.slug}
-                onChange={handleChange}
-                className="font-mono text-xs"
-                placeholder="midnight-vibes"
-                autoComplete="off"
-              />
-              <p className="text-[11px] text-slate-600 mt-1.5">
-                Le slug sera automatiquement rendu unique lors de la
-                publication.
-              </p>
             </div>
             <div>
               <FieldLabel>Description</FieldLabel>
@@ -460,37 +585,100 @@ export default function SellerBeatsPage() {
                 />
               </div>
             </div>
-            {(
-              [
-                [
-                  "URL Preview MP3 *",
-                  "previewUrl",
-                  "https://cdn.monsite.com/preview.mp3",
-                  "Extrait watermarké 30–60s diffusé aux visiteurs",
-                ],
-                [
-                  "URL Fichier WAV *",
-                  "mainFileUrl",
-                  "https://cdn.monsite.com/beat.wav",
-                  "Fichier haute qualité livré après achat",
-                ],
-              ] as const
-            ).map(([label, name, ph, hint]) => (
-              <div key={name}>
-                <FieldLabel>{label}</FieldLabel>
-                <Input
-                  name={name}
-                  value={form[name as keyof FormState] as string}
-                  onChange={handleChange}
-                  required
-                  placeholder={ph}
-                />
-                <p className="text-[11px] text-slate-600 mt-1.5 flex items-center gap-1">
-                  <span className="w-1 h-1 rounded-full bg-slate-600 inline-block" />{" "}
-                  {hint}
-                </p>
+
+            {(!user?.subscription?.plan || user.subscription.plan === "FREEMIUM") && (
+              <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl p-4 text-sm text-brand-gold/80 mb-6 flex items-start gap-3">
+                <span className="text-xl">⚠️</span>
+                <div>
+                  <strong className="text-brand-gold">Formule Freemium :</strong><br />
+                  Vous êtes limité à 3 uploads par mois. L'upload de fichier WAV et les Trackout (ZIP) sont désactivés.
+                  Passez au moins à l'abonnement <strong className="text-brand-gold">Standard</strong> pour débloquer le WAV et l'illimité.
+                </div>
               </div>
-            ))}
+            )}
+
+            <div>
+              <FieldLabel>Fichier Audio MP3 *</FieldLabel>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="audio/mp3, audio/mpeg"
+                  required
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setForm(f => ({ ...f, mp3File: file }));
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                />
+                <div className="w-full px-4 py-3 bg-white/[0.07] border border-white/20 hover:border-brand-gold/50 rounded-xl text-white flex items-center gap-3 transition-all duration-200">
+                  <UploadCloud className="w-5 h-5 text-brand-gold" />
+                  <span className="text-sm font-medium">
+                    {form.mp3File ? form.mp3File.name : "Cliquez ou glissez pour uploader votre fichier MP3"}
+                  </span>
+                </div>
+              </div>
+              <p className="text-[11px] flex items-center gap-1 mt-1.5 text-slate-600">
+                <span className="w-1 h-1 rounded-full inline-block bg-slate-600" /> Fichier compressé. Il servira pour l'écoute sur le site et la licence Basic.
+              </p>
+            </div>
+
+            <div>
+              <FieldLabel>Fichier Audio WAV {isFreemium && "(Option Standard/Premium)"}</FieldLabel>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="audio/wav"
+                  disabled={isFreemium}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setForm(f => ({ ...f, wavFile: file }));
+                  }}
+                  className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 ${isFreemium ? "hidden" : ""}`}
+                />
+                <div className={`w-full px-4 py-3 border rounded-xl flex items-center gap-3 transition-all duration-200 ${isFreemium
+                  ? "bg-white/[0.02] border-white/10 text-slate-500 opacity-50 grayscale cursor-not-allowed"
+                  : "bg-white/[0.07] border-white/20 hover:border-brand-gold/50 text-white"
+                  }`}>
+                  <UploadCloud className={`w-5 h-5 ${isFreemium ? "text-slate-500" : "text-brand-gold"}`} />
+                  <span className="text-sm font-medium">
+                    {form.wavFile ? form.wavFile.name : "Cliquez ou glissez pour uploader votre HQ (.wav)"}
+                  </span>
+                </div>
+              </div>
+              <p className={`text-[11px] flex items-center gap-1 mt-1.5 ${isFreemium ? "text-brand-gold" : "text-slate-600"}`}>
+                <span className={`w-1 h-1 rounded-full inline-block ${isFreemium ? "bg-brand-gold" : "bg-slate-600"}`} />{" "}
+                {isFreemium ? "Uniquement pour les vendeurs Standard et Premium." : "Fichier Haute Qualité. Il sera livré pour l'achat de licence Non-Exclusif."}
+              </p>
+            </div>
+
+            <div>
+              <FieldLabel>Fichier Trackout (ZIP/RAR) {user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY" && "(Option Premium)"}</FieldLabel>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".zip, .rar, application/zip, application/vnd.rar"
+                  disabled={user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY"}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setForm(f => ({ ...f, trackoutFile: file }));
+                  }}
+                  className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 ${user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY" ? "hidden" : ""}`}
+                />
+                <div className={`w-full px-4 py-3 border rounded-xl flex items-center gap-3 transition-all duration-200 ${user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY"
+                  ? "bg-white/[0.02] border-white/10 text-slate-500 opacity-50 grayscale cursor-not-allowed"
+                  : "bg-white/[0.07] border-white/20 hover:border-brand-gold/50 text-white"
+                  }`}>
+                  <UploadCloud className={`w-5 h-5 ${user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY" ? "text-slate-500" : "text-brand-gold"}`} />
+                  <span className="text-sm font-medium">
+                    {form.trackoutFile ? form.trackoutFile.name : "Cliquez ou glissez pour uploader le Trackout (.zip)"}
+                  </span>
+                </div>
+              </div>
+              <p className={`text-[11px] flex items-center gap-1 mt-1.5 ${user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY" ? "text-brand-gold" : "text-slate-600"}`}>
+                <span className={`w-1 h-1 rounded-full inline-block ${user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY" ? "bg-brand-gold" : "bg-slate-600"}`} />{" "}
+                {user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY" ? "Uniquement pour les vendeurs Premium." : "Zip des pistes séparées pour l'achat de licence Exclusif."}
+              </p>
+            </div>
           </div>
         );
 
@@ -531,18 +719,6 @@ export default function SellerBeatsPage() {
                 </div>
               </div>
             ))}
-            <div>
-              <FieldLabel>Tags libres</FieldLabel>
-              <Input
-                name="tags"
-                value={form.tags}
-                onChange={handleChange}
-                placeholder="trap, nuit, mélancolique, 808..."
-              />
-              <p className="text-[11px] text-slate-600 mt-1.5">
-                Séparés par des virgules · améliorent ta visibilité
-              </p>
-            </div>
           </div>
         );
 
@@ -558,35 +734,41 @@ export default function SellerBeatsPage() {
                 {
                   name: "basicPrice",
                   label: "Basic",
-                  sublabel: "MP3 · Non-commercial",
+                  sublabel: "Licence MP3",
                   icon: "🎧",
                   border: "border-white/15",
                   ring: "focus-within:border-white/30",
                   badge: "bg-white/10 text-slate-400",
+                  disabled: false,
+                  lockMsg: "",
                 },
                 {
                   name: "premiumPrice",
-                  label: "Premium",
-                  sublabel: "WAV + MP3 · Commercial",
-                  icon: "⭐",
-                  border: "border-brand-gold/30",
-                  ring: "focus-within:border-brand-gold/60",
-                  badge: "bg-brand-gold/20 text-brand-gold",
+                  label: "Non-Exclusif",
+                  sublabel: "Fichier Wav",
+                  icon: "✨",
+                  border: "border-blue-400/30",
+                  ring: "focus-within:border-blue-400/60",
+                  badge: "bg-blue-400/15 text-blue-400",
+                  disabled: isFreemium || !form.wavFile,
+                  lockMsg: isFreemium ? "Abonnement Standard ou Premium Requis" : "Upload du Fichier WAV requis à l'étape 2",
                 },
                 {
                   name: "exclusivePrice",
                   label: "Exclusif",
-                  sublabel: "Tous formats · Droits exclusifs",
+                  sublabel: "Trackout + Exclusivité",
                   icon: "👑",
                   border: "border-purple-400/30",
                   ring: "focus-within:border-purple-400/60",
                   badge: "bg-purple-400/15 text-purple-400",
+                  disabled: (user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY") || !form.trackoutFile,
+                  lockMsg: (user?.subscription?.plan !== "PREMIUM_MONTHLY" && user?.subscription?.plan !== "PREMIUM_YEARLY") ? "Abonnement Premium Requis" : "Upload du Trackout requis à l'étape 2",
                 },
-              ] as const
-            ).map(({ name, label, sublabel, icon, border, ring, badge }) => (
+              ]
+            ).map(({ name, label, sublabel, icon, border, ring, badge, disabled, lockMsg }) => (
               <div
                 key={name}
-                className={`rounded-2xl border p-5 bg-white/[0.04] transition-all duration-200 hover:bg-white/[0.07] ${border} ${ring}`}
+                className={`rounded-2xl border p-5 transition-all duration-200 ${disabled ? "bg-white/[0.01] opacity-50 grayscale" : `bg-white/[0.04] hover:bg-white/[0.07] ${border} ${ring}`}`}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">{icon}</span>
@@ -596,17 +778,23 @@ export default function SellerBeatsPage() {
                   >
                     {sublabel}
                   </span>
+                  {disabled && <span className="text-[10px] ml-auto text-brand-gold border border-brand-gold/50 px-2 rounded-full hidden sm:block">{lockMsg}</span>}
                 </div>
-                <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
+                <div className={`flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 ${disabled ? "opacity-50" : ""}`}>
                   <span className="text-slate-400 font-bold">€</span>
                   <input
                     type="number"
                     name={name}
                     value={form[name as keyof FormState] as string}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      if (!disabled) {
+                        handleChange(e as any);
+                      }
+                    }}
+                    disabled={disabled}
                     step="0.01"
-                    placeholder="0.00"
-                    className="flex-1 bg-transparent text-white text-xl font-black focus:outline-none placeholder-slate-700 w-full
+                    placeholder={disabled ? "—" : "0.00"}
+                    className="flex-1 bg-transparent text-white text-xl font-black focus:outline-none placeholder-slate-700 w-full disabled:cursor-not-allowed
                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
@@ -618,73 +806,6 @@ export default function SellerBeatsPage() {
       case 5:
         return (
           <div className="space-y-5">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-brand-gold/10 border border-brand-gold/25">
-              <Search className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Le SEO améliore ta visibilité sur Google. Ces champs sont{" "}
-                <span className="text-brand-gold font-semibold">
-                  optionnels
-                </span>{" "}
-                mais recommandés.
-              </p>
-            </div>
-            {(
-              [
-                [
-                  "Titre SEO",
-                  "seoTitle",
-                  "seoTitle",
-                  "Beat Trap Mélancolique 140 BPM – NomArtiste",
-                  60,
-                ],
-                [
-                  "Description SEO",
-                  "seoDescription",
-                  "seoDescription",
-                  "Beat trap sombre avec piano mélancolique...",
-                  160,
-                ],
-              ] as const
-            ).map(([label, name, formKey, ph, max]) => (
-              <div key={name}>
-                <FieldLabel>{label}</FieldLabel>
-                {name === "seoDescription" ? (
-                  <Textarea
-                    name={name}
-                    value={form[formKey as keyof FormState] as string}
-                    onChange={handleChange}
-                    rows={3}
-                    placeholder={ph}
-                  />
-                ) : (
-                  <Input
-                    name={name}
-                    value={form[formKey as keyof FormState] as string}
-                    onChange={handleChange}
-                    placeholder={ph}
-                  />
-                )}
-                <div className="flex justify-between mt-1.5">
-                  <p className="text-[11px] text-slate-600">
-                    {max} caractères max
-                  </p>
-                  <p
-                    className={`text-[11px] font-semibold tabular-nums ${(form[formKey as keyof FormState] as string).length > max ? "text-red-400" : "text-slate-500"}`}
-                  >
-                    {(form[formKey as keyof FormState] as string).length}/{max}
-                  </p>
-                </div>
-              </div>
-            ))}
-            <div>
-              <FieldLabel>Mots-clés SEO</FieldLabel>
-              <Input
-                name="seoKeywords"
-                value={form.seoKeywords}
-                onChange={handleChange}
-                placeholder="beat trap, instrumental, acheter beat rap..."
-              />
-            </div>
             <div className="mt-2 p-4 rounded-2xl bg-white/[0.04] border border-white/10">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">
                 ✅ Récapitulatif avant publication
@@ -757,13 +878,12 @@ export default function SellerBeatsPage() {
                     className="flex flex-col items-center gap-2 group"
                   >
                     <div
-                      className={`relative w-11 h-11 rounded-2xl flex items-center justify-center border-2 transition-all duration-200 ${
-                        done
-                          ? `bg-gradient-to-br ${s.color} border-transparent shadow-lg`
-                          : active
-                            ? "bg-white/10 border-brand-gold shadow-[0_0_0_3px_rgba(212,175,55,0.15)]"
-                            : "bg-white/[0.04] border-white/12 group-hover:border-white/25 group-hover:bg-white/8"
-                      }`}
+                      className={`relative w-11 h-11 rounded-2xl flex items-center justify-center border-2 transition-all duration-200 ${done
+                        ? `bg-gradient-to-br ${s.color} border-transparent shadow-lg`
+                        : active
+                          ? "bg-white/10 border-brand-gold shadow-[0_0_0_3px_rgba(212,175,55,0.15)]"
+                          : "bg-white/[0.04] border-white/12 group-hover:border-white/25 group-hover:bg-white/8"
+                        }`}
                     >
                       {done ? (
                         <Check className="w-4 h-4 text-white" strokeWidth={3} />
@@ -849,7 +969,7 @@ export default function SellerBeatsPage() {
               {step < STEPS.length ? (
                 <button
                   type="button"
-                  onClick={() => goToStep(step + 1)}
+                  onClick={handleNextStep}
                   className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-brand-gold text-slate-900 text-sm font-black
                     hover:brightness-110 active:scale-[0.98] transition-all duration-150 shadow-[0_4px_20px_rgba(212,175,55,0.35)]"
                 >

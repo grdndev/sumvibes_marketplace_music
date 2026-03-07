@@ -29,6 +29,11 @@ export async function POST(req: NextRequest) {
         // Récupérer les infos du beat et de la licence
         const beat = await prisma.beat.findUnique({
           where: { id: beatId },
+          include: {
+            seller: {
+              include: { subscription: true }
+            }
+          }
         });
 
         const license = await prisma.license.findUnique({
@@ -37,9 +42,18 @@ export async function POST(req: NextRequest) {
 
         if (!beat || !license) continue;
 
-        // Calculer la commission (15%)
+        // Calculer la commission vendeur selon son abonnement
+        const sellerPlan = beat.seller.subscription?.plan || "FREEMIUM";
+        let commissionRate = 0.30; // 30% pour Freemium
+
+        if (sellerPlan === "STANDARD_MONTHLY" || sellerPlan === "STANDARD_YEARLY") {
+          commissionRate = 0.20; // 20% pour Standard
+        } else if (sellerPlan === "PREMIUM_MONTHLY" || sellerPlan === "PREMIUM_YEARLY") {
+          commissionRate = 0.00; // 0% pour Premium
+        }
+
         const licensePrice = Number(license.price);
-        const platformFee = licensePrice * 0.15;
+        const platformFee = licensePrice * commissionRate;
         const sellerEarnings = licensePrice - platformFee;
 
         // Créer l'achat

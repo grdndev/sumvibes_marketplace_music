@@ -348,7 +348,7 @@ function MessagesContent() {
         }
         syncUnread(unreadMap);
 
-        if (newUserId) {
+        if (newUserId && newUserId !== user?.id) {
           const already = list.some((c) => c.userId === newUserId);
           if (already) {
             setActiveConvId(newUserId);
@@ -554,6 +554,12 @@ function MessagesContent() {
       e.preventDefault();
       if (!text.trim() || !activeConvId || !user || sending) return;
 
+      // Protection contre l'auto-message
+      if (activeConvId === user.id) {
+        console.warn("[Send] Impossible d'envoyer un message à soi-même.");
+        return;
+      }
+
       const content = text.trim();
       setText("");
 
@@ -698,7 +704,7 @@ function MessagesContent() {
                 Gérez vos collaborations et contrats en direct.
               </p>
             </div>
-          
+
           </div>
 
           <div
@@ -850,8 +856,8 @@ function MessagesContent() {
                           >
                             <div
                               className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm transition-opacity duration-200 ${isMine
-                                  ? "bg-brand-gold text-brand-purple font-medium rounded-br-sm shadow-[0_4px_15px_rgba(254,204,51,0.2)]"
-                                  : "glass rounded-bl-sm"
+                                ? "bg-brand-gold text-brand-purple font-medium rounded-br-sm shadow-[0_4px_15px_rgba(254,204,51,0.2)]"
+                                : "glass rounded-bl-sm"
                                 } ${msg.pending ? "opacity-55" : "opacity-100"}`}
                             >
                               <p className="break-words">{msg.content}</p>

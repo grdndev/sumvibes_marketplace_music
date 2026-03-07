@@ -68,6 +68,33 @@ export default function CreateServicePage() {
         );
     }
 
+    if (user.role === "SELLER") {
+        const plan = user.subscription?.plan;
+        if (plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY") {
+            return (
+                <div className="min-h-screen bg-gradient-premium flex flex-col items-center justify-center text-center px-4">
+                    <Navbar />
+                    <div className="glass rounded-3xl p-10 max-w-lg border border-brand-gold/30 mt-20">
+                        <div className="w-16 h-16 rounded-full bg-brand-gold/10 flex items-center justify-center mx-auto mb-6">
+                            <span className="text-3xl">👑</span>
+                        </div>
+                        <h2 className="text-2xl font-bold font-display text-white mb-4">Abonnement Premium Requis</h2>
+                        <p className="text-slate-400 mb-8 leading-relaxed">
+                            La création de services (Mixage, Mastering, etc.) est une fonctionnalité exclusive réservée aux producteurs Premium.
+                            Passez à la vitesse supérieure pour débloquer cette option.
+                        </p>
+                        <Link href="/seller/subscriptions" className="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-gradient-to-r from-brand-gold to-yellow-500 text-slate-900 shadow-lg shadow-brand-gold/20 font-bold hover:scale-105 transition-transform">
+                            Découvrir les offres
+                        </Link>
+                        <Link href="/seller/dashboard" className="block mt-4 text-sm text-slate-500 hover:text-white transition-colors">
+                            Retour au tableau de bord
+                        </Link>
+                    </div>
+                </div>
+            );
+        }
+    }
+
     return (
         <div className="relative min-h-screen bg-gradient-premium">
             <Navbar />

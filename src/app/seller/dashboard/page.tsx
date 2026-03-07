@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   TrendingUp, DollarSign, Music, Eye, ShoppingCart, Users,
   ArrowUp, ArrowDown, BarChart3, Upload, CreditCard, FileText,
-  ArrowRight, Clock, Star, Loader2, Briefcase, Settings
+  ArrowRight, Clock, Star, Loader2, Briefcase, Settings, Crown, Zap
 } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar";
@@ -101,6 +101,34 @@ export default function SellerDashboardPage() {
   }
 
   const maxRevenue = stats?.salesByDay?.reduce((m, d) => Math.max(m, Number(d.revenue)), 1) || 1;
+
+  const plan = user.subscription?.plan?.replace("_MONTHLY", "").replace("_YEARLY", "") || "FREEMIUM";
+  const isPremium = plan === "PREMIUM";
+  const isStandard = plan === "STANDARD";
+
+  let subIcon = <Music className="w-5 h-5 text-white" />;
+  let subColor = "from-slate-600 to-slate-800";
+  let textColor = "text-slate-300";
+  let ringColor = "shadow-[0_0_15px_rgba(148,163,184,0.2)]";
+  let borderColor = "border-white/10";
+
+  if (isPremium) {
+    subIcon = <Crown className="w-5 h-5 text-slate-900" />;
+    subColor = "from-brand-gold to-yellow-500";
+    textColor = "text-brand-gold";
+    ringColor = "shadow-[0_0_15px_rgba(212,175,55,0.4)]";
+    borderColor = "border-brand-gold/30";
+  } else if (isStandard) {
+    subIcon = <Zap className="w-5 h-5 text-slate-900" />;
+    subColor = "from-blue-400 to-indigo-500";
+    textColor = "text-blue-400";
+    ringColor = "shadow-[0_0_15px_rgba(96,165,250,0.4)]";
+    borderColor = "border-blue-500/30";
+  }
+
+  const expirationDate = user.subscription?.currentPeriodEnd
+    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })
+    : null;
 
   return (
     <div className="relative min-h-screen bg-gradient-premium">
@@ -211,8 +239,21 @@ export default function SellerDashboardPage() {
                 <div className="glass rounded-3xl p-8">
                   <h2 className="text-xl font-bold font-display mb-6">Navigation rapide</h2>
                   <div className="space-y-3">
+                    <Link href="/seller/subscriptions" className={`flex items-center gap-3 glass rounded-xl p-4 hover:bg-white/5 border ${borderColor} group`}>
+                      <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${subColor} flex items-center justify-center relative ${ringColor} group-hover:scale-105 transition-transform`}>
+                        {subIcon}
+                      </div>
+                      <div className="flex-1 ml-2">
+                        <div className={`font-bold text-sm ${textColor}`}>Abonnement Pro</div>
+                        <div className={`text-xs ${textColor}/70 mt-0.5`}>
+                          Gérer votre formule ({plan})
+                          {expirationDate && ` • Expire le ${expirationDate}`}
+                        </div>
+                      </div>
+                      <ArrowRight className={`w-4 h-4 ${textColor}`} />
+                    </Link>
                     <Link href="/seller/beats/display" className="flex items-center gap-3 glass rounded-xl p-4 hover:bg-white/5">
-                      <Music className="w-5 h-5 text-brand-gold" />
+                      <Music className="w-5 h-5 text-slate-300" />
                       <div className="flex-1">
                         <div className="font-semibold text-sm">Mes beats</div>
                         <div className="text-xs text-slate-400">{stats.overview.totalBeats} productions</div>

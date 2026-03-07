@@ -68,7 +68,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    let currentMonthUploads = 0;
+    if (user.role === "SELLER") {
+      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      currentMonthUploads = await prisma.beat.count({
+        where: {
+          sellerId: user.id,
+          createdAt: { gte: startOfMonth },
+        },
+      });
+    }
+
+    return NextResponse.json({ user: { ...user, currentMonthUploads } });
   } catch (error) {
     console.error("Error in /api/auth/me:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

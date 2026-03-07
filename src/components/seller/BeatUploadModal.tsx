@@ -13,7 +13,7 @@ export function BeatUploadModal({ isOpen, onClose, onSuccess }: BeatUploadModalP
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState<'form' | 'uploading' | 'success'>('form');
   const [progress, setProgress] = useState(0);
-  
+
   const audioRef = useRef<HTMLInputElement>(null);
   const coverRef = useRef<HTMLInputElement>(null);
   const stemsRef = useRef<HTMLInputElement>(null);
@@ -114,7 +114,7 @@ export function BeatUploadModal({ isOpen, onClose, onSuccess }: BeatUploadModalP
         basicPrice: parseFloat(formData.price),
         description: formData.description,
         previewUrl: audioUrl,
-        mainFileUrl: audioUrl,
+        mp3FileUrl: audioUrl,
         coverImage: coverUrl,
         stemsUrls,
       };
@@ -171,7 +171,7 @@ export function BeatUploadModal({ isOpen, onClose, onSuccess }: BeatUploadModalP
           <h3 className="text-xl font-bold mb-2">Upload en cours...</h3>
           <p className="text-slate-400 mb-4">Ne fermez pas cette fenêtre</p>
           <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-            <div 
+            <div
               className="bg-brand-gold h-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
