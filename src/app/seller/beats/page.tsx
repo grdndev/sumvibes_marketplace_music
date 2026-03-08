@@ -74,6 +74,12 @@ const STEPS = [
     icon: DollarSign,
     color: "from-emerald-500 to-teal-600",
   },
+  {
+    id: 5,
+    label: "Récap",
+    icon: Check,
+    color: "from-amber-500 to-orange-600",
+  },
 ];
 
 const INITIAL_FORM = {
@@ -175,6 +181,8 @@ export default function SellerBeatsPage() {
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const coverRef = useRef<HTMLInputElement>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [uploadStatus, setUploadStatus] = useState("");
 
   // ✅ Toujours utiliser goToStep pour naviguer — met à jour step ET stepRef ensemble
   const goToStep = (s: number) => {
@@ -221,6 +229,57 @@ export default function SellerBeatsPage() {
     });
   }, []);
 
+  const uploadToR2 = async (
+    file: File,
+    category: "audio" | "cover" | "stems",
+    label: string
+  ): Promise<string> => {
+    setUploadStatus(`Préparation de ${label}...`);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    // 1. URL Présignée
+    const presignRes = await fetch("/api/presign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+        category,
+        fileSize: file.size,
+      }),
+    });
+
+    if (!presignRes.ok) {
+      const err = await presignRes.json();
+      throw new Error(err.error || `Erreur presign: ${label}`);
+    }
+    const { uploadUrl, key } = await presignRes.json();
+
+    // 2. Upload XHR
+    setUploadStatus(`Upload de ${label}...`);
+    await new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", uploadUrl);
+      xhr.setRequestHeader("Content-Type", file.type);
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          setUploadProgress(prev => ({ ...prev, [label]: pct }));
+        }
+      };
+
+      xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Upload échoué: ${xhr.status}`));
+      xhr.onerror = () => reject(new Error("Erreur réseau"));
+      xhr.send(file);
+    });
+
+    return key;
+  };
+
   const buildFormData = (f: FormState): FormData => {
     const fd = new FormData();
     fd.append("title", f.title);
@@ -244,22 +303,54 @@ export default function SellerBeatsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // ✅ stepRef.current toujours à jour (pas de closure stale)
     if (stepRef.current !== STEPS.length) return;
 
     setError("");
     setSuccess("");
     setLoading(true);
+    setUploadProgress({});
 
     try {
-      const fd = buildFormData(form);
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (!token) throw new Error("Veuillez vous reconnecter.");
+
+      // ── 1. Upload des fichiers un par un sur R2 ──
+      let mp3Key = "";
+      let coverKey = "";
+      let wavKey: string | null = null;
+      let trackoutKey: string | null = null;
+
+      if (form.mp3File) mp3Key = await uploadToR2(form.mp3File, "audio", "Fichier MP3");
+      if (form.cover) coverKey = await uploadToR2(form.cover, "cover", "Image de couverture");
+      if (form.wavFile) wavKey = await uploadToR2(form.wavFile, "audio", "Fichier WAV");
+      if (form.trackoutFile) trackoutKey = await uploadToR2(form.trackoutFile, "stems", "Fichier Trackout (ZIP)");
+
+      // ── 2. Création finale du beat en BDD via Clés R2 ──
+      setUploadStatus("Finalisation de la publication...");
+      const fd = new FormData();
+      fd.append("title", form.title);
+      fd.append("description", form.description);
+      fd.append("bpm", form.bpm);
+      fd.append("duration", form.duration);
+      fd.append("key", form.key);
+      fd.append("basicPrice", form.basicPrice);
+      if (form.premiumPrice) fd.append("premiumPrice", form.premiumPrice);
+      if (form.exclusivePrice) fd.append("exclusivePrice", form.exclusivePrice);
+      fd.append("status", form.status);
+
+      form.genres.forEach(g => fd.append("genre", g));
+      form.moods.forEach(m => fd.append("mood", m));
+      form.instruments.forEach(i => fd.append("instruments", i));
+
+      fd.append("mp3Key", mp3Key);
+      fd.append("coverKey", coverKey);
+      if (wavKey) fd.append("wavKey", wavKey);
+      if (trackoutKey) fd.append("trackoutKey", trackoutKey);
 
       const res = await fetch("/api/beats", {
         method: "POST",
         body: fd,
-        headers: token ? { Authorization: `JWT ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) {
@@ -267,9 +358,9 @@ export default function SellerBeatsPage() {
         throw new Error(errJson.error || "Erreur lors de l'ajout du beat");
       }
 
-      setSuccess("Beat ajouté avec succès ! Redirection en cours...");
+      setSuccess("Beat publié avec succès sur Cloudflare R2 !");
+      setUploadStatus("");
 
-      // ✅ 2s pour lire le message, puis reset + redirection
       setTimeout(() => {
         setForm(INITIAL_FORM);
         goToStep(1);
@@ -906,6 +997,7 @@ export default function SellerBeatsPage() {
 
           <form
             noValidate
+            onSubmit={handleSubmit}
             onKeyDown={(e) => {
               if (e.key === "Enter" && stepRef.current !== STEPS.length) {
                 e.preventDefault();
@@ -950,42 +1042,57 @@ export default function SellerBeatsPage() {
                 )}
                 {renderStep()}
               </div>
+              {/* Progression Global si chargement */}
+              {loading && Object.keys(uploadProgress).length > 0 && (
+                <div className="mt-8 space-y-4 border-t border-white/5 pt-8 px-6 pb-6">
+                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">{uploadStatus}</p>
+                  {Object.entries(uploadProgress).map(([label, pct]) => (
+                    <div key={label} className="space-y-1.5">
+                      <div className="flex justify-between text-[10px] font-bold">
+                        <span className="text-slate-400">{label}</span>
+                        <span className="text-brand-gold">{pct}%</span>
+                      </div>
+                      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-brand-gold transition-all duration-300"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="flex gap-3 mt-4">
+            {/* Actions de navigation */}
+            <div className={`mt-10 flex gap-4 ${step === 1 ? "justify-end" : "justify-between"}`}>
               {step > 1 && (
                 <button
                   type="button"
                   onClick={() => goToStep(step - 1)}
-                  className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-white/15 text-slate-400 text-sm font-semibold
-                    hover:border-white/30 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  className="px-8 py-3.5 glass text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2"
                 >
-                  <ChevronLeft className="w-4 h-4" /> Retour
+                  <ChevronLeft className="w-4 h-4" /> Précédent
                 </button>
               )}
+
               {step < STEPS.length ? (
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-brand-gold text-slate-900 text-sm font-black
-                    hover:brightness-110 active:scale-[0.98] transition-all duration-150 shadow-[0_4px_20px_rgba(212,175,55,0.35)]"
+                  className="px-10 py-3.5 bg-brand-gold text-slate-900 rounded-xl font-bold hover:scale-105 transition-all shadow-lg flex items-center gap-2"
                 >
-                  Étape suivante <ChevronRight className="w-4 h-4" />
+                  Suivant <ChevronRight className="w-4 h-4" />
                 </button>
               ) : (
                 <button
-                  id="submit-final"
-                  type="button"
+                  type="submit"
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-brand-gold text-slate-900 text-sm font-black
-                    hover:brightness-110 active:scale-[0.98] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
-                    shadow-[0_4px_20px_rgba(212,175,55,0.35)]"
-                  onClick={handleSubmit}
+                  className="px-12 py-3.5 bg-brand-gold text-slate-900 rounded-xl font-bold hover:scale-105 transition-all shadow-[0_0_30px_rgba(212,175,55,0.4)] disabled:opacity-50 flex items-center gap-2"
                 >
                   {loading ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />{" "}
-                      Publication...
+                      <UploadCloud className="w-5 h-5 animate-bounce" /> Publication...
                     </>
                   ) : (
                     <>

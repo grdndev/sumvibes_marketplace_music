@@ -6,12 +6,9 @@ import { Navbar } from "@/components/layout/Navbar";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Music, Trash2, ShoppingCart, ArrowRight, Tag, Shield, Loader2, Briefcase } from "lucide-react";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 
-function coverSrc(raw: string) {
-  if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-  return `/uploads/covers/${raw}`;
-}
 
 export default function CartPage() {
   const router = useRouter();
@@ -88,7 +85,7 @@ export default function CartPage() {
                         {isService ? (
                           <Briefcase className="w-8 h-8 text-white/30" />
                         ) : (target as any).coverImage ? (
-                          <img src={coverSrc((target as any).coverImage)} alt={target.title} className="w-full h-full object-cover" />
+                          <img src={resolveFileUrl((target as any).coverImage)} alt={target.title} className="w-full h-full object-cover" />
                         ) : (
                           <Music className="w-8 h-8 text-white/30" />
                         )}

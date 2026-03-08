@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAudioPlayer } from "@/contexts/AudioPlayerContext";
 import { useCart } from "@/hooks/useCart";
 import { LicensePickerModal } from "@/components/catalogue/LicensePickerModal";
 import {
@@ -14,6 +15,7 @@ import {
   Youtube, Clock, BarChart2, Briefcase, MessageSquare, ArrowRight,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 interface Beat {
   id: string;
@@ -70,10 +72,6 @@ const SERVICE_EMOJIS: Record<string, string> = {
   mixage: "🎛️", ecriture: "✍️", design: "🎨", video: "🎬", coaching: "🎓", promo: "📢",
 };
 
-function coverSrc(raw: string) {
-  if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-  return `/uploads/covers/${raw}`;
-}
 
 function formatDuration(secs?: number | null) {
   if (!secs) return "—";
@@ -98,9 +96,7 @@ export default function ProducerProfilePage({
   const [search, setSearch] = useState("");
 
   // Audio player
-  const [activeBeatId, setActiveBeatId] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playBeat, activeBeat, isPlaying: isPlayingAudio } = useAudioPlayer();
 
   // Favorites
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
@@ -180,28 +176,19 @@ export default function ProducerProfilePage({
   };
 
   const togglePlay = (beat: Beat) => {
-    const url = beat.previewUrl;
-    if (!url) return;
-    if (activeBeatId === beat.id) {
-      if (isPlaying) { audioRef.current?.pause(); setIsPlaying(false); }
-      else { audioRef.current?.play(); setIsPlaying(true); }
-    } else {
-      if (audioRef.current) {
-        audioRef.current.src = url;
-        audioRef.current.play();
-        setActiveBeatId(beat.id);
-        setIsPlaying(true);
-      }
-    }
+    const audioBeat = {
+      ...beat,
+      basicPrice: beat.basicPrice ?? undefined,
+      premiumPrice: beat.premiumPrice ?? undefined,
+      exclusivePrice: beat.exclusivePrice ?? undefined,
+      seller: producer ? {
+        id: producer.id,
+        username: producer.username,
+        displayName: producer.displayName || producer.username
+      } : undefined
+    };
+    playBeat(audioBeat);
   };
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const onEnded = () => { setIsPlaying(false); setActiveBeatId(null); };
-    audio.addEventListener("ended", onEnded);
-    return () => audio.removeEventListener("ended", onEnded);
-  }, []);
 
   const filteredBeats = beats.filter((b) =>
     !search ||
@@ -253,7 +240,6 @@ export default function ProducerProfilePage({
   return (
     <div className="relative min-h-screen bg-gradient-premium">
       <Navbar />
-      <audio ref={audioRef} />
 
       <main className="pt-20">
         {/* Back */}
@@ -466,9 +452,11 @@ export default function ProducerProfilePage({
               ) : (
                 <div className="space-y-3">
                   {pagedBeats.map((beat) => {
-                    const isActive = activeBeatId === beat.id;
+                    const isActive = activeBeat?.id === beat.id;
                     const isLiked = likedIds.has(beat.id);
                     const isSeller = user?.id === id;
+                    const isPlaying = isActive && isPlayingAudio;
+
                     return (
                       <div key={beat.id}
                         className={`glass rounded-2xl p-4 md:p-5 flex items-center gap-4 md:gap-5 hover:bg-white/[0.07] transition-all group ${isActive ? "ring-1 ring-brand-gold/40 bg-brand-gold/[0.06]" : ""}`}>
@@ -476,7 +464,7 @@ export default function ProducerProfilePage({
                         {/* Cover + Play */}
                         <div className="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden bg-white/10">
                           {beat.coverImage ? (
-                            <img src={coverSrc(beat.coverImage)} alt={beat.title} className="w-full h-full object-cover" />
+                            <img src={resolveFileUrl(beat.coverImage)} alt={beat.title} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Music className="w-6 h-6 text-white/20" />
@@ -484,19 +472,12 @@ export default function ProducerProfilePage({
                           )}
                           <button
                             onClick={() => togglePlay(beat)}
-                            className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"
+                            className={`absolute inset-0 flex items-center justify-center bg-black/50 transition-all rounded-xl z-20 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                           >
-                            {isActive && isPlaying
+                            {isPlaying
                               ? <Pause className="w-6 h-6 text-brand-gold fill-current" />
                               : <Play className="w-6 h-6 text-brand-gold fill-current ml-0.5" />}
                           </button>
-                          {isActive && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl">
-                              {isPlaying
-                                ? <Pause className="w-5 h-5 text-brand-gold fill-current" />
-                                : <Play className="w-5 h-5 text-brand-gold fill-current ml-0.5" />}
-                            </div>
-                          )}
                         </div>
 
                         {/* Title + meta */}

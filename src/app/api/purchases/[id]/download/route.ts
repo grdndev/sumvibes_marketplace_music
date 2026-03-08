@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
-import fs from "fs";
+import { getFileStream } from "@/lib/r2";
+import archiver from "archiver";
+import { PassThrough, Readable } from "stream";
 import path from "path";
 
 export async function GET(
@@ -9,10 +11,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Accept token from Authorization header OR ?token= query param (for <a> links)
+    const { searchParams } = new URL(req.url);
     const token =
       req.headers.get("authorization")?.split(" ")[1] ??
-      req.nextUrl.searchParams.get("token") ??
+      searchParams.get("token") ??
       undefined;
 
     if (!token) {
@@ -29,18 +31,8 @@ export async function GET(
     const purchase = await prisma.purchase.findUnique({
       where: { id },
       include: {
-        beat: {
-          select: {
-            id: true,
-            title: true,
-            mp3FileUrl: true,
-            wavFileUrl: true,
-            trackoutFileUrl: true,
-          },
-        },
-        license: {
-          select: { type: true },
-        },
+        beat: true,
+        license: true,
       },
     });
 
@@ -48,7 +40,7 @@ export async function GET(
       return NextResponse.json({ error: "Achat introuvable" }, { status: 404 });
     }
 
-    if (purchase.buyerId !== decoded.userId) {
+    if (purchase.buyerId !== decoded.userId && decoded.role !== "ADMIN") {
       return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
@@ -56,22 +48,36 @@ export async function GET(
       return NextResponse.json({ error: "Paiement non complété" }, { status: 400 });
     }
 
-    const pInfo = purchase as any;
-    let fileUrl: string | null = null;
-    const lType = pInfo.license?.type;
+    const lType = purchase.license.type;
+    const beat = purchase.beat;
 
-    if (lType === "BASIC") {
-      fileUrl = pInfo.beat?.mp3FileUrl;
-    } else if (lType === "PREMIUM") {
-      fileUrl = pInfo.beat?.wavFileUrl || pInfo.beat?.mp3FileUrl;
-    } else if (lType === "EXCLUSIVE") {
-      fileUrl = pInfo.beat?.trackoutFileUrl || pInfo.beat?.wavFileUrl || pInfo.beat?.mp3FileUrl;
-    } else {
-      fileUrl = pInfo.beat?.mp3FileUrl;
+    // Determine files to include in the ZIP based on license
+    const filesToInclude: { key: string; name: string }[] = [];
+    const safeTitle = beat.title.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    // All licenses get at least the MP3 (or preview if MP3 missing)
+    const mp3Key = beat.mp3FileUrl || beat.previewUrl;
+    if (mp3Key) {
+      filesToInclude.push({ key: mp3Key, name: `${safeTitle}_High_Quality.mp3` });
     }
 
-    if (!fileUrl) {
-      return NextResponse.json({ error: "Fichier non disponible" }, { status: 404 });
+    // PREMIUM and EXCLUSIVE get the WAV
+    if (lType === "PREMIUM" || lType === "EXCLUSIVE") {
+      if (beat.wavFileUrl) {
+        filesToInclude.push({ key: beat.wavFileUrl, name: `${safeTitle}_High_Quality.wav` });
+      }
+    }
+
+    // EXCLUSIVE gets the Trackout (Stems)
+    if (lType === "EXCLUSIVE") {
+      if (beat.trackoutFileUrl) {
+        // Stems is usually already a ZIP
+        filesToInclude.push({ key: beat.trackoutFileUrl, name: `${safeTitle}_Stems_Trackout.zip` });
+      }
+    }
+
+    if (filesToInclude.length === 0) {
+      return NextResponse.json({ error: "Aucun fichier disponible pour ce téléchargement" }, { status: 404 });
     }
 
     // Incrémenter le compteur
@@ -80,36 +86,45 @@ export async function GET(
       data: { downloadCount: { increment: 1 } },
     });
 
-    // URL externe → redirection directe
-    if (fileUrl.startsWith("http")) {
-      return NextResponse.redirect(fileUrl);
+    // Create a streaming ZIP response
+    const archive = archiver("zip", { zlib: { level: 5 } });
+    const passThrough = new PassThrough();
+
+    // Pipe archive to passthrough
+    archive.pipe(passThrough);
+
+    // Fetch and append each file from R2
+    for (const file of filesToInclude) {
+      try {
+        const stream = await getFileStream(file.key);
+        if (stream) {
+          archive.append(stream as any, { name: file.name });
+        }
+      } catch (err) {
+        console.error(`Failed to include file ${file.key} in ZIP:`, err);
+      }
     }
 
-    // Fichier local stocké dans /public
-    const filePath = path.join(process.cwd(), "public", fileUrl);
+    // Finalize the archive
+    archive.finalize();
 
-    if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ error: "Fichier introuvable sur le serveur" }, { status: 404 });
-    }
+    const zipFilename = `${safeTitle}_${lType}_Package.zip`;
 
-    const fileBuffer = fs.readFileSync(filePath);
-    const ext = path.extname(fileUrl).toLowerCase();
-    const contentType =
-      ext === ".mp3" ? "audio/mpeg" :
-        ext === ".wav" ? "audio/wav" :
-          "application/octet-stream";
-    const safeName = `${pInfo.beat?.title?.replace(/[^a-zA-Z0-9._-]/g, "_") || "Beat"}_${pInfo.license?.type ?? "LICENSE"}${ext}`;
+    // Convert PassThrough to Web ReadableStream
+    // In Node.js environment of Next.js, PassThrough is a Readable
+    const stream = Readable.toWeb(passThrough);
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(stream as any, {
       headers: {
-        "Content-Type": contentType,
-        "Content-Disposition": `attachment; filename="${safeName}"`,
-        "Content-Length": fileBuffer.length.toString(),
+        "Content-Type": "application/zip",
+        "Content-Disposition": `attachment; filename="${zipFilename}"`,
       },
     });
+
   } catch (error) {
     console.error("Error in GET /api/purchases/[id]/download:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
 

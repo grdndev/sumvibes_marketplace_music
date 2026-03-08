@@ -24,6 +24,7 @@ import {
   Tag,
   Trash2,
 } from "lucide-react";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -324,6 +325,8 @@ function EditModal({
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "audio" | "tags" | "prix">("info");
   const coverRef = useRef<HTMLInputElement>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
+  const [uploadStatus, setUploadStatus] = useState<string>("");
 
   // Fermer sur Escape
   useEffect(() => {
@@ -373,6 +376,69 @@ function EditModal({
     setSaving(true);
     setError("");
     try {
+      // ── 1. Upload new files to R2 via presign if any ──────────────────────
+      const uploadToR2 = async (
+        file: File,
+        category: "audio" | "cover" | "stems",
+        label: string
+      ): Promise<string> => {
+        setUploadStatus(`Préparation de l'upload: ${label}...`);
+        const presignRes = await fetch("/api/presign", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type,
+            category,
+            fileSize: file.size,
+          }),
+        });
+        if (!presignRes.ok) {
+          const err = await presignRes.json();
+          throw new Error(err.error || "Impossible d'obtenir l'URL d'upload");
+        }
+        const { uploadUrl, key } = await presignRes.json();
+
+        setUploadStatus(`Upload de ${label}...`);
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", uploadUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
+
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              setUploadProgress(prev => ({ ...prev, [label]: percent }));
+            }
+          };
+
+          xhr.onload = () =>
+            xhr.status >= 200 && xhr.status < 300
+              ? resolve()
+              : reject(new Error(`Upload échoué: HTTP ${xhr.status}`));
+          xhr.onerror = () => reject(new Error("Erreur réseau"));
+          xhr.send(file);
+        });
+
+        return key;
+      };
+
+      let coverKey: string | null = null;
+      let mp3Key: string | null = null;
+      let wavKey: string | null = null;
+      let trackoutKey: string | null = null;
+
+      if (coverFile) coverKey = await uploadToR2(coverFile, "cover", "Image de couverture");
+      if (edit.mp3File) mp3Key = await uploadToR2(edit.mp3File, "audio", "Fichier MP3");
+      if (edit.wavFile) wavKey = await uploadToR2(edit.wavFile, "audio", "Fichier WAV");
+      if (edit.trackoutFile) trackoutKey = await uploadToR2(edit.trackoutFile, "stems", "Fichier Trackout");
+
+      setUploadStatus("Mise à jour de la base de données...");
+
+      // ── 2. Send metadata + R2 keys to the PATCH endpoint ─────────────────
       const fd = new FormData();
       fd.append("title", edit.title);
       fd.append("description", edit.description);
@@ -387,19 +453,14 @@ function EditModal({
       edit.mood.forEach((m) => fd.append("mood", m));
       edit.instruments.forEach((i) => fd.append("instruments", i));
 
-      if (coverFile) {
-        if (coverFile.type !== "image/jpeg" && coverFile.type !== "image/png" && coverFile.type !== "image/jpg") {
-          throw new Error("Seuls les formats JPG et PNG sont autorisés pour la cover.");
-        }
-        fd.append("cover", coverFile);
-      }
-      if (edit.mp3File) fd.append("mp3File", edit.mp3File);
-      if (edit.wavFile) fd.append("wavFile", edit.wavFile);
-      if (edit.trackoutFile) fd.append("trackoutFile", edit.trackoutFile);
+      if (coverKey) fd.append("coverKey", coverKey);
+      if (mp3Key) fd.append("mp3Key", mp3Key);
+      if (wavKey) fd.append("wavKey", wavKey);
+      if (trackoutKey) fd.append("trackoutKey", trackoutKey);
 
       const res = await fetch(`/api/beats/${beat.id}`, {
         method: "PATCH",
-        headers: { Authorization: `JWT ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
 
@@ -443,14 +504,7 @@ function EditModal({
           <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-white/[0.05] border border-white/10">
             {coverPreview ? (
               <Image
-                src={
-                  coverPreview.startsWith("blob:") ||
-                    coverPreview.startsWith("http")
-                    ? coverPreview
-                    : coverPreview.startsWith("/uploads")
-                      ? coverPreview
-                      : `/uploads/covers/${coverPreview.split("/").pop()}` // Protection contre les doubles slashes
-                }
+                src={resolveFileUrl(coverPreview)}
                 alt={edit.title}
                 fill
                 sizes="48px"
@@ -581,14 +635,7 @@ function EditModal({
                   {coverPreview ? (
                     <>
                       <Image
-                        src={
-                          coverPreview.startsWith("blob:") ||
-                            coverPreview.startsWith("http")
-                            ? coverPreview
-                            : coverPreview.startsWith("/uploads")
-                              ? coverPreview
-                              : `/uploads/covers/${coverPreview.split("/").pop()}`
-                        }
+                        src={resolveFileUrl(coverPreview)}
                         alt="cover"
                         fill
                         sizes="600px"
@@ -790,35 +837,57 @@ function EditModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-white/[0.07] flex gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 px-4 py-3 rounded-xl border border-white/12 text-slate-400 text-sm font-semibold hover:border-white/25 hover:text-white transition-all"
-          >
-            Annuler
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-black transition-all disabled:opacity-50
-              ${saved ? "bg-emerald-500 text-white" : "bg-brand-gold text-slate-900 hover:brightness-110 shadow-[0_4px_20px_rgba(212,175,55,0.3)]"}`}
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" /> Sauvegarde...
-              </>
-            ) : saved ? (
-              <>
-                <Check className="w-4 h-4" /> Sauvegardé !
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" /> Sauvegarder
-              </>
-            )}
-          </button>
+        <div className="px-6 py-4 border-t border-white/[0.07] shrink-0 space-y-4 bg-black/20">
+          {(saving || Object.keys(uploadProgress).length > 0) && (
+            <div className="space-y-2">
+              <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">{uploadStatus || "Préparation..."}</p>
+              {Object.entries(uploadProgress).map(([label, progress]) => (
+                <div key={label} className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>{label}</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-brand-gold transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+              className="flex-1 px-4 py-3 rounded-xl border border-white/12 text-slate-400 text-sm font-semibold hover:border-white/25 hover:text-white transition-all disabled:opacity-30"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-black transition-all disabled:opacity-50
+                ${saved ? "bg-emerald-500 text-white" : "bg-brand-gold text-slate-900 hover:brightness-110 shadow-[0_4px_20px_rgba(212,175,55,0.3)]"}`}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Sauvegarde...
+                </>
+              ) : saved ? (
+                <>
+                  <Check className="w-4 h-4" /> Sauvegardé !
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" /> Sauvegarder
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div >
@@ -838,10 +907,13 @@ function BeatRow({
 }) {
   const s = STATUS_MAP[beat.status] ?? STATUS_MAP.DRAFT;
   const coverSrc = beat.coverImage
-    ? beat.coverImage.startsWith("http") ||
-      beat.coverImage.startsWith("/uploads")
+    ? beat.coverImage.startsWith("http") || beat.coverImage.startsWith("/")
       ? beat.coverImage
-      : `/uploads/covers/${beat.coverImage}`
+      : beat.coverImage.startsWith("images/")
+        ? `${(process.env.NEXT_PUBLIC_R2_PUBLIC_URL || '').replace(/\/$/, '')}/${beat.coverImage}`
+        : beat.coverImage.startsWith("/uploads")
+          ? beat.coverImage
+          : `/uploads/covers/${beat.coverImage}`
     : null;
 
   return (

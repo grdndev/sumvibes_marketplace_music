@@ -3,8 +3,6 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { BeatStatus } from "@prisma/client";
 import { verifyToken } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -32,31 +30,6 @@ function toInt(value: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
-/**
- * ✅ Sauvegarde un objet File sur le disque dans /public/uploads/<subfolder>
- * et retourne le nom du fichier (pas le chemin complet).
- */
-async function saveUploadedFile(
-  file: File,
-  subfolder = "covers",
-): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "public", "uploads", subfolder);
-
-  // Crée le dossier récursivement s'il n'existe pas
-  await mkdir(uploadDir, { recursive: true });
-
-  // Nom de fichier unique pour éviter les collisions
-  const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const filepath = path.join(uploadDir, filename);
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filepath, buffer);
-
-  // Retourne uniquement le nom du fichier (ex: 1234567890-abc123.jpg)
-  return filename;
-}
-
 // ─── GET /api/beats ───────────────────────────────────────────────────────────
 export async function GET(request: NextRequest) {
   try {
@@ -65,9 +38,7 @@ export async function GET(request: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const limit = Math.min(100, parseInt(searchParams.get("limit") || "20"));
     const sortBy = searchParams.get("sortBy") || "createdAt";
-    const sortOrder = (searchParams.get("sortOrder") || "desc") as
-      | "asc"
-      | "desc";
+    const sortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc";
 
     const genre = searchParams.get("genre")?.split(",").filter(Boolean);
     const mood = searchParams.get("mood")?.split(",").filter(Boolean);
@@ -92,7 +63,6 @@ export async function GET(request: NextRequest) {
       // Si on récupère les beats d'un user, on exclut les supprimés sauf si includeDeleted=true
       where.status = { not: "DELETED" };
     }
-
 
     if (genre?.length) where.genre = { hasSome: genre };
     if (mood?.length) where.mood = { hasSome: mood };
@@ -180,6 +150,19 @@ export async function GET(request: NextRequest) {
 }
 
 // ─── POST /api/beats ──────────────────────────────────────────────────────────
+/**
+ * Crée un nouveau beat.
+ *
+ * Depuis la migration R2, le client uploade d'abord les fichiers directement
+ * vers R2 via POST /api/presign, puis envoie les clés R2 (strings) ici :
+ *
+ * FormData fields :
+ *   - mp3Key        (string, obligatoire)   ← clé R2 du fichier MP3
+ *   - wavKey        (string, optionnel)      ← clé R2 du WAV
+ *   - trackoutKey   (string, optionnel)      ← clé R2 du Trackout ZIP
+ *   - coverKey      (string, obligatoire)    ← clé R2 de la cover
+ *   + tous les autres champs texte habituels
+ */
 export async function POST(req: NextRequest) {
   try {
     // 1. Auth
@@ -225,7 +208,6 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Parse FormData
-    // ✅ On itère avec formData.entries() mais on garde les File tels quels
     const formData = await req.formData();
     const raw: Record<string, unknown> = {};
 
@@ -233,83 +215,33 @@ export async function POST(req: NextRequest) {
       if (raw[key] !== undefined) {
         raw[key] = [
           ...(Array.isArray(raw[key]) ? (raw[key] as unknown[]) : [raw[key]]),
-          value instanceof File ? value : String(value),
+          String(value),
         ];
       } else {
-        // ✅ Ne jamais caster un File en String
-        raw[key] = value instanceof File ? value : String(value);
+        raw[key] = String(value);
       }
     }
 
-    // 3. ✅ Traitement de la cover EN PREMIER
-    // Le client (page.tsx) envoie le fichier image sous la clé "cover"
-    // L'ancienne route faisait : String(raw.coverImage ?? raw.coverUrl ?? "")
-    // ce qui castait le File en "[object File]" → jamais sauvegardé sur le disque
-    let coverImagePath: string | null = null;
-    const coverFile = raw.cover;
+    // 3. Récupérer les clés R2 (envoyées par le client après upload direct vers R2)
+    const coverKey = String(raw.coverKey ?? "").trim() || null;
+    const mp3Key = String(raw.mp3Key ?? "").trim() || null;
+    const wavKey = String(raw.wavKey ?? "").trim() || null;
+    const trackoutKey = String(raw.trackoutKey ?? "").trim() || null;
 
-    if (coverFile instanceof File && coverFile.size > 0) {
-      if (coverFile.type !== "image/jpeg" && coverFile.type !== "image/png" && coverFile.type !== "image/jpg") {
-        return NextResponse.json(
-          { error: "La cover doit obligatoirement être au format PNG ou JPG." },
-          { status: 400 },
-        );
-      }
-      if (coverFile.size > 5 * 1024 * 1024) {
-        return NextResponse.json(
-          { error: "La cover ne doit pas dépasser 5 Mo" },
-          { status: 400 },
-        );
-      }
-      // ✅ Sauvegarde physique → retourne "1234567890-abc123.jpg"
-      const coverName = await saveUploadedFile(coverFile, "covers");
-      coverImagePath = `/uploads/covers/${coverName}`;
+    // Validation WAV
+    if (wavKey && (plan === "FREEMIUM" || !user.subscription)) {
+      return NextResponse.json({ error: "La formule Freemium n'autorise pas l'upload de WAV." }, { status: 403 });
     }
 
-    // 4. Extraction Fichiers Musicaux
-    const mp3File = raw.mp3File;
-    let mp3FileUrl: string | null = null;
-    if (mp3File instanceof File && mp3File.size > 0) {
-      if (!mp3File.name.toLowerCase().endsWith(".mp3") && mp3File.type !== "audio/mpeg" && mp3File.type !== "audio/mp3") {
-        return NextResponse.json({ error: "Le fichier principal doit obligatoirement être un MP3 (.mp3)." }, { status: 400 });
-      }
-      if (mp3File.size > 200 * 1024 * 1024) {
-        return NextResponse.json({ error: "L'audio MP3 ne doit pas dépasser 200 Mo." }, { status: 400 });
-      }
-      const aName = await saveUploadedFile(mp3File, "beats");
-      mp3FileUrl = `/uploads/beats/${aName}`;
+    // Validation Trackout
+    if (trackoutKey && !wavKey) {
+      return NextResponse.json({ error: "L'upload d'un Trackout nécessite aussi l'upload du fichier WAV." }, { status: 400 });
+    }
+    if (trackoutKey && plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY") {
+      return NextResponse.json({ error: "La formule Standard/Freemium n'autorise pas l'upload de Trackouts." }, { status: 403 });
     }
 
-    const wavFile = raw.wavFile;
-    let wavFileUrl: string | null = null;
-    if (wavFile instanceof File && wavFile.size > 0) {
-      if (plan === "FREEMIUM" || !user.subscription) {
-        return NextResponse.json({ error: "La formule Freemium n'autorise pas l'upload de WAV." }, { status: 403 });
-      }
-      if (!wavFile.name.toLowerCase().endsWith(".wav") && wavFile.type !== "audio/wav" && wavFile.type !== "audio/x-wav") {
-        return NextResponse.json({ error: "Le fichier Haute Qualité doit obligatoirement être un WAV (.wav)." }, { status: 400 });
-      }
-      if (wavFile.size > 500 * 1024 * 1024) {
-        return NextResponse.json({ error: "L'audio WAV ne doit pas dépasser 500 Mo." }, { status: 400 });
-      }
-      const wName = await saveUploadedFile(wavFile, "beats");
-      wavFileUrl = `/uploads/beats/${wName}`;
-    }
-
-    const trackoutFile = raw.trackoutFile;
-    let trackoutFileUrl: string | null = null;
-    if (trackoutFile instanceof File && trackoutFile.size > 0) {
-      if (!wavFileUrl) {
-        return NextResponse.json({ error: "L'upload d'un Trackout nécessite aussi l'upload du fichier WAV." }, { status: 400 });
-      }
-      if (plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY") {
-        return NextResponse.json({ error: "La formule Standard/Freemium n'autorise pas l'upload de Trackouts." }, { status: 403 });
-      }
-      const tName = await saveUploadedFile(trackoutFile, "trackouts");
-      trackoutFileUrl = `/uploads/trackouts/${tName}`;
-    }
-
-    // 4. Extraction des autres champs
+    // 4. Extraction des autres champs texte
     const title = String(raw.title ?? "").trim();
     const description = String(raw.description ?? "").trim();
     const key = String(raw.key ?? "").trim() || null;
@@ -322,6 +254,7 @@ export async function POST(req: NextRequest) {
     const genres = toArray(raw.genres ?? raw.genre);
     const moods = toArray(raw.moods ?? raw.mood);
     const instruments = toArray(raw.instruments);
+    if (instruments.length === 0) instruments.push("Instruments"); // Default fallback
 
     // 5. Slug unique automatique
     const baseSlug = title
@@ -336,8 +269,8 @@ export async function POST(req: NextRequest) {
     const missing: string[] = [];
     if (!title) missing.push("title");
     if (!description) missing.push("description");
-    if (!coverImagePath) missing.push("cover (Image)");
-    if (!mp3FileUrl) missing.push("Fichier MP3 (Obligatoire)");
+    if (!coverKey) missing.push("cover (Image)");
+    if (!mp3Key) missing.push("Fichier MP3 (Obligatoire)");
     if (!bpm || bpm <= 0) missing.push("BPM (nombre positif requis)");
     if (!duration || duration <= 0) missing.push("Durée (nombre positif requis)");
     if (!key) missing.push("Tonalité (Obligatoire)");
@@ -353,19 +286,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (wavFileUrl && premiumPrice === null) {
+    if (wavKey && premiumPrice === null) {
       return NextResponse.json({ error: "Le prix Non-Exclusif (WAV) est obligatoire car vous avez fourni un fichier WAV." }, { status: 400 });
     }
 
-    if (!wavFileUrl && premiumPrice !== null) {
+    if (!wavKey && premiumPrice !== null) {
       return NextResponse.json({ error: "Vous ne pouvez pas définir de prix Non-Exclusif sans uploader de fichier WAV." }, { status: 400 });
     }
 
-    if (trackoutFileUrl && exclusivePrice === null) {
+    if (trackoutKey && exclusivePrice === null) {
       return NextResponse.json({ error: "Le prix Exclusif (Trackout) est obligatoire car vous avez fourni un fichier Trackout." }, { status: 400 });
     }
 
-    if (!trackoutFileUrl && exclusivePrice !== null) {
+    if (!trackoutKey && exclusivePrice !== null) {
       return NextResponse.json({ error: "Vous ne pouvez pas définir de prix Exclusif sans uploader de fichier Trackout (ZIP/RAR)." }, { status: 400 });
     }
 
@@ -393,6 +326,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 7. Création en BDD — on stocke la clé R2 directement
     const beat = await prisma.beat.create({
       data: {
         title,
@@ -405,11 +339,11 @@ export async function POST(req: NextRequest) {
         bpm: bpm!,
         key,
         duration,
-        previewUrl: mp3FileUrl!,
-        mp3FileUrl: mp3FileUrl!,
-        wavFileUrl: wavFileUrl,
-        trackoutFileUrl,
-        coverImage: coverImagePath,
+        previewUrl: mp3Key!,
+        mp3FileUrl: mp3Key!,
+        wavFileUrl: wavKey,
+        trackoutFileUrl: trackoutKey,
+        coverImage: coverKey,
         basicPrice,
         premiumPrice,
         exclusivePrice,

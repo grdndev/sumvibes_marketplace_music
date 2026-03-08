@@ -9,7 +9,8 @@ import { useProducers } from "@/hooks/useProducers";
 
 export default function ProducersPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { producers, loading } = useProducers(searchQuery);
+  const [selectedGenre, setSelectedGenre] = useState("Tous");
+  const { producers, loading } = useProducers(searchQuery, selectedGenre);
   const [expandedGenres, setExpandedGenres] = useState<Set<string>>(new Set());
 
   const toggleExpandGenres = (e: React.MouseEvent, producerId: string) => {
@@ -71,7 +72,11 @@ export default function ProducersPage() {
                 {genres.map((g) => (
                   <button
                     key={g}
-                    className="px-4 py-2 rounded-full text-sm font-medium glass hover:bg-white/10"
+                    onClick={() => setSelectedGenre(g)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedGenre === g
+                        ? "bg-brand-gold text-slate-900 border-brand-gold shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                        : "glass hover:bg-white/10 text-slate-300 border-white/10"
+                      }`}
                   >
                     {g}
                   </button>
@@ -124,10 +129,10 @@ export default function ProducersPage() {
                     {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
                       <Avatar
-                          src={producer.user?.avatar}
-                          name={producer.user?.displayName || producer.user?.username}
-                          size={64}
-                        />
+                        src={producer.user?.avatar}
+                        name={producer.user?.displayName || producer.user?.username}
+                        size={64}
+                      />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-bold text-xl group-hover:text-brand-gold">

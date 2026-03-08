@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Music, Headphones, Shield, TrendingUp, Users, Star, Play, Download, Award, Loader2, Heart, ShoppingCart } from "lucide-react";
 import { useBeats } from "@/hooks/useBeats";
 import { Avatar } from "@/components/ui/Avatar";
-import { coverSrc } from "@/components/catalogue/LicensePickerModal";
+import { resolveFileUrl } from "@/lib/resolve-file";
 import { useEffect, useState, useMemo } from "react";
 
 interface TopProducer {
@@ -62,7 +62,7 @@ export default function Home() {
     fetch("/api/stats")
       .then((r) => r.json())
       .then((d) => setHomepageStats(d))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setStatsLoading(false));
   }, []);
 
@@ -189,9 +189,9 @@ export default function Home() {
             ) : featuredBeats.length > 0 ? (
               featuredBeats.map((beat) => {
                 const genre0 = Array.isArray(beat.genre) ? beat.genre[0] ?? "" : beat.genre ?? "";
-                const mood0  = Array.isArray(beat.mood)  ? beat.mood[0]  ?? "" : beat.mood  ?? "";
+                const mood0 = Array.isArray(beat.mood) ? beat.mood[0] ?? "" : beat.mood ?? "";
                 const gradient = GENRE_GRADIENT[genre0] ?? "from-brand-purple/30 to-brand-pink/25";
-                const emoji    = GENRE_EMOJI[genre0] ?? "🎵";
+                const emoji = GENRE_EMOJI[genre0] ?? "🎵";
                 return (
                   <div key={beat.id} className="glass group rounded-2xl p-6 text-center hover:scale-[1.03] hover:shadow-xl hover:shadow-black/30 transition-all duration-200 relative">
                     <Link href={`/product/${beat.slug}`} className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-600 opacity-0 group-hover:opacity-100 hover:text-rose-400 transition-all">
@@ -199,7 +199,7 @@ export default function Home() {
                     </Link>
                     <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 relative overflow-hidden`}>
                       {beat.coverImage
-                        ? <Image src={coverSrc(beat.coverImage)} alt={beat.title} fill sizes="64px" className="object-cover" />
+                        ? <Image src={resolveFileUrl(beat.coverImage)} alt={beat.title} fill sizes="64px" className="object-cover" />
                         : <span className="text-3xl">{emoji}</span>}
                     </div>
                     <h3 className="font-bold text-lg leading-tight mb-0.5 line-clamp-1 group-hover:text-brand-gold transition-colors">{beat.title}</h3>
@@ -267,9 +267,9 @@ export default function Home() {
                 const name = producer.artistName || producer.user.displayName || producer.user.username;
                 const rankStyle =
                   i === 0 ? "from-brand-gold to-yellow-500 text-black" :
-                  i === 1 ? "from-slate-300 to-slate-400 text-black" :
-                  i === 2 ? "from-amber-600 to-amber-500 text-black" :
-                  "from-brand-purple to-brand-pink text-white";
+                    i === 1 ? "from-slate-300 to-slate-400 text-black" :
+                      i === 2 ? "from-amber-600 to-amber-500 text-black" :
+                        "from-brand-purple to-brand-pink text-white";
                 return (
                   <Link
                     key={producer.user.id}

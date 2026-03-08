@@ -6,11 +6,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { CreditCard, Lock, Shield, ChevronLeft, Music, Check, Loader2, AlertCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
-function coverSrc(raw: string) {
-  if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-  return `/uploads/covers/${raw}`;
-}
 
 export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
@@ -176,7 +173,7 @@ export default function CheckoutPage() {
                       <div key={item.id} className="flex items-center gap-4">
                         <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 overflow-hidden">
                           {beat?.coverImage
-                            ? <img src={coverSrc(beat?.coverImage)} alt={beat.title} className="w-full h-full object-cover" />
+                            ? <img src={resolveFileUrl(beat?.coverImage)} alt={beat.title} className="w-full h-full object-cover" />
                             : <Music className="w-6 h-6 text-white/30 m-auto mt-4" />
                           }
                         </div>

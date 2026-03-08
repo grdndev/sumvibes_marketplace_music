@@ -41,10 +41,10 @@ export async function POST(req: NextRequest) {
       let lastInvoice: any = await tx.purchase.findFirst({
         orderBy: { invoiceNumber: "desc" },
       });
-      
+
       if (lastInvoice?.invoiceNumber) {
         const year = lastInvoice.invoiceNumber.split("-")[1];
-        
+
         if (year === String(new Date().getFullYear())) {
           const lastNumber = lastInvoice.invoiceNumber.split("-")[2]; // "00001"
           const nextNumber = String(Number(lastNumber) + 1).padStart(5, "0"); // "00002"
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
         const amount = Number((priceHT + taxAmount).toFixed(2));     // Total TTC
         const platformFee = Number((priceHT * 0.15).toFixed(2));     // Commission 15% (sur HT)
         const sellerEarnings = Number((priceHT - platformFee).toFixed(2));
-        
+
         // Créer l'achat
         const purchase = await tx.purchase.create({
           data: {
@@ -170,7 +170,7 @@ export async function POST(req: NextRequest) {
           .map((item: any) => String(item?.licenseType || "BASIC").toUpperCase())
       );
 
-     
+
 
       const payment = {
         subtotal: Number(invoiceSubtotal.toFixed(2)),
@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
         total: Number((invoiceSubtotal + invoiceTax).toFixed(2)),
         invoice_nr: sharedInvoiceNumber,
         method: data.paymentMethod,
-        
+
       };
 
       console.log("Invoice payload check:", {
@@ -240,6 +240,9 @@ export async function GET(req: NextRequest) {
               bpm: true,
               key: true,
               genre: true,
+              mp3FileUrl: true,
+              wavFileUrl: true,
+              trackoutFileUrl: true,
               seller: {
                 select: {
                   id: true,
@@ -278,7 +281,7 @@ export async function GET(req: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     });
-    
+
   } catch (error) {
     console.error("Error in GET /api/purchases:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

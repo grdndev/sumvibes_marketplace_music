@@ -33,14 +33,14 @@ interface Producer {
   };
 }
 
-export function useProducers(search?: string) {
+export function useProducers(search?: string, genre?: string) {
   const [producers, setProducers] = useState<Producer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducers();
-  }, [search]);
+  }, [search, genre]);
 
   const fetchProducers = async () => {
     try {
@@ -51,6 +51,7 @@ export function useProducers(search?: string) {
       const params = new URLSearchParams();
       params.append("role", "SELLER");
       if (search) params.append("search", search);
+      if (genre && genre !== "Tous") params.append("genre", genre);
       params.append("limit", "50");
 
       const res = await fetch(`/api/admin/users?${params.toString()}`);

@@ -11,12 +11,8 @@ import {
 } from "lucide-react";
 import { useAudioPlayer } from "@/contexts/AudioPlayerContext";
 import { Avatar } from "@/components/ui/Avatar";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
-function fixFileUrl(raw: string | null | undefined, subfolder: string): string | null {
-  if (!raw) return null;
-  if (raw.startsWith('http') || raw.startsWith('/')) return raw;
-  return `/uploads/${subfolder}/${raw}`;
-}
 
 interface License {
   id: string;
@@ -233,7 +229,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                   <div className="relative aspect-square bg-gradient-to-br from-brand-purple/30 to-brand-pink/30 flex items-center justify-center overflow-hidden group">
                     {beat.coverImage ? (
                       <img
-                        src={fixFileUrl(beat.coverImage, 'covers') ?? ''}
+                        src={resolveFileUrl(beat.coverImage) || '/logo.jpg'}
                         alt={beat.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />

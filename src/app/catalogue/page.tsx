@@ -16,7 +16,8 @@ import {
   Volume2, VolumeX, X, Check, Zap
 } from "lucide-react";
 import { useBeats } from "@/hooks/useBeats";
-import { LicensePickerModal, LicenseType, buildLicenses, coverSrc } from "@/components/catalogue/LicensePickerModal";
+import { LicensePickerModal, LicenseType, buildLicenses } from "@/components/catalogue/LicensePickerModal";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -125,7 +126,7 @@ export default function CataloguePage() {
       else { audioRef.current?.play(); setIsPlayingAudio(true); }
     } else {
       const beat = allBeats.find((b) => b.id === id);
-      const url = beat?.previewUrl || beat?.audioUrl || beat?.mp3FileUrl;
+      const url = resolveFileUrl(beat?.previewUrl || beat?.audioUrl || beat?.mp3FileUrl);
       if (!url) { alert("Aperçu audio non disponible."); return; }
       if (audioRef.current) {
         setIsBuffering(true);
@@ -462,7 +463,7 @@ export default function CataloguePage() {
                       </button>
                       <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 relative overflow-hidden`}>
                         {beat.coverImage
-                          ? <Image src={coverSrc(beat.coverImage)} alt={beat.title} fill sizes="64px" className="object-cover" />
+                          ? <Image src={resolveFileUrl(beat.coverImage)} alt={beat.title} fill sizes="64px" className="object-cover" />
                           : <span className="text-3xl">{emoji}</span>}
                         {isPlaying && (
                           <div className="absolute inset-0 bg-black/55 flex items-end justify-center gap-[3px] pb-1.5">
@@ -514,7 +515,7 @@ export default function CataloguePage() {
                     <div key={beat.id} className={`glass rounded-xl p-4 flex items-center gap-4 transition-all hover:bg-white/5 ${isActive ? "ring-1 ring-brand-gold/40 bg-brand-gold/5" : ""}`}>
                       <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-brand-purple/20 to-brand-pink/20 relative">
                         {beat.coverImage
-                          ? <Image src={coverSrc(beat.coverImage)} alt={beat.title} fill sizes="48px" className="object-cover" />
+                          ? <Image src={resolveFileUrl(beat.coverImage)} alt={beat.title} fill sizes="48px" className="object-cover" />
                           : <Music className="w-6 h-6 text-white/30 absolute inset-0 m-auto" />}
                       </div>
                       <button onClick={() => togglePlay(beat.id)} className="w-12 h-12 rounded-full bg-brand-gold/10 flex items-center justify-center hover:bg-brand-gold/20 transition-colors flex-shrink-0">
@@ -570,7 +571,7 @@ export default function CataloguePage() {
             <div className="flex items-center gap-3 w-1/3 min-w-[200px]">
               <div className="w-14 h-14 rounded-md bg-white/5 overflow-hidden relative flex-shrink-0 shadow-lg group">
                 {activeBeat.coverImage
-                  ? <Image src={coverSrc(activeBeat.coverImage)} alt="cover" fill sizes="56px" className="object-cover" />
+                  ? <Image src={resolveFileUrl(activeBeat.coverImage)} alt="cover" fill sizes="56px" className="object-cover" />
                   : <Music className="w-6 h-6 m-auto absolute inset-0 text-white/30" />}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                   <ChevronDown className="w-5 h-5 text-white" onClick={() => { audioRef.current?.pause(); setActiveBeatId(null); setIsPlayingAudio(false); }} />

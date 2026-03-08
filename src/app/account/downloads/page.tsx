@@ -13,6 +13,9 @@ interface Purchase {
   beat: {
     id: string; title: string; slug: string;
     genre: string[]; bpm: number; key: string | null; coverImage: string | null;
+    mp3FileUrl?: string | null;
+    wavFileUrl?: string | null;
+    trackoutFileUrl?: string | null;
     seller: { id: string; sellerProfile: { artistName: string } | null; displayName: string | null; username: string };
   };
   license: { id: string; name: string; type: string };
@@ -28,7 +31,7 @@ export default function DownloadsPage() {
 
   useEffect(() => {
     if (!user) return;
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token"); // Corrected line
     fetch("/api/purchases", { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(d => setPurchases(d.purchases || []))
@@ -114,7 +117,16 @@ export default function DownloadsPage() {
                       <Music className="w-8 h-8 text-white/20 absolute" />
                       {item.beat.coverImage && (
                         <img
-                          src={item.beat.coverImage.startsWith('http') || item.beat.coverImage.startsWith('/') ? item.beat.coverImage : `/uploads/covers/${item.beat.coverImage}`}
+                          src={(() => {
+                            const raw = item.beat.coverImage;
+                            if (!raw) return '';
+                            if (raw.startsWith('http') || raw.startsWith('/')) return raw;
+                            if (raw.startsWith('images/')) {
+                              const base = (process.env.NEXT_PUBLIC_R2_PUBLIC_URL || '').replace(/\/$/, "");
+                              return `${base}/${raw}`;
+                            }
+                            return `/uploads/covers/${raw}`;
+                          })()}
                           alt=""
                           className="w-full h-full object-cover relative z-10"
                           onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -154,15 +166,17 @@ export default function DownloadsPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-row md:flex-col justify-center gap-3 md:pl-6 md:border-l border-white/10">
-                      <a href={`/api/purchases/${item.id}/download?token=${token}`} className="flex-1 md:flex-none btn-primary bg-brand-gold hover:bg-brand-gold/90 text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
-                        <Download className="w-4 h-4" /> Télécharger
+                    <div className="flex flex-col justify-center gap-3 md:pl-6 md:border-l border-white/10 min-w-[200px]">
+                      <a href={`/api/purchases/${item.id}/download?token=${token}`}
+                        className="flex-1 btn-primary bg-brand-gold hover:bg-brand-gold/90 text-slate-900 px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-brand-gold/10">
+                        <Download className="w-3 h-3" /> Télécharger
                       </a>
+
                       <div className="flex gap-2">
-                        <Link href={`/product/${item.beat.slug}`} className="flex-1 glass bg-white/5 hover:bg-white/10 p-2.5 rounded-xl flex items-center justify-center transition-colors text-slate-300 hover:text-white" title="Voir le beat">
+                        <Link href={`/product/${item.beat.slug}`} className="flex-1 glass bg-white/5 hover:bg-white/10 p-2.5 rounded-xl flex items-center justify-center transition-colors text-slate-300 hover:text-white border border-white/10" title="Voir le beat">
                           <ExternalLink className="w-4 h-4" />
                         </Link>
-                        <button className="flex-1 glass bg-white/5 hover:bg-white/10 p-2.5 rounded-xl flex items-center justify-center transition-colors text-slate-300 hover:text-white" title="Contrat de licence">
+                        <button className="flex-1 glass bg-white/5 hover:bg-white/10 p-2.5 rounded-xl flex items-center justify-center transition-colors text-slate-300 hover:text-white border border-white/10" title="Contrat de licence">
                           <FileText className="w-4 h-4" />
                         </button>
                       </div>

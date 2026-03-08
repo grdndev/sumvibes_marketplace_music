@@ -11,12 +11,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { LicensePickerModal } from "@/components/catalogue/LicensePickerModal";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
-function coverSrc(raw?: string | null): string {
-    if (!raw) return "";
-    if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-    return `/uploads/covers/${raw}`;
-}
 
 function formatDuration(secs?: number | null) {
     if (!secs || isNaN(secs) || !isFinite(secs)) return "0:00";
@@ -39,8 +35,12 @@ export function GlobalAudioPlayer() {
 
     if (!activeBeat) return null;
 
-    // Only show the player on Accueil and Product pages (not on Catalogue which has its own)
-    const isAllowedPage = pathname && (pathname === "/" || pathname.startsWith("/product/"));
+    // Only show the player on Accueil, Product and Producers pages (not on Catalogue which has its own)
+    const isAllowedPage = pathname && (
+        pathname === "/" ||
+        pathname.startsWith("/product/") ||
+        pathname.startsWith("/producers")
+    );
     if (!isAllowedPage) return null;
 
     return (
@@ -52,7 +52,7 @@ export function GlobalAudioPlayer() {
                     <div className="flex items-center gap-3 w-1/3 min-w-[200px]">
                         <div className="w-14 h-14 rounded-md bg-white/5 overflow-hidden relative flex-shrink-0 shadow-lg group">
                             {activeBeat.coverImage
-                                ? <Image src={coverSrc(activeBeat.coverImage)} alt="cover" fill sizes="56px" className="object-cover" />
+                                ? <Image src={resolveFileUrl(activeBeat.coverImage)} alt="cover" fill sizes="56px" className="object-cover" />
                                 : <Music className="w-6 h-6 m-auto absolute inset-0 text-white/30" />}
                             {/* Close on hover */}
                             <div

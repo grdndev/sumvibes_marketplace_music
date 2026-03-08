@@ -9,6 +9,7 @@ import {
   ArrowDown, Eye, Ban, CheckCircle, AlertTriangle, Search, Filter, Settings,
   FileText, Clock, Star, ShoppingCart, Loader2, AlertCircle
 } from "lucide-react";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 const tabs = [
   { id: "overview", label: "Vue d'ensemble", icon: BarChart3 },
@@ -258,7 +259,7 @@ export default function AdminPage() {
                       {pendingBeats.map(beat => (
                         <div key={beat.id} className="glass rounded-2xl p-5 flex items-center gap-5">
                           <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-brand-purple/20 to-brand-pink/20">
-                            {beat.coverImage ? <img src={beat.coverImage} alt={beat.title} className="w-full h-full object-cover" /> : <Music className="w-7 h-7 text-white/30 m-auto mt-4" />}
+                            {beat.coverImage ? <img src={resolveFileUrl(beat.coverImage)} alt={beat.title} className="w-full h-full object-cover" /> : <Music className="w-7 h-7 text-white/30 m-auto mt-4" />}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="font-bold">{beat.title}</div>
@@ -268,7 +269,7 @@ export default function AdminPage() {
                             <div className="text-xs text-slate-500 mt-1">{new Date(beat.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</div>
                           </div>
                           {beat.previewUrl && (
-                            <audio controls src={beat.previewUrl} className="hidden md:block w-48" />
+                            <audio controls src={resolveFileUrl(beat.previewUrl)} className="hidden md:block w-48" />
                           )}
                           <div className="flex gap-2">
                             <button onClick={() => moderate(beat.id, "PUBLISHED")} disabled={moderating === beat.id}

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Music, Play, Pause, X, Check, ShoppingCart, Zap, Crown } from "lucide-react";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,10 +24,6 @@ export interface LicenseOption {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-export function coverSrc(raw: string) {
-  if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-  return `/uploads/covers/${raw}`;
-}
 
 export function buildLicenses(beat: any): LicenseOption[] {
   const basic = beat.basicPrice != null ? Number(beat.basicPrice) : null;
@@ -161,7 +158,7 @@ export function LicensePickerModal({
           <div className="flex items-center gap-4 p-5 border-b border-white/[0.07]">
             <div className="w-14 h-14 rounded-xl overflow-hidden relative bg-white/5 flex-shrink-0">
               {beat.coverImage
-                ? <Image src={coverSrc(beat.coverImage)} alt={beat.title} fill sizes="56px" className="object-cover" />
+                ? <Image src={resolveFileUrl(beat.coverImage)} alt={beat.title} fill sizes="56px" className="object-cover" />
                 : <Music className="w-6 h-6 absolute inset-0 m-auto text-white/30" />}
             </div>
             <div className="flex-1 min-w-0">

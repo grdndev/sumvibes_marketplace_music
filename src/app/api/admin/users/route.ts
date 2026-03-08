@@ -6,15 +6,21 @@ export const GET = async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search");
+    const genre = searchParams.get("genre");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
     const where: any = {};
+
     if (search) {
       where.OR = [
         { artistName: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
       ];
+    }
+
+    if (genre && genre !== "Tous") {
+      where.genres = { hasSome: [genre] };
     }
 
     const [profiles, total] = await Promise.all([

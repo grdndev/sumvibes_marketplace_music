@@ -82,22 +82,58 @@ export default function SettingsPage() {
     setAvatarUploading(true);
     setError("");
     try {
-      const form = new FormData();
-      form.append("file", file);
+      // 1. Obtenir l'URL présignée
+      const presignRes = await fetch("/api/presign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          category: "avatar",
+          fileSize: file.size,
+        }),
+      });
+
+      if (!presignRes.ok) {
+        const err = await presignRes.json();
+        throw new Error(err.error || "Impossible d'obtenir l'URL d'upload");
+      }
+
+      const { uploadUrl, key } = await presignRes.json();
+
+      // 2. Upload direct vers R2
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error("Erreur lors de l'upload vers R2");
+      }
+
+      // 3. Mettre à jour l'avatar de l'utilisateur avec la clé R2
       const res = await fetch("/api/auth/avatar", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ key }),
       });
+
       const data = await res.json();
       if (res.ok) {
         setAvatarPreview(data.url);
         await refreshUser();
       } else {
-        setError(data.error || "Erreur lors de l'upload");
+        setError(data.error || "Erreur lors de la mise à jour de l'avatar");
       }
-    } catch {
-      setError("Erreur réseau lors de l'upload");
+    } catch (err: any) {
+      setError(err.message || "Erreur réseau lors de l'upload");
     } finally {
       setAvatarUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

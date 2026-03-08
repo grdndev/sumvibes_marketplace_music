@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useRef, useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
+import { resolveFileUrl } from "@/lib/resolve-file";
 
 export interface AudioBeat {
     id: string;
@@ -96,17 +97,11 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
         if (audioRef.current) audioRef.current.volume = isMuted ? 0 : volume;
     }, [volume, isMuted]);
 
-    const resolveUrl = (beat: AudioBeat): string | null => {
-        const raw = beat.mp3FileUrl || beat.previewUrl || beat.audioUrl;
-        if (!raw) return null;
-        if (raw.startsWith("http") || raw.startsWith("/")) return raw;
-        return `/uploads/beats/${raw}`;
-    };
 
     const playBeat = useCallback((beat: AudioBeat) => {
         const audio = audioRef.current;
         if (!audio) return;
-        const url = resolveUrl(beat);
+        const url = resolveFileUrl(beat.mp3FileUrl || beat.previewUrl || beat.audioUrl);
         if (!url) return;
 
         if (activeBeat?.id === beat.id) {

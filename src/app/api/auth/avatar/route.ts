@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { getPublicUrl } from "@/lib/r2";
 
+/**
+ * POST /api/auth/avatar
+ *
+ * Depuis la migration R2, le client uploade l'avatar directement vers R2
+ * via POST /api/presign (category="avatar"), puis envoie ici uniquement la clé R2.
+ *
+ * Body JSON attendu :
+ * { key: string }   ← clé R2 de l'avatar (ex: "images/avatars/{userId}/...")
+ *
+ * Réponse :
+ * { url: string }   ← URL publique de l'avatar
+ */
 export async function POST(req: NextRequest) {
   try {
-    const token = req.headers.get("authorization")?.split(" ")[1];
+    const authHeader = req.headers.get("authorization") || "";
+    const token = authHeader.split(" ")[1];
     if (!token) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
@@ -15,47 +27,56 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Token invalide" }, { status: 401 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const contentType = req.headers.get("content-type") || "";
+    console.log(`[AVATAR_API] Content-Type: ${contentType}, User: ${decoded.userId}`);
 
-    if (!file) {
-      return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
+    let key = "";
+
+    if (contentType.includes("application/json")) {
+      const body = await req.json().catch(err => {
+        console.error("[AVATAR_API] Failed to parse JSON body:", err);
+        return null;
+      });
+      if (!body) return NextResponse.json({ error: "JSON invalide" }, { status: 400 });
+      key = (body as { key?: string }).key || "";
+    }
+    else if (contentType.includes("multipart/form-data")) {
+      console.warn("[AVATAR_API] Received Multipart data (legacy). Attempting to extract key or file...");
+      const formData = await req.formData();
+      // If they sent a key directly in FormData
+      key = formData.get("key") as string || "";
+      // If they sent a file (old flow), we tell them it's deprecated
+      if (formData.has("file") && !key) {
+        return NextResponse.json({
+          error: "Format obsolète. Vous devez d'abord uploader l'image vers R2 via /api/presign puis envoyer la clé ici."
+        }, { status: 410 });
+      }
+    } else {
+      return NextResponse.json({ error: "Content-Type non supporté. Attendu: application/json" }, { status: 415 });
     }
 
-    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-    if (!allowed.includes(file.type)) {
+    if (!key || typeof key !== "string" || !key.startsWith("images/avatars/")) {
+      console.error("[AVATAR_API] Invalide R2 Key received:", key);
       return NextResponse.json(
-        { error: "Format non supporté. JPG, PNG ou WEBP uniquement." },
+        { error: "Clé R2 d'avatar invalide. Attendue: images/avatars/..." },
         { status: 400 },
       );
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "Fichier trop volumineux (max 5 Mo)" },
-        { status: 400 },
-      );
-    }
+    // Construire l'URL publique de l'avatar (pour retour immédiat)
+    const avatarUrl = getPublicUrl(key);
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
-    await mkdir(uploadDir, { recursive: true });
-
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const fileName = `${Date.now()}-${decoded.userId.slice(0, 8)}-${sanitizedName}`;
-    const bytes = await file.arrayBuffer();
-    await writeFile(path.join(uploadDir, fileName), Buffer.from(bytes));
-
-    const avatarUrl = `/uploads/avatars/${fileName}`;
-
+    // Mettre à jour le profil utilisateur
     const prisma = (await import("@/lib/prisma")).default;
     await prisma.user.update({
       where: { id: decoded.userId },
-      data: { avatar: avatarUrl },
+      data: { avatar: key },
     });
 
+    console.log(`[AVATAR_API] Success: updated avatar for ${decoded.userId} with key ${key}`);
     return NextResponse.json({ url: avatarUrl });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in POST /api/auth/avatar:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    return NextResponse.json({ error: `Erreur serveur: ${error.message}` }, { status: 500 });
   }
 }

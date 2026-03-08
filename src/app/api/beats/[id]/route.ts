@@ -1,20 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
-import path from "path";
-import { writeFile, mkdir } from "fs/promises";
 
-// Helper pour sauvegarder un fichier
-async function saveUploadedFile(file: File, subfolder = "covers"): Promise<string> {
-  const uploadDir = path.join(process.cwd(), "public", "uploads", subfolder);
-  await mkdir(uploadDir, { recursive: true });
-  const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const filepath = path.join(uploadDir, filename);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filepath, buffer);
-  return filename;
-}
+// ─── Helper ───────────────────────────────────────────────────────────────────
 
 // POST /api/beats/[id] — Increment play count (no auth required)
 export async function POST(request: NextRequest, context: any) {
@@ -166,56 +154,48 @@ export async function PATCH(request: NextRequest, context: any) {
       data.mood = rawData.getAll("mood");
       data.instruments = rawData.getAll("instruments");
 
-      // 1. Cover Image
-      const coverFile = data.cover;
-      if (coverFile instanceof File && coverFile.size > 0) {
-        if (coverFile.type !== "image/jpeg" && coverFile.type !== "image/png" && coverFile.type !== "image/jpg") {
-          return NextResponse.json({ error: "La cover doit obligatoirement être au format PNG ou JPG." }, { status: 400 });
-        }
-        data.coverImage = await saveUploadedFile(coverFile, "covers");
+      // ── R2-based file handling ──
+      // The client now uploads files directly to R2 via /api/presign and sends
+      // back only the R2 keys as strings in the form data:
+      //   coverKey, mp3Key, wavKey, trackoutKey
+
+      const coverKey = typeof data.coverKey === "string" && data.coverKey.trim()
+        ? data.coverKey.trim()
+        : null;
+      const mp3Key = typeof data.mp3Key === "string" && data.mp3Key.trim()
+        ? data.mp3Key.trim()
+        : null;
+      const wavKey = typeof data.wavKey === "string" && data.wavKey.trim()
+        ? data.wavKey.trim()
+        : null;
+      const trackoutKey = typeof data.trackoutKey === "string" && data.trackoutKey.trim()
+        ? data.trackoutKey.trim()
+        : null;
+
+      if (wavKey && (plan === "FREEMIUM" || !user.subscription)) {
+        return NextResponse.json({ error: "La formule Freemium n'autorise pas l'upload de WAV." }, { status: 403 });
       }
 
-      // 2. MP3 File
-      const mp3File = data.mp3File;
-      if (mp3File instanceof File && mp3File.size > 0) {
-        if (!mp3File.name.toLowerCase().endsWith(".mp3") && mp3File.type !== "audio/mpeg" && mp3File.type !== "audio/mp3") {
-          return NextResponse.json({ error: "Le fichier principal doit obligatoirement être un MP3 (.mp3)." }, { status: 400 });
-        }
-        data.mp3FileUrl = await saveUploadedFile(mp3File, "beats");
-        data.previewUrl = data.mp3FileUrl; // Same as mp3FileUrl
+      const hasWavNow = wavKey || beat.wavFileUrl;
+      if (trackoutKey && !hasWavNow) {
+        return NextResponse.json({ error: "L'upload d'un Trackout nécessite aussi l'upload du fichier WAV." }, { status: 400 });
+      }
+      if (trackoutKey && plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY") {
+        return NextResponse.json({ error: "La formule Standard/Freemium n'autorise pas l'upload de Trackouts." }, { status: 403 });
       }
 
-      // 3. WAV File
-      const wavFile = data.wavFile;
-      if (wavFile instanceof File && wavFile.size > 0) {
-        if (plan === "FREEMIUM") {
-          return NextResponse.json({ error: "La formule Freemium n'autorise pas l'upload de WAV." }, { status: 403 });
-        }
-        if (!wavFile.name.toLowerCase().endsWith(".wav") && wavFile.type !== "audio/wav" && wavFile.type !== "audio/x-wav") {
-          return NextResponse.json({ error: "Le fichier Haute Qualité doit obligatoirement être un WAV (.wav)." }, { status: 400 });
-        }
-        data.wavFileUrl = await saveUploadedFile(wavFile, "beats");
-      }
+      if (coverKey) data.coverImage = coverKey;
+      if (mp3Key) { data.mp3FileUrl = mp3Key; data.previewUrl = mp3Key; }
+      if (wavKey) data.wavFileUrl = wavKey;
+      if (trackoutKey) data.trackoutFileUrl = trackoutKey;
 
-      // 4. Trackout File
-      const trackoutFile = data.trackoutFile;
-      if (trackoutFile instanceof File && trackoutFile.size > 0) {
-        const hasWavNow = data.wavFileUrl || beat.wavFileUrl;
-        if (!hasWavNow) {
-          return NextResponse.json({ error: "L'upload d'un Trackout nécessite aussi l'upload du fichier WAV." }, { status: 400 });
-        }
-        if (plan !== "PREMIUM_MONTHLY" && plan !== "PREMIUM_YEARLY") {
-          return NextResponse.json({ error: "La formule Standard/Freemium n'autorise pas l'upload de Trackouts." }, { status: 403 });
-        }
-        data.trackoutFileUrl = await saveUploadedFile(trackoutFile, "trackouts");
-      }
     } else {
       data = await request.json();
     }
 
     // Checking final states of files
-    const finalWavUrl = data.wavFileUrl ? `/uploads/beats/${data.wavFileUrl}` : beat.wavFileUrl;
-    const finalTrackoutUrl = data.trackoutFileUrl ? `/uploads/trackouts/${data.trackoutFileUrl}` : beat.trackoutFileUrl;
+    const finalWavUrl = data.wavFileUrl ?? beat.wavFileUrl;
+    const finalTrackoutUrl = data.trackoutFileUrl ?? beat.trackoutFileUrl;
 
     const basicPrice = data.basicPrice ? Number(data.basicPrice) : beat.basicPrice;
     const premiumPrice = data.premiumPrice !== undefined && data.premiumPrice !== ""
@@ -257,11 +237,12 @@ export async function PATCH(request: NextRequest, context: any) {
       duration: data.duration ? Number(data.duration) : beat.duration,
     };
 
-    if (data.coverImage) updateData.coverImage = `/uploads/covers/${data.coverImage}`;
-    if (data.mp3FileUrl) updateData.mp3FileUrl = `/uploads/beats/${data.mp3FileUrl}`;
-    if (data.previewUrl) updateData.previewUrl = `/uploads/beats/${data.previewUrl}`;
-    if (data.wavFileUrl) updateData.wavFileUrl = `/uploads/beats/${data.wavFileUrl}`;
-    if (data.trackoutFileUrl) updateData.trackoutFileUrl = `/uploads/trackouts/${data.trackoutFileUrl}`;
+    // Apply file key updates (already set to R2 keys in the form-data block above)
+    if (data.coverImage) updateData.coverImage = data.coverImage;
+    if (data.mp3FileUrl) updateData.mp3FileUrl = data.mp3FileUrl;
+    if (data.previewUrl) updateData.previewUrl = data.previewUrl;
+    if (data.wavFileUrl) updateData.wavFileUrl = data.wavFileUrl;
+    if (data.trackoutFileUrl) updateData.trackoutFileUrl = data.trackoutFileUrl;
 
     // Update prices if needed to prevent bad data
     if (!finalWavUrl) updateData.premiumPrice = null;

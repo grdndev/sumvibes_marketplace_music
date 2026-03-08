@@ -35,9 +35,9 @@ const SocketContext = createContext<SocketContextValue>({
   socket: null,
   totalUnread: 0,
   unreadBySender: {},
-  markAsRead: () => {},
-  syncUnread: () => {},
-  setActiveConversationId: () => {},
+  markAsRead: () => { },
+  syncUnread: () => { },
+  setActiveConversationId: () => { },
 });
 
 export function useSocket() {
@@ -55,9 +55,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
           socket: null,
           totalUnread: 0,
           unreadBySender: {},
-          markAsRead: () => {},
-          syncUnread: () => {},
-          setActiveConversationId: () => {},
+          markAsRead: () => { },
+          syncUnread: () => { },
+          setActiveConversationId: () => { },
         }}
       >
         {children}
@@ -95,7 +95,7 @@ function AuthedSocketProvider({
     io(undefined as string | undefined, {
       path: "/api/socket/io",
       addTrailingSlash: false,
-      transports: ["websocket"],
+      transports: ["polling", "websocket"],
       autoConnect: false,
       reconnection: true,
       reconnectionAttempts: Infinity,
@@ -110,7 +110,7 @@ function AuthedSocketProvider({
     // initialiser le serveur Socket.IO côté Node, puis seulement ensuite
     // connecter le client.
     fetch("/api/socket/io")
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => socket.connect());
 
     const joinRoom = () => {
